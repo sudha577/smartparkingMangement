@@ -12,5 +12,5 @@ phases:
       - echo Build completed on `date`
 artifacts:
   files:
-    - '*/'
-  base-directory: 'target/smartParkingManagement'
+    - '**/*'
+  base-directory: 'target/smartparkingManagement'
