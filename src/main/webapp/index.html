@@ -6,39 +6,21 @@
     <!-- <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <title>Hello AWS Web World!</title -->
 <script type="text/javascript">
-/*var AWS = require('aws-sdk');
- AWS.config.update({region: 'us-east-2'}); */
- AWS.config.update({
-  region: "us-east-2",
-  // The endpoint should point to the local or remote computer where DynamoDB (downloadable) is running.
-  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
-  /*
-    accessKeyId and secretAccessKey defaults can be used while using the downloadable version of DynamoDB. 
-    For security reasons, do not store AWS Credentials in your files. Use Amazon Cognito instead.
-  */
-  const ssm = require('@aws-cdk/aws-ssm');
-
-//Get latest version or specified version of plain string attribute
-const latestStringToken = ssm.StringParameter.valueForStringParameter(
-   this, 'accessKeyid');      // latest version
-const versionOfStringToken = ssm.StringParameter.valueForStringParameter(
-   this, 'accessKeyid', 1);   // version 1
-
-//Get specified version of secure string attribute
-const secureStringToken = ssm.StringParameter.valueForSecureStringParameter(
-   this, 'accessKeyid', 1);   // must specify version
- //Get latest version or specified version of plain string attribute
-   const accessStringToken = ssm.StringParameter.valueForStringParameter(
-      this, 'secretAccessKey');      // latest version
-   const versionOfaccessStringToken = ssm.StringParameter.valueForStringParameter(
-      this, 'secretAccessKey', 1);   // version 1
-
-   //Get specified version of secure string attribute
-   const secureaccessStringToken = ssm.StringParameter.valueForSecureStringParameter(
-      this, 'secretAccessKey', 1);   // must specify version
-   accessKeyId: latestStringToken,
-  secretAccessKey: accessStringToken
-});  
+//var AWS = require('aws-sdk');
+//AWS.config.loadFromPath('./credentials');
+ 
+AWS.config.update({
+	  region: "us-east-2",
+	  // The endpoint should point to the local or remote computer where DynamoDB (downloadable) is running.
+	  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
+	  /*
+	    accessKeyId and secretAccessKey defaults can be used while using the downloadable version of DynamoDB. 
+	    For security reasons, do not store AWS Credentials in your files. Use Amazon Cognito instead.
+	  */
+	  accessKeyId: "AKIASUU5L6BWABM3DQEC",
+	  secretAccessKey: "mDwbape4la6yPfTOiOa+KvgqkFTAKS7krK2gZMN/"
+	});  
+ 
 var dynamodb = new AWS.DynamoDB();
 var docClient = new AWS.DynamoDB.DocumentClient();
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
