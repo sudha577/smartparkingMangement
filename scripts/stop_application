@@ -3,4 +3,4 @@
 set -e
 
 ps -ef | grep tomcat8 | grep -v grep
-[ $?  -eq "0" ] && echo "process is running" && service tomcat8 stop|| echo "process is not running"
+[ $?  -eq "0" ] && echo "process is running" || service tomcat8 start && echo "process is not running"
