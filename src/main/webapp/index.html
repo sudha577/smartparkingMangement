@@ -1,149 +1,385 @@
 <!DOCTYPE html>
-<html>
-  <head>
-  <link href="styles/styles.css" rel="stylesheet" type="text/css">
-  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
-    <!-- <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>Hello AWS Web World!</title -->
+<html lang="en">
+<head>
+	<title>Login V18</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+<!--===============================================================================================-->
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
 <script type="text/javascript">
-//var AWS = require('aws-sdk');
-//AWS.config.loadFromPath('./credentials');
- 
-AWS.config.update({
-	  region: "us-east-2",
-	  // The endpoint should point to the local or remote computer where DynamoDB (downloadable) is running.
-	  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
-	  /*
-	    accessKeyId and secretAccessKey defaults can be used while using the downloadable version of DynamoDB. 
-	    For security reasons, do not store AWS Credentials in your files. Use Amazon Cognito instead.
-	  */
-	  accessKeyId: "AKIASUU5L6BWABM3DQEC",
-	  secretAccessKey: "mDwbape4la6yPfTOiOa+KvgqkFTAKS7krK2gZMN/"
-	});  
- 
+
+ AWS.config.update({
+  region: "us-east-2",
+  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
+  accessKeyId: "AKIASUU5L6BWABM3DQEC",
+  secretAccessKey: "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"
+});  
 var dynamodb = new AWS.DynamoDB();
 var docClient = new AWS.DynamoDB.DocumentClient();
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
-function loadref(time)
+function usercheck(username,password)
 {
-	queryData1();
-	queryData2();
-setTimeout("location.reload(true);",time);
-} 
-
-function queryData1() {
+	console.log(username);
+	console.log(password);
+	var params={
+		 TableName : "UserDetails",
+		 ScanIndexForward: false,
+	        KeyConditionExpression: "#susername = :UserName",
+	        ExpressionAttributeNames:{
+	            "#susername": "UserName"
+	        },
+	        ExpressionAttributeValues: {
+	        	":UserName":username
+	        }, 
+	        Limit:1 
+	};
+	docClient.query(params, function(err, data) {
+		if(err)
+			{
+			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+			}else{
+				var count=data.Count;
+				console.log(count);
+				if(count>0)
+					{
+					data.Items.forEach(function(item)
+							{
+						      if(item.Password.localeCompare(password)==0)
+						    	  {
+						    	  window.location.href="availability.html";
+						    	  }else{
+						    		  alert("Please enter valid password");
+						    	  }
+							});
+					}else{
+						alert("Please enter valid username");
+					}
+			}
+	});
 	
-    var params = {
-        TableName : "SlotAvailability",
-        ScanIndexForward: false,
-        KeyConditionExpression: "#sname = :SensorName",
-        ExpressionAttributeNames:{
-            "#sname": "SensorName"
-        },
-        ExpressionAttributeValues: {
-        	":SensorName":"Slot1"
-        }, 
-        Limit:1 
-    };
-    docClient.query(params, function(err, data) {
-        if (err) {
-            
-        } else {
-        	
-            data.Items.forEach(function(movie) {
-                
-                if(movie.Distance>20)
-                {
-                	document.getElementById('slottable').rows[1].cells[0].className="empty";
-                	document.getElementById('slottable').rows[1].cells[0].innerHTML="EMPTY"
-                }
-                else
-                {
-                	document.getElementById('slottable').rows[1].cells[0].className="full";
-                	document.getElementById('slottable').rows[1].cells[0].innerHTML="FULL"
-                }
-            });
-         
-        }
-    });
+	}
+function admincheck(username,password)
+{
+	console.log(username);
+	console.log(password);
+	var params={
+		 TableName : "AdminDetails",
+		 ScanIndexForward: false,
+	        KeyConditionExpression: "#susername = :UserName",
+	        ExpressionAttributeNames:{
+	            "#susername": "UserName"
+	        },
+	        ExpressionAttributeValues: {
+	        	":UserName":username
+	        }, 
+	        Limit:1 
+	};
+	docClient.query(params, function(err, data) {
+		if(err)
+			{
+			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+			}else{
+				var count=data.Count;
+				console.log(count);
+				if(count>0)
+					{
+					data.Items.forEach(function(item)
+							{
+						      if(item.Password.localeCompare(password)==0)
+						    	  {
+						    	  window.location.href="availability.html";
+						    	  }else{
+						    		  alert("Please enter valid password");
+						    	  }
+							});
+					}else{
+						alert("Please enter valid username");
+					}
+			}
+	});
+	
+	}
+function adduser(password)
+{
+	const name=document.getElementById('name').value;
+	console.log(name);
+	const email=document.getElementById('email').value;
+	console.log(email);
+	console.log(password);
+	const number=document.getElementById('number').value;
+	console.log(number)
+	var params={
+		 TableName : "UserTypeCount",
+		
+	        KeyConditionExpression: "#susername = :UserType",
+	        ExpressionAttributeNames:{
+	            "#susername": "UserType"
+	        },
+	        ExpressionAttributeValues: {
+	        	":UserType":"User"
+	        }
+	       
+	};
+	docClient.query(params, function(err, data) {
+		if(err)
+			{
+			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+			}else{
+				console.log(data.Count);
+				data.Items.forEach(function(item)
+						{
+					var count=item.Count;
+					var toinsert=count+1;
+					var coustr=toinsert.toString();
+					var params1={
+							TableName : "UserDetails",
+							Item:{
+								UserId:{N:coustr},
+								UserName:{S:name},
+								PhoneNumber:{S:number},
+								Password:{S:password},
+								Email:{S:email}
+							}
+						};
+						dynamodb.putItem(params1,function(err, data){
+							if (err) console.log(err, err.stack); // an error occurred
+							   else     console.log(data);
+						});
+						var params2={
+								TableName : "UserTypeCount",
+								Item:{
+									UserType:{S:"User"},
+									Count:{N:coustr}
+								}
+						};
+						dynamodb.putItem(params2,function(err, data){
+							if (err) console.log(err, err.stack); // an error occurred
+							   else     console.log(data);
+						});
+					});
+				alert("Please login now !!! ");
+			}
+	});
 }
-function queryData2() {
-    var params = {
-        TableName : "SlotAvailability",
-        ScanIndexForward: false,
-        KeyConditionExpression: "#sname = :SensorName",
-        ExpressionAttributeNames:{
-            "#sname": "SensorName"
-        },
-        ExpressionAttributeValues: {
-        	":SensorName":"Slot2"
-        }, 
-        
-        Limit:1 
-    };
-    docClient.query(params, function(err, data) {
-        if (err) {
-           
-        } else {
-        	
-            data.Items.forEach(function(movie) {
-                
-                if(movie.Distance>20)
-                {
-                	document.getElementById('slottable').rows[1].cells[1].className="empty";
-                	document.getElementById('slottable').rows[1].cells[1].innerHTML="EMPTY"
-                }
-                else
-                {
-                	document.getElementById('slottable').rows[1].cells[1].className="full";
-                	document.getElementById('slottable').rows[1].cells[1].innerHTML="FULL"
-                }
-            });
-         
-        }
-    });
+function addguest()
+{
+	const name=document.getElementById('name1').value;
+	console.log(name);
+	const email=document.getElementById('email1').value;
+	console.log(email);
+	const number=document.getElementById('phnumber').value;
+	console.log(number)
+	var params={
+		 TableName : "UserTypeCount",
+		
+	        KeyConditionExpression: "#susername = :UserType",
+	        ExpressionAttributeNames:{
+	            "#susername": "UserType"
+	        },
+	        ExpressionAttributeValues: {
+	        	":UserType":"Guest"
+	        }
+	       
+	};
+	docClient.query(params, function(err, data) {
+		if(err)
+			{
+			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+			}else{
+				console.log(data.Count);
+				data.Items.forEach(function(item)
+						{
+					var count=item.Count;
+					var toinsert=count+1;
+					var coustr=toinsert.toString();
+					var params1={
+							TableName : "GuestDetails",
+							Item:{
+								UserId:{N:coustr},
+								UserName:{S:name},
+								PhoneNumber:{S:number},
+								Email:{S:email}
+							}
+						};
+						dynamodb.putItem(params1,function(err, data){
+							if (err) console.log(err, err.stack); // an error occurred
+							   else     console.log(data);
+						});
+						var params2={
+								TableName : "UserTypeCount",
+								Item:{
+									UserType:{S:"Guest"},
+									Count:{N:coustr}
+								}
+						};
+						dynamodb.putItem(params2,function(err, data){
+							if (err) console.log(err, err.stack); // an error occurred
+							   else     console.log(data);
+						});
+					});
+				window.location.href="availability.html";
+			}
+	});
 }
+</script>
+</head>
+<body style="background-color: #666666;">
+<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">		     
+   <form class="login100-form validate-form">
+			<button class="login100-form-btn" onclick="toggle(this)">
+							User Login
+						</button>
+						<br>
+						<button class="login100-form-btn" onclick="toggle1(this)">
+							Admin Login
+						</button>
+						<br>
+						<button class="login100-form-btn" onclick="toggle2(this)">
+							Guest Login
+						</button>
+						<br>
+						<button class="login100-form-btn" onclick="toggle3(this)">
+							Sign Up
+						</button>
+    <div style="display:none;" id="cont">
+        <div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
+						<input class="input100" type="text" name="username" id="username">
+						<span class="focus-input100"></span>
+						<span class="label-input100">UserName</span>
+					</div>
+					
+					<div class="wrap-input100 validate-input" data-validate="Password is required">
+						<input class="input100" type="password" name="pass" id="pass">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Password</span>
+					</div>
+                 <button class="login100-form-btn" onclick="usercheck(document.getElementById('username').value,document.getElementById('pass').value)">Login</button>
 
-  </script>
-  </head>
-  <body onload="Javascript:loadref(10000)">
-  <header>
-    <div class="primary_header">
-      <h1 class="title" align="center">SMART PARKING </h1>
     </div>
-	 <div class="topnav"> 
-		 <a	href="index.html">HOME</a>	
-          <a href="About.html">ABOUT</a>		
-          <a href="Contact.html">CONTACT US</a>		
-		</div>
-</header>
-  <div>
- <h1 align="center"> <img src="images/parkingimg.jpg" alt="parkinglot" align="middle" height="250" style="width:60%;"></div></h1>
-  <div>
-  <br>
- <br>
- <div align="center">
- <br>
- <br>
-  <br>
- 
- <table id="slottable"  class="myTable"  >
-  <tr>
-    <th>Slot X</th>
-    <th>Slot Y</th>
-  </tr>
-  <tr>
-    <td></td>
-    <td></td>
-  </tr>
-</table>
-</div>
-  </body>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
+   <div style="display:none;" id="cont1">
+
+        <div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
+						<input class="input100" type="text" name="username1" id="username1">
+						<span class="focus-input100"></span>
+						<span class="label-input100">UserName</span>
+					</div>
+					
+					<div class="wrap-input100 validate-input" data-validate="Password is required">
+						<input class="input100" type="password" name="pass2" id="pass2">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Password</span>
+					</div>
+       <button class="login100-form-btn" onclick="admincheck(document.getElementById('username1').value,document.getElementById('pass2').value)">Login</button>
+    </div>
+    <div style="display:none;" id="cont2">
+
+        <div class="wrap-input100 validate-input" data-validate = "Valid name is required">
+						<input class="input100" type="text" name="name1" id="name1">
+						<span class="focus-input100"></span>
+						<span class="label-input100">UserName</span>
+					</div>
+					
+					<div class="wrap-input100 validate-input" data-validate="Valid email is required">
+						<input class="input100" type="text" name="email1" id="email1">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Email</span>
+					</div>
+					<div class="wrap-input100 validate-input" data-validate="valid number is required">
+						<input class="input100" type="text" name="phnumber" id="phnumber">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Mobile Number</span>
+					</div>
+       <button class="login100-form-btn" onclick="addguest()">Login</button>
+
+    </div>
+    <div style="display:none;" id="cont3">
+       <div class="wrap-input100 validate-input" data-validate = "Valid name">
+						<input class="input100" type="text" name="name" id="name">
+						<span class="focus-input100"></span>
+						<span class="label-input100">User Name</span>
+					</div>		
+        <div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
+						<input class="input100" type="text" name="email" id="email">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Email</span>
+					</div>
+					
+					<div class="wrap-input100 validate-input" data-validate="Password is required">
+						<input class="input100" type="password" name="pass1" id="pass1">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Password</span>
+					</div>
+					 <div class="wrap-input100 validate-input" data-validate = "Valid Number">
+						<input class="input100" type="text" name="number" id="number">
+						<span class="focus-input100"></span>
+						<span class="label-input100">Mobile Number</span>
+					</div>
+       <button class="login100-form-btn" onclick="adduser(document.getElementById('pass1').value)">SignUP</button>
+
+    </div>
+   </form>
+    <div class="login100-more" style="background-image: url('images/Parking lot Image.PNG');">
+				</div>
+   </div></div></div>
+  
+</body>
+
+	
+<!--===============================================================================================-->
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/daterangepicker/moment.min.js"></script>
+	<script src="vendor/daterangepicker/daterangepicker.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/countdowntime/countdowntime.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+<script>
+    function toggle(ele) {
+        var cont = document.getElementById('cont');
+        cont.style.display = cont.style.display == 'none' ? 'block' : 'none';
+    }
+    function toggle1(ele) {
+        var cont1 = document.getElementById('cont1');
+        cont1.style.display = cont1.style.display == 'none' ? 'block' : 'none';
+    }
+    function toggle2(ele) {
+        var cont1 = document.getElementById('cont2');
+        cont1.style.display = cont1.style.display == 'none' ? 'block' : 'none';
+    }
+    function toggle3(ele) {
+        var cont1 = document.getElementById('cont3');
+        cont1.style.display = cont1.style.display == 'none' ? 'block' : 'none';
+    }
+</script>
 </html>
