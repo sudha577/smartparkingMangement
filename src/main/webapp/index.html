@@ -249,22 +249,24 @@ function addguest()
 		<div class="container-login100">
 			<div class="wrap-login100">		     
    <form class="login100-form validate-form">
-			<button class="login100-form-btn" onclick="toggle(this)">
+            <p style="font-family: Arial, Helvetica, sans-serif; font-size:40px; text-align:center">Welcome!</p>
+			<button class="login100-form-btn" onclick="toggle(this,'cont')">
 							User Login
 						</button>
 						<br>
-						<button class="login100-form-btn" onclick="toggle1(this)">
+						<button class="login100-form-btn" onclick="toggle(this,'cont1')">
 							Admin Login
 						</button>
 						<br>
-						<button class="login100-form-btn" onclick="toggle2(this)">
+						<button class="login100-form-btn" onclick="toggle(this,'cont2')">
 							Guest Login
 						</button>
 						<br>
-						<button class="login100-form-btn" onclick="toggle3(this)">
+						<button class="login100-form-btn" onclick="toggle(this,'cont3')">
 							Sign Up
 						</button>
-    <div style="display:none;" id="cont">
+						</br>
+    <div style="display:none;" id="cont" class="tabs">
         <div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
 						<input class="input100" type="text" name="username" id="username">
 						<span class="focus-input100"></span>
@@ -279,7 +281,7 @@ function addguest()
                  <button class="login100-form-btn" onclick="usercheck(document.getElementById('username').value,document.getElementById('pass').value)">Login</button>
 
     </div>
-   <div style="display:none;" id="cont1">
+   <div style="display:none;" id="cont1" class="tabs">
 
         <div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
 						<input class="input100" type="text" name="username1" id="username1">
@@ -294,7 +296,7 @@ function addguest()
 					</div>
        <button class="login100-form-btn" onclick="admincheck(document.getElementById('username1').value,document.getElementById('pass2').value)">Login</button>
     </div>
-    <div style="display:none;" id="cont2">
+    <div style="display:none;" id="cont2" class="tabs">
 
         <div class="wrap-input100 validate-input" data-validate = "Valid name is required">
 						<input class="input100" type="text" name="name1" id="name1">
@@ -315,7 +317,7 @@ function addguest()
        <button class="login100-form-btn" onclick="addguest()">Login</button>
 
     </div>
-    <div style="display:none;" id="cont3">
+    <div style="display:none;" id="cont3" class="tabs">
        <div class="wrap-input100 validate-input" data-validate = "Valid name">
 						<input class="input100" type="text" name="name" id="name">
 						<span class="focus-input100"></span>
@@ -365,21 +367,20 @@ function addguest()
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
 <script>
-    function toggle(ele) {
-        var cont = document.getElementById('cont');
-        cont.style.display = cont.style.display == 'none' ? 'block' : 'none';
+    function toggle(ele,name) {
+    	var i, tabcontent, tablinks;
+    	  tabcontent = document.getElementsByClassName("tabs");
+    	  for (i = 0; i < tabcontent.length; i++) {
+    	    tabcontent[i].style.display = "none";
+    	  }
+    	  tablinks = document.getElementsByClassName("login100-form-btn");
+    	  for (i = 0; i < tablinks.length; i++) {
+    	    tablinks[i].className = tablinks[i].className.replace(" active", "");
+    	  }
+    	  document.getElementById(name).style.display = "block";
+    	  evt.currentTarget.className += " active";
     }
-    function toggle1(ele) {
-        var cont1 = document.getElementById('cont1');
-        cont1.style.display = cont1.style.display == 'none' ? 'block' : 'none';
-    }
-    function toggle2(ele) {
-        var cont1 = document.getElementById('cont2');
-        cont1.style.display = cont1.style.display == 'none' ? 'block' : 'none';
-    }
-    function toggle3(ele) {
-        var cont1 = document.getElementById('cont3');
-        cont1.style.display = cont1.style.display == 'none' ? 'block' : 'none';
-    }
+    
+
 </script>
 </html>

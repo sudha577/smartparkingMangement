@@ -260,14 +260,14 @@ iframe {
   min-height: 100vh;
   display: block;
   background-color: #f7f7f7;
-  padding: 173px 55px 55px 55px;
+  padding: 5px 55px 55px 55px;
 }
 .see100-form {
   width: 560px;
   min-height: 100vh;
   display: block;
   background-color: #070707;
-  padding: 173px 55px 55px 55px;
+  padding: 10px 55px 55px 55px;
 }
 .login100-form-title {
   width: 100%;
@@ -293,7 +293,7 @@ iframe {
   flex-wrap: wrap;
   align-items: flex-end;
   width: 100%;
-  height: 80px;
+  height: 55px;
   position: relative;
   border: 1px solid #e6e6e6;
   border-radius: 10px;
@@ -302,7 +302,7 @@ iframe {
 
 .label-input100 {
   font-family: Montserrat-Regular;
-  font-size: 18px;
+  font-size: 15px;
   color: #999999;
   line-height: 1.2;
 
@@ -310,9 +310,9 @@ iframe {
   position: absolute;
   pointer-events: none;
   width: 100%;
-  padding-left: 24px;
+  padding-left: 300px;
   left: 0;
-  top: 30px;
+  top: 20px;
 
   -webkit-transition: all 0.4s;
   -o-transition: all 0.4s;
@@ -325,14 +325,14 @@ iframe {
   width: 100%;
   background: transparent;
   font-family: Montserrat-Regular;
-  font-size: 18px;
+  font-size: 13px;
   color: #555555;
-  line-height: 1.2;
-  padding: 0 26px;
+  line-height: 0.7;
+  padding: 0 15px;
 }
 
 input.input100 {
-  height: 100%;
+  height: 50%;
   -webkit-transition: all 0.4s;
   -o-transition: all 0.4s;
   -moz-transition: all 0.4s;
@@ -482,7 +482,7 @@ input.input100 {
   align-items: center;
   padding: 0 20px;
   width: 100%;
-  height: 50px;
+  height: 40px;
   border-radius: 10px;
   background: #6675df;
 
@@ -534,7 +534,7 @@ input.input100 {
   .login100-form {
     padding-left: 15px;
     padding-right: 15px;
-    padding-top: 70px;
+    padding-top: 10px;
   }
 }
 
