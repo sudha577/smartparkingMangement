@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <link href="styles/styles.css" rel="stylesheet" type="text/css">
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
+    <!-- <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Hello AWS Web World!</title -->
+<script type="text/javascript">
+
+ 
+AWS.config.update({
+	  region: "us-east-2",
+	  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
+	  accessKeyId: "AKIASUU5L6BWABM3DQEC",
+	  secretAccessKey: "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"
+	});  
+ 
+var dynamodb = new AWS.DynamoDB();
+var docClient = new AWS.DynamoDB.DocumentClient();
+var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+function loadref(time)
+{
+	queryData();
+	
+setTimeout("location.reload(true);",time);
+} 
+
+function queryData() {
+	
+    var params = {
+        TableName : "BookingDetails",
+        FilterExpression: "#user_status = :Status",
+        ExpressionAttributeNames: {
+            "#user_status": "Status",
+        },
+        ExpressionAttributeValues: { ":Status": 'Y'}
+             
+    };
+    docClient.scan(params, onScan);
+    var count = 0;
+    var row;
+    var c0;
+    var c1;
+    var c2;
+    var c3;
+    var c4;
+    var c5;
+    var c6;
+    var c7;
+    var c8;
+    var c9;
+    var table = document.getElementById("Detailstable");
+    function onScan(err, data) {
+        if (err) {
+            console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+        }
+        else
+        {        
+            console.log("Scan succeeded.");
+            var i=1;       
+       
+            data.Items.forEach(function(item) {
+            	
+            	 console.log("Scan ");
+               console.log("Item :", ++count,JSON.stringify(item));
+               console.log(count);
+               
+             	   console.log("in For loop ");
+             	  row = table.insertRow(i);
+             	  c0 = row.insertCell(0);
+             	  c1= row.insertCell(1);
+             	  c2= row.insertCell(2);
+             	  c3= row.insertCell(3);
+             	  c4= row.insertCell(4);
+             	  c5= row.insertCell(5);
+             	  c6= row.insertCell(6);
+             	  c7= row.insertCell(7);
+             	  c8= row.insertCell(8);
+             	  c9= row.insertCell(9);
+            	   
+             document.getElementById('Detailstable').rows[i].cells[0].innerHTML=item.UserName; 
+          	
+          	 document.getElementById('Detailstable').rows[i].cells[1].innerHTML=item.BookingId;
+          	
+          	 document.getElementById('Detailstable').rows[i].cells[2].innerHTML=item.BookingDate; 
+          
+          	 document.getElementById('Detailstable').rows[i].cells[3].innerHTML=item.Flag; 
+          	
+           	 document.getElementById('Detailstable').rows[i].cells[4].innerHTML=item.FromTime;
+          	
+          	 document.getElementById('Detailstable').rows[i].cells[5].innerHTML=item.ToTime;
+          
+          	 document.getElementById('Detailstable').rows[i].cells[6].innerHTML=item.PaymentAmount; 
+          	
+          	 document.getElementById('Detailstable').rows[i].cells[7].innerHTML=item.PaymentMethod; 
+          	
+          	 document.getElementById('Detailstable').rows[i].cells[8].innerHTML=item.SensorName; 
+          	
+          	 document.getElementById('Detailstable').rows[i].cells[9].innerHTML=item.VehicleNumber; 
+         
+          
+            	i++;  
+                            
+            });
+      
+
+            // continue scanning if we have more items
+            if (typeof data.LastEvaluatedKey != "undefined") 
+            {
+                console.log("Scanning for more...");
+                params.ExclusiveStartKey = data.LastEvaluatedKey;
+                docClient.scan(params, onScan);
+            }
+        }
+    }
+}
+   
+</script>
+</head>
+<body onload="Javascript:loadref(10000)" style="background-image: url('images/Background Empty.jpg');no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;">
+ <header>
+	 <div class="topnav">
+	 <div align="left"> 
+		 <a	class="active" id="home" href="availability.html" >HOME</a>	
+          <a  id="about" href="About.html" >ABOUT</a>		
+          <a  id="contact"href="Contact.html" >CONTACT US</a>
+           <a  id="booking" href="BookingDetails.html">Booking Details</a>
+           <a  id="analytics" href="Analytics.html">Analytics of Application</a>
+           
+          </div>	
+          <div align="right" style="left-padding:100px">
+              <a  id="account"href="Myaccount.html" >My Account</a>		
+		  </div>
+	 </div>
+</header>
+  <div class="login100-more-avail" >
+ <div align="center">
+ </br>
+ </br>
+
+ 
+ <h1 style="text-align:left"> Booking Data</h1>
+ 
+ 
+ 
+  <table id="Detailstable"  class="myTable"  >
+  <tr>
+    <th style="text-align:centre;padding:20px">UserName</th>
+    <th style="text-align:centre;padding:20px">Booking Id</th>
+    <th style="text-align:centre;padding:20px">Booking Date</th>
+    <th style="text-align:centre;padding:20px">Flag</th>
+    <th style="text-align:centre;padding:20px">From Time</th>
+    <th style="text-align:centre;padding:20px">To Time</th>
+    <th style="text-align:centre;padding:20px">Payment Amount</th>
+    <th style="text-align:centre;padding:20px">Payment Method</th>
+    <th style="text-align:centre;padding:20px">Sensor Name</th>
+    <th style="text-align:centre;">Vehicle Number</th>
+  </tr>
+  
+</table> 
+
+</body>
+</html>
