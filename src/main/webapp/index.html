@@ -67,7 +67,9 @@ function usercheck(username,password)
 							{
 						      if(item.Password.localeCompare(password)==0)
 						    	  {
-						    	  window.location.href="availability.html";
+						    	  sessionStorage.setItem("UserName",username);
+						    	  console.log(sessionStorage.getItem("UserName"));
+						    	  window.location.href="SlotAvailability.html";
 						    	  }else{
 						    		  alert("Please enter valid password");
 						    	  }
@@ -238,7 +240,7 @@ function addguest()
 							   else     console.log(data);
 						});
 					});
-				window.location.href="availability.html";
+				window.location.href="SlotAvailability.html";
 			}
 	});
 }

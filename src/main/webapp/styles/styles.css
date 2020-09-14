@@ -10,6 +10,45 @@ body {
 	text-rendering: optimizeLegibility;
 	background-color: #ffffff;
 }
+
+.label-form
+{
+	font: 18px/1.4em "Lucida Grande", Verdana, sans-serif;
+	display: inline-block;
+    float: left;
+    clear: left;
+    width: 250px;
+    text-align: left;
+}
+.input-form
+{
+  width: 60%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;	
+  float: left;
+
+}
+.input-form-button
+{
+	width: 60%;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;	
+  float: left;
+  background-color: #2095db; 
+  border-radius: 6px;
+  color: white;
+  padding: 12px 20px;;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+}
 .primary_header {
 	width:100%;
 	margin-left: 0px;
@@ -40,7 +79,7 @@ body {
   cursor: pointer;
 }
 .myTable { 
-  width:55%;
+  width:60%;
   text-align: left;
   background-color: lemonchiffon;
   border-collapse:bottom;
@@ -107,6 +146,7 @@ h2 {
 	background-position: 0 50%;
 	background-repeat: no-repeat;
 }
+
 
 
 /*************

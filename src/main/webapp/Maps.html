@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
+  <link href="styles/styles.css" rel="stylesheet" type="text/css">
+  <script defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDzyOaqAYHjR_UtKv4X25gmw4NeX5aHuHY&callback=initMap">
+    </script> 
     <style>
       /* Set the size of the div element that contains the map */
       #map {
-        height: 400px;  /* The height is 400 pixels */
+        height: 700px;  /* The height is 400 pixels */
         width: 100%;  /* The width is the width of the web page */
        }
     </style>
@@ -15,6 +19,14 @@
     <div id="map"></div>
     <script>
     function initMap() {
+    	var locations = [
+  	      ['Slot1', 37.655656, -122.057867, 1],
+  	      ['Slot2', 37.657963, -122.052656, 2],
+  	      ['Slot3', 37.659326, -122.054388, 3],
+  	      ['Slot4', 37.659597, -122.056430, 4],
+  	      ['Slot5', 37.656038, -122.052505, 5]
+  	    ];
+    	const des=sessionStorage.getItem("NavigateSlot");
     	const directionsRenderer = new google.maps.DirectionsRenderer();
   	    const directionsService = new google.maps.DirectionsService();
        const map = new google.maps.Map(document.getElementById('map'), {
@@ -34,7 +46,8 @@
             directionsService.route(
             	    {
             	      origin: pos,
-            	      destination: {lat:37.3899271,lng:-122.0150952},
+            	      destination: new google.maps.LatLng(locations[1][1], locations[1][2]),
+
             	      travelMode: google.maps.TravelMode.DRIVING
             	    },
             	    (response, status) => {
@@ -64,10 +77,9 @@
 
 
     </script>
-    <script defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDzyOaqAYHjR_UtKv4X25gmw4NeX5aHuHY&callback=initMap">
-    </script> 
-    <link rel="stylesheet" type="text/css" href="./styles.css" />
+    
+    
+    
   </head>
   <body>
     <div id="map"></div>

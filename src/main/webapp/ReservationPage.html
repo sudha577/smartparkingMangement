@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<link href="styles/styles.css" rel="stylesheet" type="text/css">
+<link href="css/availabilitypage.css" rel="stylesheet" type="text/css">
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
+<script type="text/javascript">
+AWS.config.update({
+	  region: "us-east-2",
+	  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
+	  accessKeyId: "AKIASUU5L6BWABM3DQEC",
+	  secretAccessKey: "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"
+	});  
+ 
+var dynamodb = new AWS.DynamoDB();
+var docClient = new AWS.DynamoDB.DocumentClient();
+var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+function ReserveSpace()
+{
+		const UserName="test";
+		const Bookingdate= "09-Sep-2020";
+		const Flag="Null";
+		const FromTime=document.getElementById('fromtime').value;
+		const PaymentAmount="100";
+		const Paymentmethod="paypal";
+		const status="Y";
+		const ToTime=document.getElementById('totime').value;
+		const SensorName=document.getElementById('Slot').value;
+		const VehicleNumber=document.getElementById('Vnum').value;
+	   console.log(FromTime);
+	   console.log(ToTime);
+	   console.log(SensorName);
+	   console.log(VehicleNumber);
+	   
+	   var params={
+				 TableName : "Bookingdetails",
+				 ScanIndexForward: false,
+			        KeyConditionExpression: "#susername = :UserType and #Status = :status",
+			        ExpressionAttributeNames:{
+			            "#susername": "UserName",
+			            "#Status": "Status"
+			        },
+			        ExpressionAttributeValues: {
+			        	":status" : "Y"
+			        },
+			        limit:1
+			       
+			};
+			docClient.query(params, function(err, data) {
+				if(err)
+					{
+					console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+					}else{
+						console.log(data.BookingId);
+						data.Items.forEach(function(item)
+								{
+							var count=item.Count;
+							var toinsert=count+1;
+							var coustr=toinsert.toString();  
+							console.log(coustr);
+	   			var params1={
+				TableName : "BookingDetails",
+				Item:{
+					UserName:{S:UserName},
+					BookingId:{S:coustr},
+					BookingDate:{S:Bookingdate},
+					Flag:{S:Flag},
+					FromTime:{S:FromTime},
+					PaymentAmount:{S:PaymentAmount},
+					PaymentMethod:{S:Paymentmethod},
+					Status:{S:status},
+					ToTime:{S:ToTime},
+					SensorName:{S:SensorName},
+					VehicleNumber:{S:VehicleNumber}
+				}
+			};
+	   console.log("ok till now")
+	   dynamodb.putItem(params1,function(err, data){
+			if (err)
+				{
+				console.log(err, err.stack); // an error occurred
+				}
+			   else    
+				   {
+				   console.log("Inserted");			   
+				   }
+		});
+	   
+	});
+}
+			});
+}
+</script>
+</head>
+<body>
+<header>
+	 <div class="topnav">
+	 <div align="left"> 
+		 <a	 id="home" href="availability.html" >HOME</a>	
+          <a  id="about" href="About.html" >ABOUT</a>		
+          <a  id="contact"href="Contact.html" >CONTACT US</a>
+          </div>	
+          <div style="left-padding:100px">
+          <a  id="booking" href="Bookings.html">My Bookings</a>	
+          <a  id="account"href="Myaccount.html" >My Account</a>		
+		</div>
+		</div>
+</header>
+<div align="center" style=" padding-top:20px">
+<form  style="width: 600px; height: 500px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:120px">
+<h1 style="font: 20px/1.4em Verdana, sans-serif; float:left">Reserve a space..</h1>
+<label class="label-form" for="From">From          :</label>
+  <input class="input-form" list="fromtimes" name="fromtime" id="fromtime">
+  <datalist id="fromtimes">
+    <option value="00:00">
+    <option value="01:00">
+    <option value="02:00">
+    <option value="03:00">
+    <option value="04:00">
+    <option value="05:00">
+    <option value="06:00">
+    <option value="07:00">
+    <option value="08:00">
+    <option value="09:00">
+    <option value="10:00">
+    <option value="11:00">
+    <option value="12:00">
+    <option value="13:00">
+    <option value="14:00">
+    <option value="15:00">
+    <option value="16:00">
+    <option value="17:00">
+    <option value="18:00">
+    <option value="19:00">
+    <option value="20:00">
+    <option value="21:00">
+    <option value="22:00">
+    <option value="23:00">
+  </datalist>
+  <br>
+  <label class="label-form" for="To">To            :</label>
+    <input class="input-form" list="totimes" name="totime" id="totime">
+  <datalist id="totimes">
+    <option value="00:00">
+    <option value="01:00">
+    <option value="02:00">
+    <option value="03:00">
+    <option value="04:00">
+    <option value="05:00">
+    <option value="06:00">
+    <option value="07:00">
+    <option value="08:00">
+    <option value="09:00">
+    <option value="10:00">
+    <option value="11:00">
+    <option value="12:00">
+    <option value="13:00">
+    <option value="14:00">
+    <option value="15:00">
+    <option value="16:00">
+    <option value="17:00">
+    <option value="18:00">
+    <option value="19:00">
+    <option value="20:00">
+    <option value="21:00">
+    <option value="22:00">
+    <option value="23:00">
+  </datalist>
+  </br>
+  </br>
+  <label class="label-form" for="SelectSlot">Select Slot :</label>
+    <input class="input-form" list="Slots" name="Slot" id="Slot">
+  <datalist id="Slots">
+    <option value="Slot 1">
+    <option value="Slot 2">
+    <option value="Slot 3">
+    <option value="Slot 4">
+    <option value="Slot 5">
+  </datalist>
+  </br>
+  </br>
+  <label class="label-form" for="Vehicle Number">Vehicle Number :</label>
+  <input  class="input-form"type="text" id="Vnum" name="Vnum"><br><br>
+  <button class="button" onClick= "ReserveSpace()" >Reserve</button>
+</form>
+</div>
+
+</body>
+</html>
