@@ -18,8 +18,9 @@ var docClient = new AWS.DynamoDB.DocumentClient();
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 function ReserveSpace()
 {
-		const UserName="test";
-		const Bookingdate= "09-Sep-2020";
+		const UserName=sessionStorage.getItem("UserName");
+		const current_datetime=new Date();
+		const Bookingdate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
 		const Flag="Null";
 		const FromTime=document.getElementById('fromtime').value;
 		const PaymentAmount="100";
@@ -33,64 +34,63 @@ function ReserveSpace()
 	   console.log(SensorName);
 	   console.log(VehicleNumber);
 	   
-	   var params={
-				 TableName : "Bookingdetails",
-				 ScanIndexForward: false,
-			        KeyConditionExpression: "#susername = :UserType and #Status = :status",
-			        ExpressionAttributeNames:{
-			            "#susername": "UserName",
-			            "#Status": "Status"
-			        },
-			        ExpressionAttributeValues: {
-			        	":status" : "Y"
-			        },
-			        limit:1
-			       
-			};
-			docClient.query(params, function(err, data) {
-				if(err)
-					{
-					console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
-					}else{
-						console.log(data.BookingId);
-						data.Items.forEach(function(item)
-								{
-							var count=item.Count;
-							var toinsert=count+1;
-							var coustr=toinsert.toString();  
-							console.log(coustr);
-	   			var params1={
-				TableName : "BookingDetails",
-				Item:{
-					UserName:{S:UserName},
-					BookingId:{S:coustr},
-					BookingDate:{S:Bookingdate},
-					Flag:{S:Flag},
-					FromTime:{S:FromTime},
-					PaymentAmount:{S:PaymentAmount},
-					PaymentMethod:{S:Paymentmethod},
-					Status:{S:status},
-					ToTime:{S:ToTime},
-					SensorName:{S:SensorName},
-					VehicleNumber:{S:VehicleNumber}
-				}
-			};
-	   console.log("ok till now")
-	   dynamodb.putItem(params1,function(err, data){
-			if (err)
+	   var params = {
+		        TableName : "BookingDetails",
+		        FilterExpression: "#user_status = :Status",
+		        ExpressionAttributeNames: {
+		            "#user_status": "Status",
+		        },
+		        ExpressionAttributeValues: { ":Status": 'Y'}
+		             
+		    };
+	   docClient.scan(params, onScan);
+	   function onScan(err, data){
+			if(err)
 				{
-				console.log(err, err.stack); // an error occurred
+				console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+				}else{
+	   					var coustr=(data.Count+1).toString();
+	   					
+	   					console.log(coustr);
+				   			var params1={
+							TableName : "BookingDetails",
+							Item:{
+								UserName:{S:UserName},
+								BookingId:{S:coustr},
+								BookingDate:{S:Bookingdate},
+								Flag:{S:Flag},
+								FromTime:{S:FromTime},
+								PaymentAmount:{S:PaymentAmount},
+								PaymentMethod:{S:Paymentmethod},
+								Status:{S:status},
+								ToTime:{S:ToTime},
+								SensorName:{S:SensorName},
+								VehicleNumber:{S:VehicleNumber}
+							}
+						};
+				   console.log("ok till now")
+				   dynamodb.putItem(params1,function(err, data){
+						if (err)
+							{
+							console.log(err, err.stack); // an error occurred
+							}
+						   else    
+							   {
+							   console.log("Inserted");			   
+							   }
+				
+				   
+				});
+				   
 				}
-			   else    
-				   {
-				   console.log("Inserted");			   
-				   }
-		});
-	   
-	});
+	   }
 }
-			});
-}
+function appendLeadingZeroes(n){
+	  if(n <= 9){
+	    return "0" + n;
+	  }
+	  return n
+	}
 </script>
 </head>
 <body>
@@ -108,7 +108,7 @@ function ReserveSpace()
 		</div>
 </header>
 <div align="center" style=" padding-top:20px">
-<form  style="width: 600px; height: 500px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:120px">
+<form  style="width: 600px; height: 500px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:120px" onsubmit="return false;">
 <h1 style="font: 20px/1.4em Verdana, sans-serif; float:left">Reserve a space..</h1>
 <label class="label-form" for="From">From          :</label>
   <input class="input-form" list="fromtimes" name="fromtime" id="fromtime">

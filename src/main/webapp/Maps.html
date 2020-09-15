@@ -19,6 +19,7 @@
     <div id="map"></div>
     <script>
     function initMap() {
+    	var i=0;
     	var locations = [
   	      ['Slot1', 37.655656, -122.057867, 1],
   	      ['Slot2', 37.657963, -122.052656, 2],
@@ -26,7 +27,17 @@
   	      ['Slot4', 37.659597, -122.056430, 4],
   	      ['Slot5', 37.656038, -122.052505, 5]
   	    ];
-    	const des=sessionStorage.getItem("NavigateSlot");
+    	console.log(sessionStorage.getItem("NavigateToSlot"));
+    	switch(sessionStorage.getItem("NavigateToSlot").toString())
+    	{
+    	case "Slot 1":i=1;break;
+    	case "Slot 2":i=2;break;
+    	case "Slot 3":i=3;break;
+    	case "Slot 4":i=4;break;
+    	case "Slot 5":i=5;break;
+    	default:
+    	
+    	}
     	const directionsRenderer = new google.maps.DirectionsRenderer();
   	    const directionsService = new google.maps.DirectionsService();
        const map = new google.maps.Map(document.getElementById('map'), {
@@ -46,7 +57,7 @@
             directionsService.route(
             	    {
             	      origin: pos,
-            	      destination: new google.maps.LatLng(locations[1][1], locations[1][2]),
+            	      destination: new google.maps.LatLng(locations[i][1], locations[i][2]),
 
             	      travelMode: google.maps.TravelMode.DRIVING
             	    },
