@@ -5,6 +5,7 @@
 <link href="styles/styles.css" rel="stylesheet" type="text/css">
 <link href="css/availabilitypage.css" rel="stylesheet" type="text/css">
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
 <script type="text/javascript">
 AWS.config.update({
 	  region: "us-east-2",
@@ -22,11 +23,11 @@ function ReserveSpace()
 		const current_datetime=new Date();
 		const Bookingdate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
 		const Flag="Null";
-		const FromTime=document.getElementById('fromtime').value;
-		const PaymentAmount="100";
+		const FromTime=document.getElementById('From').value;
+		const PaymentAmount=document.getElementById('payamount').value;
 		const Paymentmethod="paypal";
 		const status="Y";
-		const ToTime=document.getElementById('totime').value;
+		const ToTime=document.getElementById('To').value;
 		const SensorName=document.getElementById('Slot').value;
 		const VehicleNumber=document.getElementById('Vnum').value;
 	   console.log(FromTime);
@@ -92,7 +93,93 @@ function appendLeadingZeroes(n){
 	  }
 	  return n
 	}
+function displaytooptions()
+{
+	console.log("in displaytooptions method");
+	var selector=document.getElementById("From");
+	console.log(selector.selectedIndex);
+	var n=selector.selectedIndex;
+	var options = document.querySelectorAll('#To option');
+	  options.forEach(o => o.remove());
+	for (i = n; i < 24; i++) {
+		console.log("in for loop");
+	var x = document.getElementById("To");
+	  var option = document.createElement("option");
+	  
+	  option.text = appendLeadingZeroes(i)+":00";
+	  option.id=i;
+	  x.add(option);
+	}
+	
+	}
+function displayslots() {
+	var selector1=document.getElementById("From");
+	var n1=selector1.selectedIndex-1;
+	var selector2=document.getElementById("To");
+	var n2=selector2.selectedIndex;
+	console.log(n1);
+	console.log(n2);
+	var amount=(n2+1) * 10;
+	console.log(amount);
+	document.getElementById("payamount").value=amount;
+	var options = document.querySelectorAll('#Slot option');
+	  options.forEach(o => o.remove());
+	  const current_datetime=new Date();
+		const todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
+		console.log(todaydate);
+	var params={
+			 TableName : "BookingDetails",
+			 FilterExpression: " #FromTime between :one AND :two AND #BookingDate = :date OR #ToTime between :one AND :two AND #BookingDate = :date",
+			 ExpressionAttributeNames:{
+		            "#FromTime":"FromTime",
+		            "#ToTime":"ToTime",
+		            "#BookingDate":"BookingDate"
+		        },
+		        ExpressionAttributeValues: {
+		        	":one":document.getElementById("From").value,
+		        	":two":document.getElementById("To").value,
+		        	":date":todaydate
+		        }
+		        
+		};
+	docClient.scan(params, onScan);
+	function onScan(err, data) {
+		if(err)
+			{
+			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+			}else{
+				var count=data.Count;
+				console.log(count);
+				var slots=["Slot 1","Slot 2","Slot 3","Slot 4","Slot 5"];
+				data.Items.forEach(function(movie) {
+	                  
+	                  if(slots.includes(movie.SensorName))
+	                  {
+	                	  delete slots[slots.indexOf(movie.SensorName)];
+	                  }
+	                  else
+	                  {
+	                  	
+	                  }
+	              });
+				slots.sort();
+				var x = document.getElementById("Slot");
+				slots.forEach(myFunction); 
+				function myFunction(item, index) 
+				{ 
+					console.log(item);
+					  var option = document.createElement("option");
+					  option.text = item;
+					  option.id=item;
+					  x.add(option);
+					}
+				
+			}
+	}
+	
+}
 </script>
+
 </head>
 <body>
 <header>
@@ -109,81 +196,101 @@ function appendLeadingZeroes(n){
 		</div>
 </header>
 <div align="center" style=" padding-top:20px">
-<form  style="width: 600px; height: 500px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:120px" onsubmit="return false;">
+<form  style="width: 600px; height: 700px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:120px" onsubmit="return false;">
 <h1 style="font: 20px/1.4em Verdana, sans-serif; float:left">Reserve a space..</h1>
-<label class="label-form" for="From">From          :</label>
-  <input class="input-form" list="fromtimes" name="fromtime" id="fromtime">
-  <datalist id="fromtimes">
-    <option value="00:00">
-    <option value="01:00">
-    <option value="02:00">
-    <option value="03:00">
-    <option value="04:00">
-    <option value="05:00">
-    <option value="06:00">
-    <option value="07:00">
-    <option value="08:00">
-    <option value="09:00">
-    <option value="10:00">
-    <option value="11:00">
-    <option value="12:00">
-    <option value="13:00">
-    <option value="14:00">
-    <option value="15:00">
-    <option value="16:00">
-    <option value="17:00">
-    <option value="18:00">
-    <option value="19:00">
-    <option value="20:00">
-    <option value="21:00">
-    <option value="22:00">
-    <option value="23:00">
-  </datalist>
+</br>
+</br>
+<label class="label-form" for="From" >From:</label>
+  <select name="From" class="input-form" onchange="displaytooptions(this.id)" id="From">
+  <option disabled selected value> </option>
+    <option value="00:00">00:00</option>
+	<option value="01:00">01:00</option>
+	<option value="02:00">02:00</option>
+	<option value="03:00">03:00</option>
+	<option value="04:00">04:00</option>
+	<option value="05:00">05:00</option>
+	<option value="06:00">06:00</option>
+	<option value="07:00">07:00</option>
+	<option value="08:00">08:00</option>
+	<option value="09:00">09:00</option>
+	<option value="10:00">10:00</option>
+	<option value="11:00">11:00</option>
+	<option value="12:00">12:00</option>
+	<option value="13:00">13:00</option>
+	<option value="14:00">14:00</option>
+	<option value="15:00">15:00</option>
+	<option value="16:00">16:00</option>
+	<option value="17:00">17:00</option>
+	<option value="18:00">18:00</option>
+	<option value="19:00">19:00</option>
+	<option value="20:00">20:00</option>
+	<option value="21:00">21:00</option>
+	<option value="22:00">22:00</option>
+	<option value="23:00">23:00</option>
+  </select>
   <br>
-  <label class="label-form" for="To">To            :</label>
-    <input class="input-form" list="totimes" name="totime" id="totime">
-  <datalist id="totimes">
-    <option value="00:00">
-    <option value="01:00">
-    <option value="02:00">
-    <option value="03:00">
-    <option value="04:00">
-    <option value="05:00">
-    <option value="06:00">
-    <option value="07:00">
-    <option value="08:00">
-    <option value="09:00">
-    <option value="10:00">
-    <option value="11:00">
-    <option value="12:00">
-    <option value="13:00">
-    <option value="14:00">
-    <option value="15:00">
-    <option value="16:00">
-    <option value="17:00">
-    <option value="18:00">
-    <option value="19:00">
-    <option value="20:00">
-    <option value="21:00">
-    <option value="22:00">
-    <option value="23:00">
-  </datalist>
+  
+   </br>
+  </br>
+   </br>
+  </br>
+  <label class="label-form"  for="To" >To :</label>
+  <select name="To" class="input-form" onchange="displayslots()" id="To">
+  </select>
   </br>
   </br>
   <label class="label-form" for="SelectSlot">Select Slot :</label>
-    <input class="input-form" list="Slots" name="Slot" id="Slot">
-  <datalist id="Slots">
-    <option value="Slot 1">
-    <option value="Slot 2">
-    <option value="Slot 3">
-    <option value="Slot 4">
-    <option value="Slot 5">
-  </datalist>
+    <select name="Slot" class="input-form" id="Slot">
+ </select>
   </br>
   </br>
   <label class="label-form" for="Vehicle Number">Vehicle Number :</label>
   <input  class="input-form"type="text" id="Vnum" name="Vnum"><br><br>
-  <button class="button" onClick= "ReserveSpace()" >Reserve</button>
+  <label class="label-form" for="payment Amount">Payment Amount in $ :</label>
+  <input  class="input-form"type="text" id="payamount" name="payamount" readonly="readonly" ><br><br>
+ 
+  <div id="paypal-button"></div>
+  <script>
+        paypal.Button.render({
+
+            env: 'sandbox', // sandbox | production
+
+            // PayPal Client IDs - replace with your own
+            // Create a PayPal app: https://developer.paypal.com/developer/applications/create
+            client: {
+                sandbox: 'AeYyMA9Yts9iAuw7c8YBRBRUo16xyopcaBJOmuF3GfMWiqE1gPC09slSDURsFZCLSm33nSoHxu52k90E',
+                production: 'AVxLLM-i36D-84l6SzPLxZIeaPc4e-zY1EFbs2V3hrPrg-8KEjVYBitFrOVllgn8ERUmdl4pg44aBPp3'
+            },
+
+            // Show the buyer a 'Pay Now' button in the checkout flow
+            commit: true,
+
+            // payment() is called when the button is clicked
+            payment: function (data, actions) {
+                // Make a call to the REST api to create the payment
+                return actions.payment.create({
+                    payment: {
+                        transactions: [
+                            {
+                                amount: {total: document.getElementById('payamount').value, currency: 'USD'}
+                            }
+                        ]
+                    }
+                });
+            },
+
+            // onAuthorize() is called when the buyer approves the payment
+            onAuthorize: function (data, actions) {
+                // Make a call to the REST api to execute the payment
+                return actions.payment.execute().then(function () {
+                	document.getElementById('reserve').disabled=false;
+                  window.alert('Payment Complete!');
+                });
+            }
+        }, '#paypal-button');
+
+    </script>
+  <button class="button" id="reserve"  onClick= "ReserveSpace()" disabled >Reserve</button>
 </form>
 </div>
 
