@@ -13,4 +13,4 @@ phases:
 artifacts:
   files:
     - '**/*'
-    - smartparkingManagement.war
+    - smartparkingManagement1.war
