@@ -10,7 +10,9 @@ body {
 	text-rendering: optimizeLegibility;
 	background-color: #ffffff;
 }
-
+.hidden {
+  visibility: hidden
+}
 .label-form
 {
 	font: 18px/1.4em "Lucida Grande", Verdana, sans-serif;

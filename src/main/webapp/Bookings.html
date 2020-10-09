@@ -24,6 +24,7 @@ function queryData() {
 	
     var params = {
         TableName : "BookingDetails",
+        ScanIndexForward: false,
         FilterExpression: "#user = :name",
         ExpressionAttributeNames: {
             "#user": "UserName",
@@ -52,7 +53,9 @@ function queryData() {
         else
         {        
             console.log("Scan succeeded.");
-            var i=1;       
+            var i=1;    
+            const current_datetime=new Date();
+    		const Todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
        
             data.Items.forEach(function(item) {
             	
@@ -70,6 +73,8 @@ function queryData() {
              	  c5= row.insertCell(5);
              	  c6= row.insertCell(6);
              	  c7= row.insertCell(7);
+             	 c7= row.insertCell(8);
+             	c7= row.insertCell(9);
             	   
           	
           	 document.getElementById('Detailstable').rows[i].cells[0].innerHTML=item.BookingId;
@@ -93,7 +98,15 @@ function queryData() {
             button.innerHTML="Navigate";
             button.setAttribute('onClick',navigate());
             document.getElementById('Detailstable').rows[i].cells[7].appendChild(button); */
+            console.log(Todaydate);
+            console.log(item.BookingDate);
+            console.log(item.ToTime.substring(0,2));
+            if((item.BookingDate==Todaydate) &&(item.ToTime.substring(0,1)<new Date().getHours()))
+            	{
             document.getElementById('Detailstable').rows[i].cells[7].innerHTML = "<button class='button' align='center' onClick= 'navigate(\""+item.SensorName+"\")'>Navigate</button>";
+            document.getElementById('Detailstable').rows[i].cells[8].innerHTML = "<button class='button' align='center' onClick= 'extend(\""+item.BookingId+"\")'>Extend</button>";
+            document.getElementById('Detailstable').rows[i].cells[9].innerHTML = "<button class='button' align='center' onClick= 'cancel(\""+item.SensorName+"\")'>Cancel</button>";
+            	}
           console.log("helll0")
             	i++;  
                             
@@ -117,6 +130,26 @@ function navigate(name)
 	console.log("In Navigate method");
 	window.location.href="Maps.html";
 	}   
+function extend(name)
+{
+	console.log(name);
+	sessionStorage.setItem("Extenditem",name);
+	console.log("In extend method");
+	window.location.href="ExtendSlot.html";
+	}   
+function cancel(name)
+{
+	console.log(name);
+	sessionStorage.setItem("CancelSlot",name);
+	console.log("In cancel method");
+	window.location.href="Cancellation.html";
+	}   
+function appendLeadingZeroes(n){
+	  if(n <= 9){
+	    return "0" + n;
+	  }
+	  return n
+	}
 </script>
 </head>
 <body onload="Javascript:queryData()" style="background-image: url('images/Background Empty.jpg');no-repeat center center fixed; 
@@ -159,6 +192,8 @@ function navigate(name)
     <th style="text-align:centre;padding:20px">Sensor Name</th>
     <th style="text-align:centre;">Vehicle Number</th>
     <th style="text-align:centre;">Navigate</th>
+    <th style="text-align:centre;">Extend</th>
+    <th style="text-align:centre;">Cancel</th>
   </tr>
   
 </table> 
