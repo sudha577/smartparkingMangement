@@ -22,17 +22,21 @@ var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
 function queryData() {
 	
-    var params = {
-        TableName : "BookingDetails",
-        ScanIndexForward: false,
-        FilterExpression: "#user = :name",
-        ExpressionAttributeNames: {
-            "#user": "UserName",
-        },
-        ExpressionAttributeValues: { ":name": sessionStorage.getItem("UserName")}
+	  var params = {
+	          TableName : "BookingDetail",
+	          ScanIndexForward: false,
+	          KeyConditionExpression: "#uname = :UserName",
+	          ExpressionAttributeNames:{
+	              "#uname": "UserName"
+	          },
+	          ExpressionAttributeValues: {
+	          	":UserName":sessionStorage.getItem("UserName")
+	          }
+	      };
+       /*  ExpressionAttributeValues: { ":name": sessionStorage.getItem("UserName")}
              
-    };
-    docClient.scan(params, onScan);
+    }; */
+    
     var count = 0;
     var row;
     var c0;
@@ -43,10 +47,8 @@ function queryData() {
     var c5;
     var c6;
     var c7;
-    var c8;
-    var c9;
     var table = document.getElementById("Detailstable");
-    function onScan(err, data) {
+    docClient.query(params, function(err, data) {
         if (err) {
             console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
         }
@@ -72,10 +74,7 @@ function queryData() {
              	  c4= row.insertCell(4);
              	  c5= row.insertCell(5);
              	  c6= row.insertCell(6);
-             	  c7= row.insertCell(7);
-             	 c7= row.insertCell(8);
-             	c7= row.insertCell(9);
-            	   
+             	  c7= row.insertCell(7);  
           	
           	 document.getElementById('Detailstable').rows[i].cells[0].innerHTML=item.BookingId;
           	
@@ -85,11 +84,8 @@ function queryData() {
           	
           	 document.getElementById('Detailstable').rows[i].cells[3].innerHTML=item.ToTime;
           
-          	 document.getElementById('Detailstable').rows[i].cells[4].innerHTML=item.PaymentAmount; 
-          	
-          	 document.getElementById('Detailstable').rows[i].cells[5].innerHTML=item.SensorName; 
-          	
-          	 document.getElementById('Detailstable').rows[i].cells[6].innerHTML=item.VehicleNumber; 
+          	 document.getElementById('Detailstable').rows[i].cells[4].innerHTML = "<button class='button' align='center' onClick= 'details(\""+item.BookingId+"\")'>View Details</button>";
+          	 
 
           	/* var button = document.createElement('button');
             button.setAttribute('type', 'button');
@@ -103,9 +99,9 @@ function queryData() {
             console.log(item.ToTime.substring(0,2));
             if((item.BookingDate==Todaydate) &&(item.ToTime.substring(0,1)<new Date().getHours()))
             	{
-            document.getElementById('Detailstable').rows[i].cells[7].innerHTML = "<button class='button' align='center' onClick= 'navigate(\""+item.SensorName+"\")'>Navigate</button>";
-            document.getElementById('Detailstable').rows[i].cells[8].innerHTML = "<button class='button' align='center' onClick= 'extend(\""+item.BookingId+"\")'>Extend</button>";
-            document.getElementById('Detailstable').rows[i].cells[9].innerHTML = "<button class='button' align='center' onClick= 'cancel(\""+item.SensorName+"\")'>Cancel</button>";
+            document.getElementById('Detailstable').rows[i].cells[5].innerHTML = "<button class='button' align='center' onClick= 'navigate(\""+item.SensorName+"\")'>Navigate</button>";
+            document.getElementById('Detailstable').rows[i].cells[6].innerHTML = "<button class='button' align='center' onClick= 'extend(\""+item.BookingId+"\")'>Extend</button>";
+            document.getElementById('Detailstable').rows[i].cells[7].innerHTML = "<button class='button' align='center' onClick= 'cancel(\""+item.BookingId+"\")'>Cancel</button>";
             	}
           console.log("helll0")
             	i++;  
@@ -121,7 +117,7 @@ function queryData() {
                 docClient.scan(params, onScan);
             }
         }
-    }
+    });
 }
 function navigate(name)
 {
@@ -129,7 +125,14 @@ function navigate(name)
 	sessionStorage.setItem("NavigateToSlot",name);
 	console.log("In Navigate method");
 	window.location.href="Maps.html";
-	}   
+	} 
+function details(name)
+{
+	console.log(name);
+	sessionStorage.setItem("BookingId",name);
+	console.log("In details method");
+	window.location.href="ViewDetails.html";
+	} 
 function extend(name)
 {
 	console.log(name);
@@ -140,7 +143,7 @@ function extend(name)
 function cancel(name)
 {
 	console.log(name);
-	sessionStorage.setItem("CancelSlot",name);
+	sessionStorage.setItem("CancelId",name);
 	console.log("In cancel method");
 	window.location.href="Cancellation.html";
 	}   
@@ -152,23 +155,17 @@ function appendLeadingZeroes(n){
 	}
 </script>
 </head>
-<body onload="Javascript:queryData()" style="background-image: url('images/Background Empty.jpg');no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;">
+<body onload="Javascript:queryData()">
  <header>
 	 <div class="topnav">
 	 <div align="left"> 
-		 <a	class="active" id="home" href="availability.html" >HOME</a>	
+		 <a	 id="home" href="SlotAvailability.html" >HOME</a>	
           <a  id="about" href="About.html" >ABOUT</a>		
-          <a  id="contact"href="Contact.html" >CONTACT US</a>
-           <a  id="booking" href="BookingDetails.html">Booking Details</a>
-           <a  id="analytics" href="Analytics.html">Analytics of Application</a>
-           
+          <a  id="contact"href="Contact.html" >CONTACT US</a> 
           </div>	
           <div align="right" style="left-padding:100px">
-              <a  id="account"href="Myaccount.html" >My Account</a>		
+          <a id="booking" href="Bookings.html">MY Bookings</a>
+              <a  id="account"href="MyAccount.html" >My Account</a>		
 		  </div>
 	 </div>
 </header>
@@ -176,21 +173,13 @@ function appendLeadingZeroes(n){
  <div align="center">
  </br>
  </br>
-
- 
- <h1 style="text-align:left"> Booking Data</h1>
- 
- 
- 
-  <table id="Detailstable"  class="myTable"  >
+  <table id="Detailstable"  class="myBookingsTable"  >
   <tr>
     <th style="text-align:centre;padding:20px">Booking Id</th>
     <th style="text-align:centre;padding:20px">Booking Date</th>
     <th style="text-align:centre;padding:20px">From Time</th>
     <th style="text-align:centre;padding:20px">To Time</th>
-    <th style="text-align:centre;padding:20px">Payment Amount</th>
-    <th style="text-align:centre;padding:20px">Sensor Name</th>
-    <th style="text-align:centre;">Vehicle Number</th>
+    <th style="text-align:centre;">View Details</th>
     <th style="text-align:centre;">Navigate</th>
     <th style="text-align:centre;">Extend</th>
     <th style="text-align:centre;">Cancel</th>

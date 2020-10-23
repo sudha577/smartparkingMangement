@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <link href="styles/styles.css" rel="stylesheet" type="text/css">
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
+    <!-- <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Hello AWS Web World!</title -->
+<script type="text/javascript">
+
+ 
+AWS.config.update({
+	  region: "us-east-2",
+	  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
+	  accessKeyId: "AKIASUU5L6BWABM3DQEC",
+	  secretAccessKey: "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"
+	});  
+ 
+var dynamodb = new AWS.DynamoDB();
+var docClient = new AWS.DynamoDB.DocumentClient();
+var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+
+
+function queryData() {
+	
+    var params = {
+        TableName : "UserDetails",
+        ScanIndexForward: true,
+        FilterExpression: "#Uname = :uname",
+        ExpressionAttributeNames: {
+            "#Uname": "UserName",
+        },
+        ExpressionAttributeValues: { ":uname":sessionStorage.getItem("UserName")}
+             
+    };
+    docClient.scan(params, onScan);
+    function onScan(err, data) {
+        if (err) {
+            console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+        }
+        else
+        {        
+            console.log("Scan succeeded.");
+            console.log(data.Count);
+            console.log(sessionStorage.getItem("BookingId"));
+            data.Items.forEach(function(item) {
+  
+               console.log("Item :",JSON.stringify(item))
+               
+             	   console.log("in For loop ");
+               document.getElementById('uname').innerHTML=sessionStorage.getItem("UserName");
+          	 document.getElementById('email').innerHTML=item.Email;
+          	
+          	 document.getElementById('phoneno').innerHTML=item.PhoneNumber; 
+          	
+           	 document.getElementById('credit').innerHTML=item.AvailableCredit;
+          	
+                     });
+      
+
+            // continue scanning if we have more items
+            if (typeof data.LastEvaluatedKey != "undefined") 
+            {
+                console.log("Scanning for more...");
+                params.ExclusiveStartKey = data.LastEvaluatedKey;
+                docClient.scan(params, onScan);
+            }
+        }
+    }
+}
+function Bookings()
+{
+	window.location.href="Bookings.html";
+}
+   
+function appendLeadingZeroes(n){
+	  if(n <= 9){
+	    return "0" + n;
+	  }
+	  return n;
+	}
+</script>
+</head>
+<body onload="Javascript:queryData()">
+ <header>
+	 <div class="topnav">
+	 <div align="left"> 
+		 <a	 id="home" href="SlotAvailability.html" >HOME</a>	
+          <a  id="about" href="About.html" >ABOUT</a>		
+          <a  id="contact"href="Contact.html" >CONTACT US</a> 
+          </div>	
+          <div align="right" style="left-padding:100px">
+          <a   id="booking" href="Bookings.html">MY Bookings</a>
+              <a  class="active" id="account"href="MyAccount.html" >My Account</a>		
+		  </div>
+	 </div>
+</header>
+  <div class="login100-more-avail" >
+ <div align="center">
+  </br>
+ </br> 
+ 
+  </br>
+ </br> 
+ 
+ <table id="Detailstable"  class="myDetailsTable"  >
+    <tr>
+    <th style="text-align:centre;padding:20px">UserName</th>
+    <td style="text-align:centre;padding:20px" id="uname"></th>
+    </tr>
+    <tr>
+    <th style="text-align:centre;padding:20px">Phone Number</th>
+    <td style="text-align:centre;padding:20px" id="phoneno"></th>
+    </tr>
+    <tr>
+    <th style="text-align:centre;padding:20px">Email Address</th>
+    <td style="text-align:centre;padding:20px" id="email"></th>
+    </tr>
+    
+    <tr>
+    <th style="text-align:centre;padding:20px">Available credit</th>
+    <td style="text-align:centre;padding:20px" id="credit"></th>
+    </tr>
+  
+  
+</table>
+ </br>
+ </br> 
+
+</body>
+</html>

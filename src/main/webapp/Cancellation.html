@@ -1,0 +1,222 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<link href="styles/styles.css" rel="stylesheet" type="text/css">
+<link href="css/availabilitypage.css" rel="stylesheet" type="text/css">
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
+<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+<script type="text/javascript">
+AWS.config.update({
+	  region: "us-east-2",
+	  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
+	  accessKeyId: "AKIASUU5L6BWABM3DQEC",
+	  secretAccessKey: "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"
+	});  
+ 
+var dynamodb = new AWS.DynamoDB();
+var docClient = new AWS.DynamoDB.DocumentClient();
+var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+function CancelBooking()
+{	     var amount;
+console.log(sessionStorage.getItem("UserName"));
+console.log(parseInt(sessionStorage.getItem("CancelId")))
+	 var params = {
+		        TableName : "BookingDetail",
+		        ScanIndexForward: true,
+		        FilterExpression: "#user = :name AND #BookingId = :bookingid",
+		        ExpressionAttributeNames: {
+		            "#user": "UserName",
+		            "#BookingId":"BookingId",
+		        },
+		        ExpressionAttributeValues: { ":name": sessionStorage.getItem("UserName"), ":bookingid":parseInt(sessionStorage.getItem("CancelId"))}
+		             
+		    };
+	 docClient.scan(params, onScan);
+	 function onScan(err, data) {
+	        if (err) {
+	            console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+	        }
+	        else
+	        {        
+	            console.log("Scan succeeded.");
+	            console.log(data.Count);
+	            data.Items.forEach(function(item) {
+	            sessionStorage.setItem("CreditAmount",item.PaymentAmount);
+	            console.log(item.PaymentAmount);
+	            });
+	            }
+	 }
+
+ 	 var UserName=sessionStorage.getItem("UserName");
+	var BookingId=parseInt(sessionStorage.getItem("CancelId"));
+	 var params = {
+		    TableName:"BookingDetail",
+		    Key:{
+		        "UserName": UserName,
+		        "BookingId": BookingId
+		    }
+		};
+
+		console.log("Attempting a conditional delete...");
+		docClient.delete(params, function(err, data) {
+		    if (err) {
+		        console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
+		    } else {
+		        console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
+		    }
+		}); 	
+		var reason;
+		if(document.getElementById("Reason").value=="others")
+		{
+			reason=document.getElementById("otherreason").value;
+			
+		}
+		else
+		{
+			reason=document.getElementById("Reason").value;
+		}
+		console.log(reason);
+		//console.log("amount:"+amount);
+		
+		const current_datetime=new Date();
+		
+    	const Todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
+		console.log(Todaydate);
+		console.log(sessionStorage.getItem("UserName"));
+	
+    	var params2={
+				TableName : "CancelledBooking",
+				Item:{
+					UserName:{S:sessionStorage.getItem("UserName")},
+					BookingId:{N:sessionStorage.getItem("CancelId").toString()},
+					CancellationDate:{S:Todaydate},
+					CreditAmount:{N:sessionStorage.getItem("CreditAmount").toString()},
+					Reason:{S:reason},
+				}
+			};
+	   console.log("ok till now")
+	   dynamodb.putItem(params2,function(err, data){
+			if (err)
+				{
+				console.log(err, err.stack); // an error occurred
+				}
+			   else    
+				   {
+				   console.log("Inserted");
+				   if (window.confirm("your booking has been cancelled.")) { 
+					   window.location.href="Bookings.html";
+					 }		   
+				   }
+	
+		
+		
+}); 
+	   var params3 = {
+		          TableName : "UserDetails",
+		          KeyConditionExpression: "#uname = :UserName",
+		          ExpressionAttributeNames:{
+		              "#uname": "UserName"
+		          },
+		          ExpressionAttributeValues: {
+		          	":UserName":sessionStorage.getItem("UserName")
+		          }
+		      };
+	   docClient.query(params3, function(err, data) {
+	        if (err) {
+	            console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+	        }
+	        else
+	        {
+	        	console.log(data.Count);
+	        	data.Items.forEach(function(item) {
+	        		
+	        		var credit=parseInt(item.AvailableCredit);
+	        		console.log(credit);
+	        		var userid=item.UserId;
+	        		credit=credit+sessionStorage.getItem("CreditAmount")
+	        		   var params4={
+								TableName : "UserDetails",
+								Item:{
+									UserName:{S:sessionStorage.getItem("UserName")},
+									AvailableCredit:{S:credit.toString()},
+									UserId:{S:userid.toString()}
+									
+								}
+						};
+						dynamodb.putItem(params2,function(err, data){
+							if (err) console.log(err, err.stack); // an error occurred
+							   else     console.log(data);
+						});
+	        		
+	        	});
+	        }
+	   });
+	   }
+
+
+
+function appendLeadingZeroes(n){
+	  if(n <= 9){
+	    return "0" + n;
+	  }
+	  return n
+	}
+function checkIfOthers()
+{
+	console.log(document.getElementById("Reason").value);
+	if(document.getElementById("Reason").value=="others")
+		{
+		document.getElementById('other').style.display='block';
+		}
+	else
+		{
+		document.getElementById('other').style.display='none';
+		}
+	}
+
+
+</script>
+
+</head>
+<body>
+<header>
+	 <div class="topnav">
+	 <div align="left"> 
+		 <a	 id="home" href="SlotAvailability.html" >HOME</a>	
+          <a  id="about" href="About.html" >ABOUT</a>		
+          <a  id="contact"href="Contact.html" >CONTACT US</a>
+          </div>	
+          <div style="left-padding:100px">
+          <a  id="booking" href="Bookings.html">My Bookings</a>	
+          <a  id="account"href="MyAccount.html" >My Account</a>		
+		</div>
+		</div>
+</header>
+<div align="center" style=" padding-top:20px">
+<form  style="width: 600px; height: 700px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:120px" onsubmit="return false;">
+
+</br>
+</br>
+  <label class="label-form" for="Reason">Reason for Cancellation :</label>
+    <select name="Reason" class="input-form" id="Reason" onchange="checkIfOthers()">
+    <option disabled selected value> </option>
+    <option value="Change of plan">Change of plan</option>
+	<option value="Duplicate Booking">Duplicate Booking</option>
+	<option value="Preferred another parking lot">Preferred another parking lot</option>
+	<option value="others">others</option>
+ </select>
+ 
+    </br>
+    </br>
+    <div  style="display:none;" id="other">
+    <label class="label-form" for="otherreason">please specify</label>
+  <input  class="input-form"type="text" id="otherreason" name="otherreason"><br><br>
+  </div>
+  <button class="input-form-button" id="reserve"  onClick= "CancelBooking()" >Cancel Booking</button>
+  <p style="display: inline-block;text-align: center;text-decoration: none;font-size: 16px;">Cancelled Amount will be available for future booking as credit in your account.</p>
+</form>
+</div>
+
+</body>
+</html>

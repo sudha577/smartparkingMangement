@@ -2,8 +2,11 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
+<title>Extend Booking</title>
+<meta charset="ISO-8859-1">
  <link href="styles/styles.css" rel="stylesheet" type="text/css">
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
+  <script src="https://www.paypalobjects.com/api/checkout.js"></script>
   <script type="text/javascript">
 AWS.config.update({
 	  region: "us-east-2",
@@ -19,13 +22,13 @@ function onLoad()
 {
 	
 	var params = {
-	        TableName : "BookingDetails",
+	        TableName : "BookingDetail",
 	        ScanIndexForward: false,
 	        FilterExpression: "#BookingId = :BookingId",
 	        ExpressionAttributeNames: {
 	            "#BookingId": "BookingId",
 	        },
-	        ExpressionAttributeValues: { ":BookingId": sessionStorage.getItem("Extenditem")}
+	        ExpressionAttributeValues: { ":BookingId": Number(sessionStorage.getItem("Extenditem"))}
 	             
 	    };
 	docClient.scan(params, onScan);
@@ -39,17 +42,19 @@ function onLoad()
 				var extendFrom;
 				
 				data.Items.forEach(function(item) {
-					document.getElementById('From').value=item.FromTime;
-					sessionStorage.setItem("ExtendTime",item.SensorName);
+					console.log(item);
+					document.getElementById('From').value=item.ToTime;
 					extendFrom=item.ToTime;
 					console.log("extend From :    "+extendFrom)
 					sessionStorage.setItem("ToExtend",item.SensorName);
+					sessionStorage.setItem("extendFrom",item.ToTime);
 	                  
 	              });
 				var n=extendFrom.substring(0,2);
+				console.log("n:"+ n);
 				var options = document.querySelectorAll('#To option');
 				  options.forEach(o => o.remove());
-				for (i = n; i < 24; i++) {
+				for (i = Number(n)+1; i < 24; i++) {
 					console.log("in for loop");
 				var x = document.getElementById("To");
 				  var option = document.createElement("option");
@@ -63,43 +68,50 @@ function onLoad()
 	}
 	
 	}
+function appendLeadingZeroes(n){
+	  if(n <= 9){
+	    return "0" + n;
+	  }
+	  return n;
+}
 function displayslots() {
-var slot=sessionStorage.getItem("ToExtend");
-const current_datetime=new Date();
-const todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
-console.log(todaydate);
-var params = {
-        TableName : "BookingDetails",
-        ScanIndexForward: false,
-        FilterExpression: "#SensorName = :SensorName AND #BookingDate=:Date AND #FromTime=:",
-        ExpressionAttributeNames: {
-            "#SensorName": "SensorName",
-            "#BookingDate": "BookingDate"
-        },
-        ExpressionAttributeValues: { ":SensorName": slot,":Date": todaydate}            
-    };
-docClient.scan(params, onScan);
-function onScan(err, data) {
-	if(err)
-		{
-		console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
-		}else{
-			var count=data.Count;
-			console.log(count);
-			if(count>0)
-				{
-				document.getElementById('slotselection').style.visibility='visible';
-				displayslots1();
-				}
-			else
-				{
+	var slot=sessionStorage.getItem("ToExtend");
+	const current_datetime=new Date();
+	const todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
+	console.log(todaydate);
+	var params = {
+	        TableName : "BookingDetail",
+	        ScanIndexForward: false,
+	        FilterExpression: "#SensorName = :SensorName AND #BookingDate=:Date AND #FromTime=:From",
+	        ExpressionAttributeNames: {
+	            "#SensorName": "SensorName",
+	            "#BookingDate": "BookingDate",
+	            "#FromTime":"FromTime"
+	        },
+	        ExpressionAttributeValues: { ":SensorName": slot,":Date": todaydate,":From":sessionStorage.getItem("extendFrom")}            
+	    };
+	docClient.scan(params, onScan);
+	function onScan(err, data) {
+		if(err)
+			{
+			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+			}else{
+				var count=data.Count;
+				console.log(count);
+				if(count>0)
+					{
+					document.getElementById('slotselection').style.visibility='visible';
+					displayslots1();
+					}
+				else
+					{
+					
+					}
 				
-				}
-			
-		}
-}
+			}
+	}
 
-}
+	}
 function displayslots1() {
 	
 	var options = document.querySelectorAll('#Slot option');
@@ -160,16 +172,7 @@ function displayslots1() {
 	}
 	
 }
-	
-
-function appendLeadingZeroes(n){
-	  if(n <= 9){
-	    return "0" + n;
-	  }
-	  return n;
-}
-</script>
-<title>Insert title here</title>
+	</script>
 </head>
 <body onload="onLoad()">
 
@@ -195,15 +198,8 @@ function appendLeadingZeroes(n){
     <label class="label-form"  for="To" >To :</label>
   <select name="To" class="input-form" onchange="displayslots()" id="To">
   </select>
-    <div class="hidden" id="slotselection">
-    
-    <label class="label-form" for="SelectSlot">please select another Slot :</label>
-    <select name="Slot" class="input-form" id="Slot">
-    </select>
-    </div>
-      <label class="label-form" for="payment Amount">Payment Amount in $ :</label>
+  <label class="label-form" for="payment Amount">Payment Amount in $ :</label>
   <input  class="input-form"type="text" id="payamount" name="payamount" readonly="readonly" ><br><br>
- 
   <div id="paypal-button"></div>
   <script>
         paypal.Button.render({
@@ -245,7 +241,10 @@ function appendLeadingZeroes(n){
         }, '#paypal-button');
 
     </script>
-  <button class="button" id="Extend"  onClick= "Extend()" disabled >Extend Booking</button>
+    </br>
+    </br>
+  <button class="button" id="reserve"  onClick= "ReserveSpace()" disabled >Reserve</button>
+  </div>
 </form>
 </div>
 

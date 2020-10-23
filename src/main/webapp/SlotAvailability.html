@@ -1,9 +1,13 @@
-<!DOCTYPE html>
+	<!DOCTYPE html>
 <html>
 <head>
+<title>Home</title>
+<link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
 <meta charset="ISO-8859-1">
+
 <link href="styles/styles.css" rel="stylesheet" type="text/css">
 <link href="css/availabilitypage.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
 <script type="text/javascript">
 function initMap() {
@@ -50,18 +54,17 @@ function initMap() {
   var dynamodb = new AWS.DynamoDB();
   var docClient = new AWS.DynamoDB.DocumentClient();
   var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
-  let slotMap=new Map();
-  slotMap["Slot1"]=0;
-  slotMap["Slot2"]=1;
   function loadref(time)
   {
   	queryData("Slot1");
+  	var slot="Slot1";
+  	setInterval("queryData(\"Slot1\");",10000);
   	//queryData("Slot2");
-  setTimeout("location.reload(true);",time);
+  //setTimeout("location.reload(true);",time);
   } 
 
   function queryData(slotId) {
-  	
+  	console.log("refreshed");
       var params = {
           TableName : "SlotAvailability",
           ScanIndexForward: false,
@@ -78,18 +81,25 @@ function initMap() {
           if (err) {
               
           } else {
-          	
+        	  
               data.Items.forEach(function(movie) {
-                  
+            	  var map1 = new Map(); 
+            	  
+            	// adding some elements to the map  
+            	map1.set("Slot1", 0); 
+            	map1.set("Slot2", 1); 
+            	console.log(slotId);
+                  console.log(map1.get(slotId));
+                  console.log(movie.Distance)
                   if(movie.Distance>20)
                   {
                   	document.getElementById('slottable').rows[1].cells[0].className="empty";
-                  	document.getElementById('slottable').rows[1].cells[SlotMap[slotId]].innerHTML="EMPTY"
+                  	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].innerHTML="EMPTY"
                   }
                   else
                   {
                   	document.getElementById('slottable').rows[1].cells[0].className="full";
-                  	document.getElementById('slottable').rows[1].cells[slotMap[slotId]].innerHTML="FULL"
+                  	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].innerHTML="FULL"
                   }
               });
            
@@ -110,16 +120,21 @@ function loadReservation()
 <body onload="Javascript:loadref(20000)">
 <header>
 	 <div class="topnav">
-	 <div align="left"> 
-		 <a	class="active" id="home" href="availability.html" >HOME</a>	
-          <a  id="about" href="About.html" >ABOUT</a>		
-          <a  id="contact"href="Contact.html" >CONTACT US</a>
-          </div>	
-          <div style="left-padding:100px">
-          <a  id="booking" href="Bookings.html">My Bookings</a>	
-          <a  id="account"href="Myaccount.html" >My Account</a>		
-		</div>
-		</div>
+  <a class="active" href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
+  <a href="Bookings.html">My Bookings</a>
+  <a href="CancelledBookings.html">Cancelled Bookings</a>
+  <div class="topnav-right">
+     <div class="dropdown">
+    <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account 
+      <i class="fa fa-user-circle"></i>
+    </button>
+    <div class="dropdown-content">
+      <a href="MyAccount.html">Profile</a>
+      <a href="index.html"><i class="fa fa-sign-out"></i>Logout </a>
+    </div>
+  </div> 
+  </div>
+</div>
 </header>
 <div class="row">
   <div class="column" id="map">
@@ -132,7 +147,7 @@ function loadReservation()
  </br>
 </br>
  <div align="center" >
- <table id="slottable"  class="myTable"  >
+ <table id="slottable"  class="myTable" >
   <tr>
     <th>Slot 1</th>
     <th>Slot 2</th>

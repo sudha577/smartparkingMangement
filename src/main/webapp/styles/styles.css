@@ -100,7 +100,52 @@ body {
   border: 1px solid #404040; 
    text-align: center;
   }
- .myTable tr:hover {background-color: #f5f5f5;}
+ .myTable tr:hover {background-color: #137c93;}
+ 
+ 
+.myBookingsTable {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.myBookingsTable th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+.myBookingsTable tr:nth-child(even){background-color: #eafbf9}
+
+.myBookingsTable th {
+  background-color: #808080;
+  color: white;
+}
+
+
+
+.myDetailsTable {
+  border-collapse: collapse;
+  width: 50%;
+}
+
+.myDetailsTable td {
+  text-align: left;
+  padding: 8px;
+}
+
+.myDetailsTable tr:nth-child(even){background-color: #eafbf9}
+
+.myDetailsTable th {
+  background-color: #808080;
+  color: white;
+  text-align: centre;
+  padding: 8px;
+  width:30%;
+}
+
+
+
+
+
 
 .empty{
 background-color: #008000;	
@@ -109,8 +154,8 @@ background-color: #008000;
 background-color: #ff0000;	
 }
 .topnav {
-  background-color: #808080;
-  overflow: hidden;
+    background-color: #333;
+    overflow: hidden;
 }
 
 /* Style the links inside the navigation bar */
@@ -133,6 +178,52 @@ background-color: #ff0000;
 .topnav a.active {
   background-color: #2095db;
   color: white;
+}
+
+/* Right-aligned section inside the top navigation */
+.topnav-right {
+  float: right;
+}
+
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  font-size: 16px;  
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  float: none;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
 }
 
 h2 {

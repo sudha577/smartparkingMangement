@@ -35,57 +35,87 @@ function ReserveSpace()
 	   console.log(SensorName);
 	   console.log(VehicleNumber);
 	   
-	   var params = {
-		        TableName : "BookingDetails",
-		        FilterExpression: "#user_status = :Status",
-		        ExpressionAttributeNames: {
-		            "#user_status": "Status",
-		        },
-		        ExpressionAttributeValues: { ":Status": 'Y'}
-		             
-		    };
-	   docClient.scan(params, onScan);
-	   function onScan(err, data){
-			if(err)
-				{
-				console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
-				}else{
-	   					var coustr=(data.Count+1).toString();
-	   					
-	   					console.log(coustr);
-				   			var params1={
-							TableName : "BookingDetails",
-							Item:{
-								UserName:{S:UserName},
-								BookingId:{S:coustr},
-								BookingDate:{S:Bookingdate},
-								Flag:{S:Flag},
-								FromTime:{S:FromTime},
-								PaymentAmount:{S:PaymentAmount},
-								PaymentMethod:{S:Paymentmethod},
-								Status:{S:status},
-								ToTime:{S:ToTime},
-								SensorName:{S:SensorName},
-								VehicleNumber:{S:VehicleNumber},
-								Email:{S:sessionStorage.getItem("Email")}
-							}
-						};
-				   console.log("ok till now")
-				   dynamodb.putItem(params1,function(err, data){
-						if (err)
-							{
-							console.log(err, err.stack); // an error occurred
-							}
-						   else    
-							   {
-							   console.log("Inserted");			   
-							   }
+	   
+	   
+	   var params={
+				 TableName : "UserTypeCount",
 				
-				   
-				});
-				   
-				}
-	   }
+			        KeyConditionExpression: "#susername = :UserType",
+			        ExpressionAttributeNames:{
+			            "#susername": "UserType"
+			        },
+			        ExpressionAttributeValues: {
+			        	":UserType":"Bookings"
+			        }
+			       
+			};
+			docClient.query(params, function(err, data) {
+				if(err)
+					{
+					console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+					}
+				else
+					{
+								console.log(data.Count);
+				   					var coustr;
+				   					data.Items.forEach(function(movie) {
+				   						console.log(movie);
+				                     coustr=movie.Count+1;
+				                     console.log("latest BookingId:"+coustr)
+				   					console.log(coustr);
+							   			var params1={
+										TableName : "BookingDetail",
+										Item:{
+											UserName:{S:UserName},
+											BookingId:{N:coustr.toString()},
+											BookingDate:{S:Bookingdate},
+											Flag:{S:Flag},
+											FromTime:{S:FromTime},
+											PaymentAmount:{S:PaymentAmount},
+											PaymentMethod:{S:Paymentmethod},
+											Status:{S:status},
+											ToTime:{S:ToTime},
+											SensorName:{S:SensorName},
+											VehicleNumber:{S:VehicleNumber},
+											Email:{S:sessionStorage.getItem("Email")}
+										}
+									};
+							   console.log("ok till now")
+							   dynamodb.putItem(params1,function(err, data){
+									if (err)
+										{
+										console.log(err, err.stack); // an error occurred
+										}
+									   else    
+										   {
+										   console.log("Inserted");
+										   if (window.confirm("your booking has been made.")) { 
+											   window.location.href="Bookings.html";
+											 }		   
+										   }
+							
+							   
+							});
+							   console.log(coustr+": coustr")
+							   var params2={
+										TableName : "UserTypeCount",
+										Item:{
+											UserType:{S:"Bookings"},
+											Count:{N:coustr.toString()}
+										}
+								};
+								dynamodb.putItem(params2,function(err, data){
+									if (err) console.log(err, err.stack); // an error occurred
+									   else     console.log(data);
+								});
+							   
+							});
+				   }
+					
+			});
+	   
+	   
+	   
 }
 function appendLeadingZeroes(n){
 	  if(n <= 9){
@@ -106,20 +136,20 @@ function displaytooptions()
 	var x = document.getElementById("To");
 	  var option = document.createElement("option");
 	  
-	  option.text = appendLeadingZeroes(i)+":00";
-	  option.id=i;
+	  option.value = appendLeadingZeroes(i)+":00";
+	  option.text=appendLeadingZeroes(i)+":00";
 	  x.add(option);
 	}
-	
+	displayslots();
 	}
 function displayslots() {
-	var selector1=document.getElementById("From");
-	var n1=selector1.selectedIndex-1;
-	var selector2=document.getElementById("To");
-	var n2=selector2.selectedIndex;
+	var n1=document.getElementById("From").value.substring(0,2);
+	var n2=document.getElementById("To").value.substring(0,2);
+	console.log("value: "+document.getElementById("To").value);
+	console.log("text: "+document.getElementById("To").innerHTML);
 	console.log(n1);
 	console.log(n2);
-	var amount=(n2+1) * 10;
+	var amount=(n2-n1) * 10;
 	console.log(amount);
 	document.getElementById("payamount").value=amount;
 	var options = document.querySelectorAll('#Slot option');
@@ -128,7 +158,7 @@ function displayslots() {
 		const todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
 		console.log(todaydate);
 	var params={
-			 TableName : "BookingDetails",
+			 TableName : "BookingDetail",
 			 FilterExpression: " #FromTime between :one AND :two AND #BookingDate = :date OR #ToTime between :one AND :two AND #BookingDate = :date",
 			 ExpressionAttributeNames:{
 		            "#FromTime":"FromTime",
@@ -178,14 +208,52 @@ function displayslots() {
 	}
 	
 }
+function checkBookings()
+{
+	const current_datetime=new Date();
+	const Todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
+
+	var params = {
+	        TableName : "BookingDetail",
+	        ScanIndexForward: true,
+	        FilterExpression: "#user = :name AND #BookingDate = :date",
+	        ExpressionAttributeNames: {
+	            "#user": "UserName",
+	            "#BookingDate":"BookingDate"
+	        },
+	        ExpressionAttributeValues: { ":name": sessionStorage.getItem("UserName"),":date":Todaydate}
+	             
+	    };
+	    docClient.scan(params, onScan);
+	}
+function onScan(err, data) {
+    if (err) {
+        console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+    }
+    else
+    {        
+     if(data.Count>=5)
+    {
+    	 if (window.confirm("Sorry! you exceeded maximum bookings")) { 
+			   window.location.href="Bookings.html";
+			 }	
+    	 
+    	 }
+     else
+ 	{
+ 	document.getElementById("form").style.display='block';
+ 	}
+    }
+    
+    }
 </script>
 
 </head>
-<body>
+<body onload="checkBookings()">
 <header>
 	 <div class="topnav">
 	 <div align="left"> 
-		 <a	 id="home" href="availability.html" >HOME</a>	
+		 <a	 id="home" href="SlotAvailability.html" >HOME</a>	
           <a  id="about" href="About.html" >ABOUT</a>		
           <a  id="contact"href="Contact.html" >CONTACT US</a>
           </div>	
@@ -195,7 +263,7 @@ function displayslots() {
 		</div>
 		</div>
 </header>
-<div align="center" style=" padding-top:20px">
+<div align="center" id="form" style=" padding-top:20px; display:none">
 <form  style="width: 600px; height: 700px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:120px" onsubmit="return false;">
 <h1 style="font: 20px/1.4em Verdana, sans-serif; float:left">Reserve a space..</h1>
 </br>
@@ -248,8 +316,11 @@ function displayslots() {
   <input  class="input-form"type="text" id="Vnum" name="Vnum"><br><br>
   <label class="label-form" for="payment Amount">Payment Amount in $ :</label>
   <input  class="input-form"type="text" id="payamount" name="payamount" readonly="readonly" ><br><br>
- 
-  <div id="paypal-button"></div>
+ </br>
+    </br>
+    </br>
+    </br>
+   <div id="paypal-button" style="display: inline-block;padding: 12px 20px;float:left"></div>
   <script>
         paypal.Button.render({
 
@@ -290,9 +361,13 @@ function displayslots() {
         }, '#paypal-button');
 
     </script>
-  <button class="button" id="reserve"  onClick= "ReserveSpace()" disabled >Reserve</button>
+    <button class="input-form-button" id="reserve"  onClick= "ReserveSpace()"  >Reserve</button>
+    </div>
+    </br>
+    </br>
+  
 </form>
-</div>
+
 
 </body>
 </html>

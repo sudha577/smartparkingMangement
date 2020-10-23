@@ -117,24 +117,15 @@ function queryData() {
    
 </script>
 </head>
-<body onload="Javascript:loadref(10000)" style="background-image: url('images/Background Empty.jpg');no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;">
+<body onload="Javascript:loadref(10000)">
  <header>
 	 <div class="topnav">
 	 <div align="left"> 
-		 <a	class="active" id="home" href="availability.html" >HOME</a>	
-          <a  id="about" href="About.html" >ABOUT</a>		
-          <a  id="contact"href="Contact.html" >CONTACT US</a>
-           <a  id="booking" href="BookingDetails.html">Booking Details</a>
+		 <a	 id="home" href="SlotAvailability.html" >HOME</a>	
+           <a  class="active" id="booking" href="BookingDetails.html">Booking Details</a>
            <a  id="analytics" href="Analytics.html">Analytics of Application</a>
            
           </div>	
-          <div align="right" style="left-padding:100px">
-              <a  id="account"href="Myaccount.html" >My Account</a>		
-		  </div>
 	 </div>
 </header>
   <div class="login100-more-avail" >
@@ -147,7 +138,7 @@ function queryData() {
  
  
  
-  <table id="Detailstable"  class="myTable"  >
+  <table id="Detailstable"  class="myBookingsTable"  >
   <tr>
     <th style="text-align:centre;padding:20px">UserName</th>
     <th style="text-align:centre;padding:20px">Booking Id</th>
@@ -157,7 +148,7 @@ function queryData() {
     <th style="text-align:centre;padding:20px">To Time</th>
     <th style="text-align:centre;padding:20px">Payment Amount</th>
     <th style="text-align:centre;padding:20px">Payment Method</th>
-    <th style="text-align:centre;padding:20px">Sensor Name</th>
+    <th style="text-align:centre;padding:20px">Slot NUmber</th>
     <th style="text-align:centre;">Vehicle Number</th>
   </tr>
   
