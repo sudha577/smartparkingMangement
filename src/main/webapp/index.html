@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Login Page</title>
-	<link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
+	<title>Login V18</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
@@ -112,7 +111,7 @@ function admincheck(username,password)
 							{
 						      if(item.Password.localeCompare(password)==0)
 						    	  {
-						    	  window.location.href="AdminHome.html";
+						    	  window.location.href="Adminview.html";
 						    	  }else{
 						    		  alert("Please enter valid password");
 						    	  }
@@ -130,12 +129,18 @@ function adduser(password)
 	console.log(name);
 	const email=document.getElementById('email').value;
 	console.log(email);
+	if(validateEmail(email))
+	{
 	console.log(password);
+	var passlen=password.length;
+	if(passlen>0){
 	const number=document.getElementById('number').value;
 	console.log(number)
+	if(/^\d{10}$/.test(number))
+		{
 	var params={
 		 TableName : "UserTypeCount",
-		
+		 
 	        KeyConditionExpression: "#susername = :UserType",
 	        ExpressionAttributeNames:{
 	            "#susername": "UserType"
@@ -143,7 +148,7 @@ function adduser(password)
 	        ExpressionAttributeValues: {
 	        	":UserType":"User"
 	        }
-	       
+	        
 	};
 	docClient.query(params, function(err, data) {
 		if(err)
@@ -156,6 +161,27 @@ function adduser(password)
 					var count=item.Count;
 					var toinsert=count+1;
 					var coustr=toinsert.toString();
+					var checkExsistUser={
+							ScanIndexForward: false,
+							 TableName : "UserDetails",
+						        KeyConditionExpression: "#susername = :UserType",
+						        ExpressionAttributeNames:{
+						            "#susername": "UserName"
+						        },
+						        ExpressionAttributeValues: {
+						        	":UserType": name
+						        },
+						        Limit:1
+					};
+					docClient.query(checkExsistUser, function(err, data1) {
+						if(err)
+							{
+							console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+							}else{
+								console.log(data1);
+								console.log(data1.Count);
+								if(data1.Count==0)
+									{
 					var params1={
 							TableName : "UserDetails",
 							Item:{
@@ -181,19 +207,51 @@ function adduser(password)
 							if (err) console.log(err, err.stack); // an error occurred
 							   else     console.log(data);
 						});
+						alert("Please login now !!! ");
+									}
+								else{
+									alert("Username already exsists please enter other username");
+								}
+							}
 					});
-				alert("Please login now !!! ");
+					});
+				
 			}
 	});
+		}else{
+			alert("Enter a valid Mobile number");
+		}
+		}else{
+			alert("Please Enter Password");
+		}
+	}
+	else{
+		alert("Enter a valid email address");
+	}
+	
+}
+function validateEmail(email) {
+	  const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	  return re.test(email);
+	}
+function phonenumber(inputtxt)
+{
+  const phoneno = /^\d{10}$/;
+  return inputtxt.value.match(phoneno);
 }
 function addguest()
 {
 	const name=document.getElementById('name1').value;
 	console.log(name);
+	if(name.length>0){
 	const email=document.getElementById('email1').value;
 	console.log(email);
 	const number=document.getElementById('phnumber').value;
 	console.log(number)
+	if(validateEmail(email))
+	{
+		if(/^\d{10}$/.test(number))
+		{
 	var params={
 		 TableName : "UserTypeCount",
 		
@@ -245,6 +303,15 @@ function addguest()
 				window.location.href="SlotAvailability.html";
 			}
 	});
+		}else{
+			alert("Please enter valid Mobile Number");
+		}
+	}else{
+		alert("Please Enter valid Email address");
+	}
+	}else{
+		alert("Please enter User Name to move forwad!!!");
+	}
 }
 </script>
 </head>
@@ -253,8 +320,8 @@ function addguest()
 		<div class="container-login100">
 			<div class="wrap-login100">		     
    <form class="login100-form validate-form">
-            <p style="font-family: Arial, Helvetica, sans-serif; font-size:20px; text-align:center">Welcome! </p>
-			<!-- <p style="font-family: Arial, Helvetica, sans-serif; font-size:40px; text-align:center">Smart Parking Management </p> -->
+            <p style="font-family: Arial, Helvetica, sans-serif; font-size:40px; text-align:center">Welcome! </p>
+			<p style="font-family: Arial, Helvetica, sans-serif; font-size:40px; text-align:center">Smart Parking Management </p>
 			<button class="login100-form-btn" onclick="toggle(this,'cont')">
 							User Login
 						</button>
@@ -329,7 +396,7 @@ function addguest()
 						<span class="label-input100">User Name</span>
 					</div>		
         <div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
-						<input class="input100" type="text" name="email" id="email">
+						<input class="input100" type="text" name="email"  id="email" required>
 						<span class="focus-input100"></span>
 						<span class="label-input100">Email</span>
 					</div>

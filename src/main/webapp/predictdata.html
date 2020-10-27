@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/xlsx.full.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.13.5/jszip.js"></script>
+	<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<script type="text/javascript">
+    function UploadProcess() {
+        //Reference the FileUpload element.
+        var fileUpload = document.getElementById("fileUpload");
+ 
+        //Validate whether File is valid Excel file.
+        var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.xls|.xlsx)$/;
+        if (regex.test(fileUpload.value.toLowerCase())) {
+            if (typeof (FileReader) != "undefined") {
+                var reader = new FileReader();
+ 
+                //For Browsers other than IE.
+                if (reader.readAsBinaryString) {
+                    reader.onload = function (e) {
+                        GetTableFromExcel(e.target.result);
+                    };
+                    reader.readAsBinaryString(fileUpload.files[0]);
+                } else {
+                    //For IE Browser.
+                    reader.onload = function (e) {
+                        var data = "";
+                        var bytes = new Uint8Array(e.target.result);
+                        for (var i = 0; i < bytes.byteLength; i++) {
+                            data += String.fromCharCode(bytes[i]);
+                        }
+                        GetTableFromExcel(data);
+                    };
+                    reader.readAsArrayBuffer(fileUpload.files[0]);
+                }
+            } else {
+                alert("This browser does not support HTML5.");
+            }
+        } else {
+            alert("Please upload a valid Excel file.");
+        }
+    };
+    function GetTableFromExcel(data) {
+        //Read the Excel File data in binary
+        var workbook = XLSX.read(data, {
+            type: 'binary'
+        });
+ 
+        //get the name of First Sheet.
+        var Sheet = workbook.SheetNames[0];
+ 
+        //Read all rows from First Sheet into an JSON array.
+        var excelRows = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[Sheet]);
+  
+        //Create a HTML Table element.
+        var myTable  = document.createElement("table");
+        myTable.border = "1";
+ 
+        //Add the header row.
+        var row = myTable.insertRow(-1);
+ 
+        //Add the header cells.
+        var headerCell = document.createElement("TH");
+        headerCell.innerHTML = "slno";
+        row.appendChild(headerCell);
+ 
+        headerCell = document.createElement("TH");
+        headerCell.innerHTML = "Day_of_Week";
+        row.appendChild(headerCell);
+ 
+        headerCell = document.createElement("TH");
+        headerCell.innerHTML = "Hour";
+        row.appendChild(headerCell);
+        
+        headerCell = document.createElement("TH");
+        headerCell.innerHTML = "Occupancy";
+        row.appendChild(headerCell);
+ 
+        var d = new Date();
+        var n = d.getDay()
+        var actual_day=n-1;
+        var array_x=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24];
+        var array_zero=[];
+        var array_one=[];
+        var array_two=[];
+        var array_three=[];
+        var array_four=[];
+        var array_five=[];
+        var array_six=[];
+           console.log(actual_day)
+        //Add the data rows from Excel file.
+        for (var i = 0; i < excelRows.length; i++) {
+        	console.log("entered");
+            //Add the data row.
+            if(excelRows[i].Day_of_Week==0){
+           /*  var row = myTable.insertRow(-1);
+ 
+            //Add the data cells.
+            var cell = row.insertCell(-1);
+            cell.innerHTML = excelRows[i].slno;
+ 
+            cell = row.insertCell(-1);
+            cell.innerHTML = excelRows[i].Day_of_Week;
+ 
+            cell = row.insertCell(-1);
+            cell.innerHTML = excelRows[i].Hour;
+            
+            cell = row.insertCell(-1);
+            cell.innerHTML = excelRows[i].Occupancy; */
+            
+            array_zero.push(excelRows[i].Occupancy);
+        }
+            if(excelRows[i].Day_of_Week==1)
+            	{
+            	 array_one.push(excelRows[i].Occupancy);
+            	}
+            if(excelRows[i].Day_of_Week==2)
+        	{
+        	 array_two.push(excelRows[i].Occupancy);
+        	}
+            if(excelRows[i].Day_of_Week==3)
+        	{
+        	 array_three.push(excelRows[i].Occupancy);
+        	}
+            if(excelRows[i].Day_of_Week==4)
+        	{
+        	 array_four.push(excelRows[i].Occupancy);
+        	}
+            if(excelRows[i].Day_of_Week==5)
+        	{
+        	 array_five.push(excelRows[i].Occupancy);
+        	}
+            
+            if(excelRows[i].Day_of_Week==6)
+        	{
+        	 array_six.push(excelRows[i].Occupancy);
+        	}
+        }
+           var Monday = {
+        		   x: array_x,
+        		   y: array_zero,
+        		   type: 'scatter'
+        		 };
+           var Tuesday = {
+        		   x: array_x,
+        		   y: array_one,
+        		   type: 'scatter'
+        		 };
+           var Wednesday = {
+        		   x: array_x,
+        		   y: array_two,
+        		   type: 'scatter'
+        		 };
+           var Thursday = {
+        		   x: array_x,
+        		   y: array_three,
+        		   type: 'scatter'
+        		 };
+           var Friday = {
+        		   x: array_x,
+        		   y: array_four,
+        		   type: 'scatter'
+        		 };
+           var Saturday = {
+        		   x: array_x,
+        		   y: array_five,
+        		   type: 'scatter'
+        		 };
+           var sunday = {
+        		   x: array_x,
+        		   y: array_six,
+        		   type: 'scatter'
+        		 };
+           var data = [Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,sunday];
+           Plotly.newPlot('myDiv', data);
+       
+    };
+</script>
+
+</head>
+
+<body>
+<input type="file" id="fileUpload" />
+<input type="button" id="upload" value="Upload" onclick="UploadProcess()" />
+<br/>
+
+<div id='myDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+</body>
+</html>
