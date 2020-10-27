@@ -2,6 +2,8 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
+<title>Reservation Page</title>
+<link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
 <link href="styles/styles.css" rel="stylesheet" type="text/css">
 <link href="css/availabilitypage.css" rel="stylesheet" type="text/css">
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
@@ -252,22 +254,32 @@ function onScan(err, data) {
 <body onload="checkBookings()">
 <header>
 	 <div class="topnav">
-	 <div align="left"> 
-		 <a	 id="home" href="SlotAvailability.html" >HOME</a>	
-          <a  id="about" href="About.html" >ABOUT</a>		
-          <a  id="contact"href="Contact.html" >CONTACT US</a>
-          </div>	
-          <div style="left-padding:100px">
-          <a  id="booking" href="Bookings.html">My Bookings</a>	
-          <a  id="account"href="Myaccount.html" >My Account</a>		
-		</div>
-		</div>
+  <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
+  <a href="Bookings.html">My Bookings</a>
+  <a href="CancelledBookings.html">Cancelled Bookings</a>
+  <div class="topnav-right">
+     <div class="dropdown">
+    <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account 
+      <i class="fa fa-user-circle"></i>
+    </button>
+    <div class="dropdown-content">
+      <a href="MyAccount.html">Profile</a>
+      <a href="index.html"><i class="fa fa-sign-out"></i>Logout </a>
+    </div>
+  </div> 
+  </div>
+</div>
 </header>
-<div align="center" id="form" style=" padding-top:20px; display:none">
+<div align="center" class="form-container" id="form" style=" padding-top:20px; display:none">
 <form  style="width: 600px; height: 700px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:120px" onsubmit="return false;">
 <h1 style="font: 20px/1.4em Verdana, sans-serif; float:left">Reserve a space..</h1>
 </br>
 </br>
+<label class="label-form" for="datelabel">Select Date:</label>
+  <input class="input-form" type="date" id="bokingdate" name="date" style="font-size:15px">
+  </br>
+  </br>
+
 <label class="label-form" for="From" >From:</label>
   <select name="From" class="input-form" onchange="displaytooptions(this.id)" id="From">
   <option disabled selected value> </option>
@@ -320,7 +332,7 @@ function onScan(err, data) {
     </br>
     </br>
     </br>
-   <div id="paypal-button" style="display: inline-block;padding: 12px 20px;float:left"></div>
+   <div id="paypal-button">
   <script>
         paypal.Button.render({
 
@@ -359,8 +371,11 @@ function onScan(err, data) {
                 });
             }
         }, '#paypal-button');
+        
+        </div>
 
     </script>
+   </div>
     <button class="input-form-button" id="reserve"  onClick= "ReserveSpace()"  >Reserve</button>
     </div>
     </br>

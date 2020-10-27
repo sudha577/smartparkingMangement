@@ -83,16 +83,21 @@ function appendLeadingZeroes(n){
 <body onload="Javascript:queryData()">
  <header>
 	 <div class="topnav">
-	 <div align="left"> 
-		 <a	 id="home" href="SlotAvailability.html" >HOME</a>	
-          <a  id="about" href="About.html" >ABOUT</a>		
-          <a  id="contact"href="Contact.html" >CONTACT US</a> 
-          </div>	
-          <div align="right" style="left-padding:100px">
-          <a   id="booking" href="Bookings.html">MY Bookings</a>
-              <a  class="active" id="account"href="MyAccount.html" >My Account</a>		
-		  </div>
-	 </div>
+  <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
+  <a href="Bookings.html">My Bookings</a>
+  <a href="CancelledBookings.html">Cancelled Bookings</a>
+  <div class="topnav-right">
+     <div class="dropdown">
+    <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account 
+      <i class="fa fa-user-circle"></i>
+    </button>
+    <div class="dropdown-content">
+      <a href="MyAccount.html">Profile</a>
+      <a href="index.html"><i class="fa fa-sign-out"></i>Logout </a>
+    </div>
+  </div> 
+  </div>
+</div>
 </header>
   <div class="login100-more-avail" >
  <div align="center">
