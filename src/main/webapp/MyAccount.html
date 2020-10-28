@@ -2,6 +2,9 @@
 <html>
 <head>
  <link href="styles/styles.css" rel="stylesheet" type="text/css">
+ <link href="styles/Account.css" rel="stylesheet" type="text/css">
+ <link href="css/availabilitypage.css" rel="stylesheet" type="text/css">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
     <!-- <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <title>Hello AWS Web World!</title -->
@@ -48,9 +51,10 @@ function queryData() {
                
              	   console.log("in For loop ");
                document.getElementById('uname').innerHTML=sessionStorage.getItem("UserName");
-          	 document.getElementById('email').innerHTML=item.Email;
+               document.getElementById('uid').innerHTML=sessionStorage.getItem("UserId");
+          	 document.getElementById('email_input').value=item.Email;
           	
-          	 document.getElementById('phoneno').innerHTML=item.PhoneNumber; 
+          	 document.getElementById('phoneno_input').value=item.PhoneNumber; 
           	
            	 document.getElementById('credit').innerHTML=item.AvailableCredit;
           	
@@ -78,19 +82,113 @@ function appendLeadingZeroes(n){
 	  }
 	  return n;
 	}
+
+function removeReadOnly(name)
+{
+	console.log(name);
+	document.getElementById(name).removeAttribute('readonly');
+	document.getElementById('Save').disabled=false;
+	}
+	
+	
+	function updateData()
+	{
+		var uname=document.getElementById('uname').innerText;
+		var uid=parseInt(document.getElementById('uid').innerText);
+		var credit=document.getElementById('credit').innerText;
+		var email= document.getElementById('email_input').value;
+		var phoneno=document.getElementById('phoneno_input').value;
+		
+		
+		console.log(document.getElementById('uid').innerText);
+		console.log(document.getElementById('credit').innerText);
+		console.log(document.getElementById('uname').innerText.toString());
+		console.log(document.getElementById('email_input').value);
+		console.log(document.getElementById('phoneno_input').value);
+		
+		var params={
+				 TableName : "UserDetails",
+				 ScanIndexForward: false,
+			        KeyConditionExpression: "#susername = :UserName AND #userId = :uid",
+			        ExpressionAttributeNames:{
+			            "#susername": "UserName",
+			            "#userId":"UserId"
+			        },
+			        ExpressionAttributeValues: {
+			        	":UserName":uname,
+			        	":uid":uid
+			        }, 
+			        Limit:1 
+			};
+			docClient.query(params, function(err, data) {
+				if(err)
+					{
+					console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+					}else{
+						data.Items.forEach(function(item)
+								{
+							var password=item.Password;
+							var params1={
+									TableName : "UserDetails",
+									Item:{
+										UserId:{N:uid.toString()},
+										UserName:{S:uname},
+										PhoneNumber:{S:phoneno},
+										Password:{S:password},
+										Email:{S:email},
+										AvailableCredit:{S:credit}
+									}
+								};
+								dynamodb.putItem(params1,function(err, data){
+									if (err) console.log(err, err.stack); // an error occurred
+									   else     console.log(data);
+								});
+								});
+					}});
+		
+		/*  var params = {
+			    TableName:"UserDetails",
+			    Key:{
+			        "UserName": uname,
+			        "UserId": uid
+			    },
+			    UpdateExpression: "set info.Email = :em, info.PhoneNumber=:p",
+			    ExpressionAttributeValues:{
+			        ":em":email,
+			        ":p":phoneno
+			    },
+			    ReturnValues:"UPDATED_NEW"
+			};
+
+			console.log("Updating the item...");
+			docClient.update(params, function(err, data) {
+			    if (err) {
+			        console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
+			    } else {
+			        console.log("UpdateItem succeeded:", JSON.stringify(data, null, 2));
+			    }
+			});  */
+	}
 </script>
 </head>
 <body onload="Javascript:queryData()">
  <header>
-	 <div class="topnav">
+	<div class="topnav">
   <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
   <a href="Bookings.html">My Bookings</a>
   <a href="CancelledBookings.html">Cancelled Bookings</a>
+  <div class="dropdown">
+    <button class="dropbtn" >More <i class="fa fa-caret-down"></i></button>
+    <div class="dropdown-content">
+      <a >Peak Hours</a>
+      <a href="About.html">About</a>
+      <a href="About.html">Contact us</a>
+    </div>
+  </div> 
   <div class="topnav-right">
+    <a href="Notifications.html"><i class="fa fa-bell" style="font-size:24px;color:#B0E0E6"></i></a>
      <div class="dropdown">
-    <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account 
-      <i class="fa fa-user-circle"></i>
-    </button>
+    <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account <i class="fa fa-user-circle"></i></button>
     <div class="dropdown-content">
       <a href="MyAccount.html">Profile</a>
       <a href="index.html"><i class="fa fa-sign-out"></i>Logout </a>
@@ -99,26 +197,31 @@ function appendLeadingZeroes(n){
   </div>
 </div>
 </header>
-  <div class="login100-more-avail" >
- <div align="center">
+
+  <div align="center" class="form-container" id="form" style=" padding-top:20px">
+  <form  style="width: 900px; height: 700px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:20px" onsubmit="return false;">
   </br>
  </br> 
- 
-  </br>
- </br> 
- 
  <table id="Detailstable"  class="myDetailsTable"  >
     <tr>
     <th style="text-align:centre;padding:20px">UserName</th>
     <td style="text-align:centre;padding:20px" id="uname"></th>
     </tr>
     <tr>
+    <th style="text-align:centre;padding:20px">UserId</th>
+    <td style="text-align:centre;padding:20px" id="uid"></th>
+    </tr>
+    <tr>
     <th style="text-align:centre;padding:20px">Phone Number</th>
-    <td style="text-align:centre;padding:20px" id="phoneno"></th>
+    <td style="text-align:centre;padding:20px" id="phoneno"><input class="input-account" name="phoneno" id="phoneno_input" readonly>
+  <button class="account-button" onClick="removeReadOnly('phoneno_input')"><i class="fa fa-edit"></i></button></td>
+    </th>
     </tr>
     <tr>
     <th style="text-align:centre;padding:20px">Email Address</th>
-    <td style="text-align:centre;padding:20px" id="email"></th>
+    <td style="text-align:centre;padding:20px" id="email"><input class="input-account" name="email" id="email_input" readonly>
+  <button class="account-button" onClick="removeReadOnly('email_input')"><i class="fa fa-edit"></i></button></td>
+    </th>
     </tr>
     
     <tr>
@@ -130,6 +233,8 @@ function appendLeadingZeroes(n){
 </table>
  </br>
  </br> 
-
+   <button class="account-form-button" id="Save" style="align:centre" onClick= "updateData()"  >Save</button>
+   </form>
+   </div>
 </body>
 </html>

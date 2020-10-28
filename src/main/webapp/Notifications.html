@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Bookings Page</title>
+<link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
+ <link href="styles/styles.css" rel="stylesheet" type="text/css">
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
+    <!-- <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Hello AWS Web World!</title -->
+<script type="text/javascript">
+
+ 
+AWS.config.update({
+	  region: "us-east-2",
+	  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
+	  accessKeyId: "AKIASUU5L6BWABM3DQEC",
+	  secretAccessKey: "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"
+	});  
+ 
+var dynamodb = new AWS.DynamoDB();
+var docClient = new AWS.DynamoDB.DocumentClient();
+var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+
+
+function queryData() {
+	
+	const current_datetime=new Date();
+	const today= current_datetime.getFullYear()+ "-"+ appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) ;
+	
+	var params = {
+	        TableName : "SlotAvailability",
+	        FilterExpression: "#Dates =:today",
+	        ExpressionAttributeNames: {
+	            "#Dates": "Dates",
+	            
+	        },
+	        ExpressionAttributeValues: { ":today":today },
+	        Limit: 1
+	             
+	    };
+	    docClient.scan(params, onScan);
+	    function onScan(err, data) {
+    if (err) {
+        console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+    }
+    else
+    {        
+    	data.Items.forEach(function(item) {
+    		var time=item.Time;
+    		console.log(time);
+    		var Slot=item.SensorName;
+    		console.log(Slot);
+    	 var params1 = {
+ 		        TableName : "BookingDetail",
+ 		        FilterExpression: ":time between #FromTime AND #ToTime  AND #SensorName =:Slot",
+ 		        ExpressionAttributeNames: {
+ 		            "#FromTime": "FromTime",
+ 		            "#ToTime": "ToTime",
+ 		            "#SensorName": "SensorName"
+ 		        },
+ 		        ExpressionAttributeValues: { ":time": time, ":Slot": Slot}
+ 		             
+ 		    };
+ 		    docClient.scan(params1, onScan);
+ 		    function onScan(err, data) {
+         if (err) {
+             console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+         }
+         else
+         {        
+             console.log("Scan succeeded.");
+             console.log(data.Count);           
+         }
+        }
+    	});
+      
+    }
+}
+
+	
+	
+	
+	
+	
+}
+
+function appendLeadingZeroes(n){
+	  if(n <= 9){
+	    return "0" + n;
+	  }
+	  return n
+	}
+
+</script>
+</head>
+<body onload="Javascript:queryData()">
+ <header>
+	 <div class="topnav">
+  <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
+  <a class="active" href="Bookings.html">My Bookings</a>
+  <a href="CancelledBookings.html">Cancelled Bookings</a>
+  <div class="topnav-right">
+     <div class="dropdown">
+    <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account 
+      <i class="fa fa-user-circle"></i>
+    </button>
+    <div class="dropdown-content">
+      <a href="MyAccount.html">Profile</a>
+      <a href="index.html"><i class="fa fa-sign-out"></i>Logout </a>
+    </div>
+  </div> 
+  </div>
+</div>
+</header>
+  <div class="login100-more-avail" >
+ <div align="center">
+ </br>
+ </br>
+  <table id="Detailstable"  class="myBookingsTable"  >
+  <tr>
+    <th style="text-align:centre;padding:20px">Booking Id</th>
+    <th style="text-align:centre;padding:20px">Booking Date</th>
+    <th style="text-align:centre;padding:20px">From Time</th>
+    <th style="text-align:centre;padding:20px">To Time</th>
+    <th style="text-align:centre;">View Details</th>
+    <th style="text-align:centre;">Navigate</th>
+    <th style="text-align:centre;">Extend</th>
+    <th style="text-align:centre;">Cancel</th>
+  </tr>
+  
+</table> 
+
+</body>
+</html>

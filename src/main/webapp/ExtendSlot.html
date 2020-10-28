@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <title>Extend Booking</title>
 <meta charset="ISO-8859-1">
  <link href="styles/styles.css" rel="stylesheet" type="text/css">
@@ -178,16 +179,28 @@ function displayslots1() {
 
 <header>
 	 <div class="topnav">
-	 <div align="left"> 
-		 <a	 id="home" href="availability.html" >HOME</a>	
-          <a  id="about" href="About.html" >ABOUT</a>		
-          <a  id="contact"href="Contact.html" >CONTACT US</a>
-          </div>	
-          <div style="left-padding:100px">
-          <a  id="booking" href="Bookings.html">My Bookings</a>	
-          <a  id="account"href="Myaccount.html" >My Account</a>		
-		</div>
-		</div>
+  <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
+  <a href="Bookings.html">My Bookings</a>
+  <a href="CancelledBookings.html">Cancelled Bookings</a>
+  <div class="dropdown">
+    <button class="dropbtn" >More <i class="fa fa-caret-down"></i></button>
+    <div class="dropdown-content">
+      <a>Peak Hours</a>
+      <a href="About.html">About</a>
+      <a href="About.html">Contact us</a>
+    </div>
+  </div> 
+  <div class="topnav-right">
+    <a href="Notifications.html"><i class="fa fa-bell" style="font-size:24px;color:#B0E0E6"></i></a>
+     <div class="dropdown">
+    <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account <i class="fa fa-user-circle"></i></button>
+    <div class="dropdown-content">
+      <a href="MyAccount.html">Profile</a>
+      <a href="index.html"><i class="fa fa-sign-out"></i>Logout </a>
+    </div>
+  </div> 
+  </div>
+</div>
 </header>
 <div align="center" style=" padding-top:20px">
 <form style="width: 600px; height: 700px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:120px" onsubmit="return false;">

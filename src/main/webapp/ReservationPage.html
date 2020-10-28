@@ -23,7 +23,7 @@ function ReserveSpace()
 {
 		const UserName=sessionStorage.getItem("UserName");
 		const current_datetime=new Date();
-		const Bookingdate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
+		const Bookingdate= document.getElementById('date').value;
 		const Flag="Null";
 		const FromTime=document.getElementById('From').value;
 		const PaymentAmount=document.getElementById('payamount').value;
@@ -157,7 +157,7 @@ function displayslots() {
 	var options = document.querySelectorAll('#Slot option');
 	  options.forEach(o => o.remove());
 	  const current_datetime=new Date();
-		const todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
+		const todaydate= current_datetime.getFullYear()+ "-"+ appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) ;
 		console.log(todaydate);
 	var params={
 			 TableName : "BookingDetail",
@@ -213,8 +213,12 @@ function displayslots() {
 function checkBookings()
 {
 	const current_datetime=new Date();
-	const Todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
+	const Todaydate= current_datetime.getFullYear()+ "-"+ appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) ;
 
+	var today = new Date().toISOString().split('T')[0];
+	console.log(today);
+	document.getElementsByName("date")[0].setAttribute('min', today);
+	console.log(today);
 	var params = {
 	        TableName : "BookingDetail",
 	        ScanIndexForward: true,
@@ -276,7 +280,7 @@ function onScan(err, data) {
 </br>
 </br>
 <label class="label-form" for="datelabel">Select Date:</label>
-  <input class="input-form" type="date" id="bokingdate" name="date" style="font-size:15px">
+  <input type="date"  id="date" required="Required" style="font-size:15px" class="input-form" name="date" placeholder="Select suitable date" />
   </br>
   </br>
 
@@ -371,8 +375,6 @@ function onScan(err, data) {
                 });
             }
         }, '#paypal-button');
-        
-        </div>
 
     </script>
    </div>

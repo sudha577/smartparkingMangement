@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>My Bookings</title>
+<title>My Bookings Page</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
  <link href="styles/styles.css" rel="stylesheet" type="text/css">
@@ -26,7 +26,7 @@ var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 function queryData() {
 	
 	  var params = {
-	          TableName : "BookingDetail",
+	          TableName : "CancelledBooking",
 	          ScanIndexForward: false,
 	          KeyConditionExpression: "#uname = :UserName",
 	          ExpressionAttributeNames:{
@@ -46,10 +46,6 @@ function queryData() {
     var c1;
     var c2;
     var c3;
-    var c4;
-    var c5;
-    var c6;
-    var c7;
     var table = document.getElementById("Detailstable");
     docClient.query(params, function(err, data) {
         if (err) {
@@ -60,8 +56,8 @@ function queryData() {
             console.log("Scan succeeded.");
             var i=1;    
             const current_datetime=new Date();
-    		const Todaydate=  current_datetime.getFullYear()+ "-"+ appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) ;
-            console.log(Todaydate)
+    		const Todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
+       
             data.Items.forEach(function(item) {
             	
             	 console.log("Scan ");
@@ -73,40 +69,17 @@ function queryData() {
              	  c0 = row.insertCell(0);
              	  c1= row.insertCell(1);
              	  c2= row.insertCell(2);
-             	  c3= row.insertCell(3);
-             	  c4= row.insertCell(4);
-             	  c5= row.insertCell(5);
-             	  c6= row.insertCell(6);
-             	  c7= row.insertCell(7);  
+             	  c3= row.insertCell(3); 
           	
           	 document.getElementById('Detailstable').rows[i].cells[0].innerHTML=item.BookingId;
           	
-          	 document.getElementById('Detailstable').rows[i].cells[1].innerHTML=item.BookingDate; 
+          	 document.getElementById('Detailstable').rows[i].cells[1].innerHTML=item.CancellationDate; 
           	
-           	 document.getElementById('Detailstable').rows[i].cells[2].innerHTML=item.FromTime;
+           	 document.getElementById('Detailstable').rows[i].cells[2].innerHTML=item.CreditAmount;
           	
-          	 document.getElementById('Detailstable').rows[i].cells[3].innerHTML=item.ToTime;
+          	 document.getElementById('Detailstable').rows[i].cells[3].innerHTML=item.Reason;
           
-          	 document.getElementById('Detailstable').rows[i].cells[4].innerHTML = "<button class='button' align='center' onClick= 'details(\""+item.BookingId+"\")'>View Details</button>";
-          	 
-
-          	/* var button = document.createElement('button');
-            button.setAttribute('type', 'button');
-            button.setAttribute('value', 'Navigate');
-            button.setAttribute('class', 'button');
-            button.innerHTML="Navigate";
-            button.setAttribute('onClick',navigate());
-            document.getElementById('Detailstable').rows[i].cells[7].appendChild(button); */
-            console.log(Todaydate);
-            console.log(item.BookingDate);
-            console.log(item.ToTime.substring(0,2));
-            if((item.BookingDate>=Todaydate) &&(item.ToTime.substring(0,1)<new Date().getHours()))
-            	{
-            document.getElementById('Detailstable').rows[i].cells[5].innerHTML = "<button class='button' align='center' onClick= 'navigate(\""+item.SensorName+"\")'>Navigate</button>";
-            document.getElementById('Detailstable').rows[i].cells[6].innerHTML = "<button class='button' align='center' onClick= 'extend(\""+item.BookingId+"\")'>Extend</button>";
-            document.getElementById('Detailstable').rows[i].cells[7].innerHTML = "<button class='button' align='center' onClick= 'cancel(\""+item.BookingId+"\")'>Cancel</button>";
-            	}
-          console.log("helll0")
+          	           console.log("helll0")
             	i++;  
                             
             });
@@ -160,10 +133,10 @@ function appendLeadingZeroes(n){
 </head>
 <body onload="Javascript:queryData()">
  <header>
-	<div class="topnav">
+	 <div class="topnav">
   <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
-  <a class="active" href="Bookings.html">My Bookings</a>
-  <a href="CancelledBookings.html">Cancelled Bookings</a>
+  <a href="Bookings.html">My Bookings</a>
+  <a class="active" href="CancelledBookings.html">Cancelled Bookings</a>
   <div class="dropdown">
     <button class="dropbtn" >More <i class="fa fa-caret-down"></i></button>
     <div class="dropdown-content">
@@ -191,13 +164,9 @@ function appendLeadingZeroes(n){
   <table id="Detailstable"  class="myBookingsTable"  >
   <tr>
     <th style="text-align:centre;padding:20px">Booking Id</th>
-    <th style="text-align:centre;padding:20px">Booking Date</th>
-    <th style="text-align:centre;padding:20px">From Time</th>
-    <th style="text-align:centre;padding:20px">To Time</th>
-    <th style="text-align:centre;">View Details</th>
-    <th style="text-align:centre;">Navigate</th>
-    <th style="text-align:centre;">Extend</th>
-    <th style="text-align:centre;">Cancel</th>
+    <th style="text-align:centre;padding:20px">Cancellation date Date</th>
+    <th style="text-align:centre;padding:20px">Credit Amount</th>
+    <th style="text-align:centre;padding:20px">Reason</th>
   </tr>
   
 </table> 
