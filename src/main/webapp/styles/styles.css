@@ -152,6 +152,9 @@ body {
 .myBookingsTable th, td {
   text-align: center;
   padding: 8px;
+  text: bold;
+  font-size: 12px;
+  
 }
 
 .myBookingsTable tr:nth-child(even){background-color: #eafbf9}
@@ -173,6 +176,8 @@ body {
   text-align: centre;
   padding: 2px;
   width: 50%;
+   text: bold;
+  font-size: 12px;
 }
 
 .myDetailsTable tr:nth-child(even){background-color: #eafbf9}

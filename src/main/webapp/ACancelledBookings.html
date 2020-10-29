@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
- <link href="styles/styles.css" rel="stylesheet" type="text/css">
- <link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
+ <link href="styles/styles.css" rel="stylesheet" type="text/css">
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
     <!-- <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <title>Hello AWS Web World!</title -->
@@ -26,32 +26,27 @@ function loadref(time)
 	queryData();
 	
 setTimeout("location.reload(true);",time);
-} 
+}
 
 function queryData() {
 	
-    var params = {
-        TableName : "BookingDetail",
-        FilterExpression: "#user_status = :Status",
-        ExpressionAttributeNames: {
-            "#user_status": "Status",
-        },
-        ExpressionAttributeValues: { ":Status": 'Y'}
-             
-    };
-    docClient.scan(params, onScan);
+	  var params = {
+	          TableName : "CancelledBooking",
+	          FilterExpression: "#user_status = :Status",
+	          ExpressionAttributeNames:{
+	              "#user_status": "Status" ,
+	          },
+	         ExpressionAttributeValues: { ":Status": 'Y'}
+	         
+	      };
+	  docClient.scan(params, onScan);
+    console.log("after query");
     var count = 0;
     var row;
     var c0;
     var c1;
     var c2;
     var c3;
-    var c4;
-    var c5;
-    var c6;
-    var c7;
-    var c8;
-    var c9;
     var table = document.getElementById("Detailstable");
     function onScan(err, data) {
         if (err) {
@@ -60,7 +55,9 @@ function queryData() {
         else
         {        
             console.log("Scan succeeded.");
-            var i=1;       
+            var i=1;    
+            const current_datetime=new Date();
+    		const Todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
        
             data.Items.forEach(function(item) {
             	
@@ -73,35 +70,17 @@ function queryData() {
              	  c0 = row.insertCell(0);
              	  c1= row.insertCell(1);
              	  c2= row.insertCell(2);
-             	  c3= row.insertCell(3);
-             	  c4= row.insertCell(4);
-             	  c5= row.insertCell(5);
-             	  c6= row.insertCell(6);
-             	  c7= row.insertCell(7);
-             	  c8= row.insertCell(8);
-             	  c9= row.insertCell(9);
-            	   
-             document.getElementById('Detailstable').rows[i].cells[0].innerHTML=item.UserName; 
+             	  c3= row.insertCell(3); 
           	
-          	 document.getElementById('Detailstable').rows[i].cells[1].innerHTML=item.BookingId;
+          	 document.getElementById('Detailstable').rows[i].cells[0].innerHTML=item.BookingId;
           	
-          	 document.getElementById('Detailstable').rows[i].cells[2].innerHTML=item.BookingDate; 
+          	 document.getElementById('Detailstable').rows[i].cells[1].innerHTML=item.CancellationDate; 
+          	
+           	 document.getElementById('Detailstable').rows[i].cells[2].innerHTML=item.CreditAmount;
+          	
+          	 document.getElementById('Detailstable').rows[i].cells[3].innerHTML=item.Reason;
           
-          	 document.getElementById('Detailstable').rows[i].cells[3].innerHTML=item.Flag; 
-          	
-           	 document.getElementById('Detailstable').rows[i].cells[4].innerHTML=item.FromTime;
-          	
-          	 document.getElementById('Detailstable').rows[i].cells[5].innerHTML=item.ToTime;
-          
-          	 document.getElementById('Detailstable').rows[i].cells[6].innerHTML=item.PaymentAmount; 
-          	
-          	 document.getElementById('Detailstable').rows[i].cells[7].innerHTML=item.PaymentMethod; 
-          	
-          	 document.getElementById('Detailstable').rows[i].cells[8].innerHTML=item.SensorName; 
-          	
-          	 document.getElementById('Detailstable').rows[i].cells[9].innerHTML=item.VehicleNumber; 
-         
-          
+          	           console.log("helll0")
             	i++;  
                             
             });
@@ -117,15 +96,48 @@ function queryData() {
         }
     }
 }
-   
+function navigate(name)
+{
+	console.log(name);
+	sessionStorage.setItem("NavigateToSlot",name);
+	console.log("In Navigate method");
+	window.location.href="Maps.html";
+	} 
+function details(name)
+{
+	console.log(name);
+	sessionStorage.setItem("BookingId",name);
+	console.log("In details method");
+	window.location.href="ViewDetails.html";
+	} 
+function extend(name)
+{
+	console.log(name);
+	sessionStorage.setItem("Extenditem",name);
+	console.log("In extend method");
+	window.location.href="ExtendSlot.html";
+	}   
+function cancel(name)
+{
+	console.log(name);
+	sessionStorage.setItem("CancelId",name);
+	console.log("In cancel method");
+	window.location.href="Cancellation.html";
+	}   
+function appendLeadingZeroes(n){
+	  if(n <= 9){
+	    return "0" + n;
+	  }
+	  return n
+	}
 </script>
 </head>
-<body onload="Javascript:loadref(10000)">
+<body onload="Javascript:queryData()">
  <header>
-	 <div class="topnav">
-	 <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
-   <a class="active" href="BookingDetails.html">Bookings</a>
-  <a href="ACancelledBookings.html">Cancellations</a>
+	<div class="topnav">
+  <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
+  <a  href="BookingDetails.html">Bookings</a>
+  <a class="active" href="ACancelledBookings.html">Cancellations</a>
   <a  id="analytics" href="Analytics.html">Analytics of Application</a>
   <div class="dropdown">
     <button class="dropbtn" >More <i class="fa fa-caret-down"></i></button>
@@ -151,24 +163,12 @@ function queryData() {
  <div align="center">
  </br>
  </br>
-
- 
- <h1 style="text-align:left"> Booking Data</h1>
- 
- 
- 
   <table id="Detailstable"  class="myBookingsTable"  >
   <tr>
-    <th style="text-align:centre;padding:20px">UserName</th>
     <th style="text-align:centre;padding:20px">Booking Id</th>
-    <th style="text-align:centre;padding:20px">Booking Date</th>
-    <th style="text-align:centre;padding:20px">Flag</th>
-    <th style="text-align:centre;padding:20px">From Time</th>
-    <th style="text-align:centre;padding:20px">To Time</th>
-    <th style="text-align:centre;padding:20px">Payment Amount</th>
-    <th style="text-align:centre;padding:20px">Payment Method</th>
-    <th style="text-align:centre;padding:20px">Slot NUmber</th>
-    <th style="text-align:centre;">Vehicle Number</th>
+    <th style="text-align:centre;padding:20px">Cancellation Date</th>
+    <th style="text-align:centre;padding:20px">Credit Amount</th>
+    <th style="text-align:centre;padding:20px">Reason</th>
   </tr>
   
 </table> 

@@ -95,6 +95,7 @@ console.log(parseInt(sessionStorage.getItem("CancelId")))
 					CancellationDate:{S:Todaydate},
 					CreditAmount:{N:sessionStorage.getItem("CreditAmount").toString()},
 					Reason:{S:reason},
+					Status:{S:"Y"},
 				}
 			};
 	   console.log("ok till now")
@@ -186,7 +187,7 @@ function checkIfOthers()
 	 <div class="topnav">
   <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
   <a href="Bookings.html">My Bookings</a>
-  <a href="CancelledBookings.html">Cancelled Bookings</a>
+  <a class="active" href="CancelledBookings.html">Cancellations</a>
   <div class="dropdown">
     <button class="dropbtn" >More <i class="fa fa-caret-down"></i></button>
     <div class="dropdown-content">
