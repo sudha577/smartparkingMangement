@@ -70,6 +70,7 @@ function usercheck(username,password)
 						    	  {
 						    	  sessionStorage.setItem("UserName",username);
 						    	  sessionStorage.setItem("UserId",item.UserId);
+						    	  
 						    	  console.log(sessionStorage.getItem("UserId"));
 						    	  sessionStorage.setItem("Email",item.Email);
 						    	  console.log(sessionStorage.getItem("UserName"));
@@ -114,6 +115,7 @@ function admincheck(username,password)
 							{
 						      if(item.Password.localeCompare(password)==0)
 						    	  {
+						    	  
 						    	  window.location.href="AdminHome.html";
 						    	  }else{
 						    		  alert("Please enter valid password");
@@ -320,7 +322,7 @@ function addguest()
 }
 </script>
 </head>
-<body style="background-color: #666666;">
+<body style="background-color: #666666;" onload=clearSession()>
 <div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100">		     
