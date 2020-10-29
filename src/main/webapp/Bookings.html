@@ -103,7 +103,7 @@ function queryData() {
             console.log(Todaydate);
             console.log(item.BookingDate);
             console.log(item.ToTime.substring(0,2));
-            if((item.BookingDate>=Todaydate) &&(item.ToTime.substring(0,1)<new Date().getHours()))
+            if((item.BookingDate>=Todaydate) &&(item.ToTime.substring(0,2)>new Date().getHours()))
             	{
             document.getElementById('Detailstable').rows[i].cells[5].innerHTML = "<button class='button' align='center' onClick= 'navigate(\""+item.SensorName+"\")'>Navigate</button>";
             document.getElementById('Detailstable').rows[i].cells[6].innerHTML = "<button class='button' align='center' onClick= 'extend(\""+item.BookingId+"\")'>Extend</button>";

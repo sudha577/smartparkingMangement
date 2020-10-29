@@ -44,8 +44,9 @@ console.log(parseInt(sessionStorage.getItem("CancelId")))
 	            console.log("Scan succeeded.");
 	            console.log(data.Count);
 	            data.Items.forEach(function(item) {
-	            sessionStorage.setItem("CreditAmount",item.PaymentAmount);
+	            sessionStorage.setItem("CreditAmount",item.PaymentAmount);	
 	            console.log(item.PaymentAmount);
+	            console.log(sessionStorage.getItem("CreditAmount"));
 	            });
 	            }
 	 }
