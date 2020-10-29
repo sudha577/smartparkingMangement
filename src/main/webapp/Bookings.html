@@ -4,6 +4,7 @@
 <title>My Bookings</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
+
  <link href="styles/styles.css" rel="stylesheet" type="text/css">
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
     <!-- <meta http-equiv="Content-type" content="text/html; charset=utf-8">
@@ -51,6 +52,7 @@ function queryData() {
     var c6;
     var c7;
     var table = document.getElementById("Detailstable");
+    //
     docClient.query(params, function(err, data) {
         if (err) {
             console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
@@ -78,6 +80,7 @@ function queryData() {
              	  c5= row.insertCell(5);
              	  c6= row.insertCell(6);
              	  c7= row.insertCell(7);  
+             	  
           	
           	 document.getElementById('Detailstable').rows[i].cells[0].innerHTML=item.BookingId;
           	
@@ -110,6 +113,7 @@ function queryData() {
             	i++;  
                             
             });
+           
       
 
             // continue scanning if we have more items
@@ -163,7 +167,7 @@ function appendLeadingZeroes(n){
 	<div class="topnav">
   <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
   <a class="active" href="Bookings.html">My Bookings</a>
-  <a href="CancelledBookings.html">Cancelled Bookings</a>
+  <a href="CancelledBookings.html">Cancellations</a>
   <div class="dropdown">
     <button class="dropbtn" >More <i class="fa fa-caret-down"></i></button>
     <div class="dropdown-content">
@@ -188,7 +192,7 @@ function appendLeadingZeroes(n){
  <div align="center">
  </br>
  </br>
-  <table id="Detailstable"  class="myBookingsTable"  >
+  <table id="Detailstable" align="center" class="myBookingsTable"  >
   <tr>
     <th style="text-align:centre;padding:20px">Booking Id</th>
     <th style="text-align:centre;padding:20px">Booking Date</th>

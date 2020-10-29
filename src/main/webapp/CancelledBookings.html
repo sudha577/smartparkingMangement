@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>My Bookings Page</title>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
  <link href="styles/styles.css" rel="stylesheet" type="text/css">
@@ -133,16 +133,17 @@ function appendLeadingZeroes(n){
 </head>
 <body onload="Javascript:queryData()">
  <header>
-	 <div class="topnav">
+	<div class="topnav">
   <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
-  <a href="Bookings.html">My Bookings</a>
-  <a class="active" href="CancelledBookings.html">Cancelled Bookings</a>
+  <a  href="Bookings.html">Bookings</a>
+  <a class="active" href="CancelledBookings.html">Cancellations</a>
+  <a  id="analytics" href="Analytics.html">Analytics of Application</a>
   <div class="dropdown">
     <button class="dropbtn" >More <i class="fa fa-caret-down"></i></button>
     <div class="dropdown-content">
       <a >Peak Hours</a>
-      <a href="About.html">About</a>
-      <a href="About.html">Contact us</a>
+      <a href="AAbout.html">About</a>
+      <a href="AContact.html">Contact us</a>
     </div>
   </div> 
   <div class="topnav-right">
@@ -164,7 +165,7 @@ function appendLeadingZeroes(n){
   <table id="Detailstable"  class="myBookingsTable"  >
   <tr>
     <th style="text-align:centre;padding:20px">Booking Id</th>
-    <th style="text-align:centre;padding:20px">Cancellation date Date</th>
+    <th style="text-align:centre;padding:20px">Cancellation Date</th>
     <th style="text-align:centre;padding:20px">Credit Amount</th>
     <th style="text-align:centre;padding:20px">Reason</th>
   </tr>
