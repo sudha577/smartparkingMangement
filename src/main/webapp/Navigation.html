@@ -1,0 +1,54 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="styles/styles.css" rel="stylesheet" type="text/css">
+<link href="css/availabilitypage.css" rel="stylesheet" type="text/css">
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
+<script>
+function loadmap()
+{
+	//sessionStorage.setItem("NavigateToSlot",name);
+	var slot= sessionStorage.getItem("NavigateToSlot");
+	document.getElementById(slot).style.display="block";
+	
+	}
+</script>
+</head>
+<body onload=loadmap()>
+<header>
+	 <div class="topnav">
+  <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
+  <a href="Bookings.html">My Bookings</a>
+  <a href="CancelledBookings.html">Cancellations</a>
+  <div class="dropdown">
+    <button class="dropbtn" >More <i class="fa fa-caret-down"></i></button>
+    <div class="dropdown-content">
+      <a>Peak Hours</a>
+      <a href="About.html">About</a>
+      <a href="About.html">Contact us</a>
+    </div>
+  </div> 
+  <div class="topnav-right">
+    <a href="Notifications.html"><i class="fa fa-bell" style="font-size:24px;color:#B0E0E6"></i></a>
+     <div class="dropdown">
+    <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account <i class="fa fa-user-circle"></i></button>
+    <div class="dropdown-content">
+      <a href="MyAccount.html">Profile</a>
+    <a href="index.html"><i class="fa fa-sign-out"></i>Logout </a>
+    </div>
+  </div> 
+  </div>
+</div>
+</header>
+<div align="center" style="padding-top:30px">
+<iframe id="Slot 1" style="display:none" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3158.730924202247!2d-122.0602485537529!3d37.65552955926416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808f938a553c0b27%3A0xb0b33f37bdee69c3!2sParking%20Lot%20A!5e0!3m2!1sen!2sus!4v1603951236718!5m2!1sen!2sus" width="800" height="600" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+<iframe id="Slot 2" style="display:none" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d789.6580213998643!2d-122.05272107082857!3d37.6578528604531!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808f9388fcf097b9%3A0x14c6c041b6eed202!2sHayward%20Highland%2C%20Hayward%2C%20CA%2094542!5e0!3m2!1sen!2sus!4v1603951320387!5m2!1sen!2sus" width="800" height="600" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+<iframe id="Slot 3" style="display:none" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1579.2872266279865!2d-122.05513046476923!3d37.65920751055436!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808f938eb2615661%3A0x18405bac8fb62a51!2sHayward%20Highland%2C%20Hayward%2C%20CA%2094542!5e0!3m2!1sen!2sus!4v1603951416971!5m2!1sen!2sus" width="800" height="600" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+<iframe id="Slot 4" style="display:none" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1579.2872266279865!2d-122.05513046476923!3d37.65920751055436!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808f938c15c484ad%3A0xc3a33a60ab27310!2sLot%20K!5e0!3m2!1sen!2sus!4v1603951446921!5m2!1sen!2sus" width="800" height="600" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+<iframe id="Slot 5" style="display:none" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1579.3409778523512!2d-122.05407367441735!3d37.65668062851783!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808f939ee6cc8c97%3A0x12e4d26946edf250!2sParking%20Lot%20E%2C%20CSUEB%20campus!5e0!3m2!1sen!2sus!4v1603951667187!5m2!1sen!2sus" width="600" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+</div>
+</body>
+</html>
