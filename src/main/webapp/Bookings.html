@@ -103,7 +103,7 @@ function queryData() {
             console.log(Todaydate);
             console.log(item.BookingDate);
             console.log(item.ToTime.substring(0,2));
-            if((item.BookingDate>=Todaydate) &&(item.ToTime.substring(0,2)>new Date().getHours()))
+            if((item.BookingDate>Todaydate)||((item.BookingDate==Todaydate) &&(item.ToTime.substring(0,2)>new Date().getHours())))
             	{
             document.getElementById('Detailstable').rows[i].cells[5].innerHTML = "<button class='button' align='center' onClick= 'navigate(\""+item.SensorName+"\")'>Navigate</button>";
             document.getElementById('Detailstable').rows[i].cells[6].innerHTML = "<button class='button' align='center' onClick= 'extend(\""+item.BookingId+"\")'>Extend</button>";
@@ -164,20 +164,19 @@ function appendLeadingZeroes(n){
 </head>
 <body onload="Javascript:queryData()">
  <header>
-	<div class="topnav">
+<div class="topnav">
   <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
   <a class="active" href="Bookings.html">My Bookings</a>
   <a href="CancelledBookings.html">Cancellations</a>
   <div class="dropdown">
     <button class="dropbtn" >More <i class="fa fa-caret-down"></i></button>
     <div class="dropdown-content">
-      <a >Peak Hours</a>
+      <a>Peak Hours</a>
       <a href="About.html">About</a>
-      <a href="About.html">Contact us</a>
+      <a href="Contact.html">Contact us</a>
     </div>
   </div> 
   <div class="topnav-right">
-    <a href="Notifications.html"><i class="fa fa-bell" style="font-size:24px;color:#B0E0E6"></i></a>
      <div class="dropdown">
     <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account <i class="fa fa-user-circle"></i></button>
     <div class="dropdown-content">
