@@ -51,7 +51,7 @@ function queryData() {
     var c6;
     var c7;
     var c8;
-    var c9;
+    //var c9;
     var table = document.getElementById("Detailstable");
     function onScan(err, data) {
         if (err) {
@@ -79,27 +79,25 @@ function queryData() {
              	  c6= row.insertCell(6);
              	  c7= row.insertCell(7);
              	  c8= row.insertCell(8);
-             	  c9= row.insertCell(9);
+             	  
             	   
              document.getElementById('Detailstable').rows[i].cells[0].innerHTML=item.UserName; 
           	
           	 document.getElementById('Detailstable').rows[i].cells[1].innerHTML=item.BookingId;
           	
-          	 document.getElementById('Detailstable').rows[i].cells[2].innerHTML=item.BookingDate; 
+          	 document.getElementById('Detailstable').rows[i].cells[2].innerHTML=item.BookingDate;     	 
+          	
+           	 document.getElementById('Detailstable').rows[i].cells[3].innerHTML=item.FromTime;
+          	
+          	 document.getElementById('Detailstable').rows[i].cells[4].innerHTML=item.ToTime;
           
-          	 document.getElementById('Detailstable').rows[i].cells[3].innerHTML=item.Flag; 
+          	 document.getElementById('Detailstable').rows[i].cells[5].innerHTML=item.PaymentAmount; 
           	
-           	 document.getElementById('Detailstable').rows[i].cells[4].innerHTML=item.FromTime;
+          	 document.getElementById('Detailstable').rows[i].cells[6].innerHTML=item.PaymentMethod; 
           	
-          	 document.getElementById('Detailstable').rows[i].cells[5].innerHTML=item.ToTime;
-          
-          	 document.getElementById('Detailstable').rows[i].cells[6].innerHTML=item.PaymentAmount; 
+          	 document.getElementById('Detailstable').rows[i].cells[7].innerHTML=item.SensorName; 
           	
-          	 document.getElementById('Detailstable').rows[i].cells[7].innerHTML=item.PaymentMethod; 
-          	
-          	 document.getElementById('Detailstable').rows[i].cells[8].innerHTML=item.SensorName; 
-          	
-          	 document.getElementById('Detailstable').rows[i].cells[9].innerHTML=item.VehicleNumber; 
+          	 document.getElementById('Detailstable').rows[i].cells[8].innerHTML=item.VehicleNumber; 
          
           
             	i++;  
@@ -123,7 +121,7 @@ function queryData() {
 <body onload="Javascript:loadref(10000)">
  <header>
 	 <div class="topnav">
-	 <a href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
+	 <a href="AdminHome.html"><i class="fa fa-fw fa-home"></i> Home</a>
    <a class="active" href="BookingDetails.html">Bookings</a>
   <a href="ACancelledBookings.html">Cancellations</a>
   <a  id="analytics" href="Analytics.html">Analytics of Application</a>
@@ -140,7 +138,7 @@ function queryData() {
      <div class="dropdown">
     <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account <i class="fa fa-user-circle"></i></button>
     <div class="dropdown-content">
-      <a href="MyAccount.html">Profile</a>
+     
       <a href="index.html"><i class="fa fa-sign-out"></i>Logout </a>
     </div>
   </div> 
@@ -162,7 +160,7 @@ function queryData() {
     <th style="text-align:centre;padding:20px">UserName</th>
     <th style="text-align:centre;padding:20px">Booking Id</th>
     <th style="text-align:centre;padding:20px">Booking Date</th>
-    <th style="text-align:centre;padding:20px">Flag</th>
+    
     <th style="text-align:centre;padding:20px">From Time</th>
     <th style="text-align:centre;padding:20px">To Time</th>
     <th style="text-align:centre;padding:20px">Payment Amount</th>

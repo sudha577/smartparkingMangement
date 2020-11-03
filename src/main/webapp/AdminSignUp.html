@@ -39,96 +39,8 @@
 var dynamodb = new AWS.DynamoDB();
 var docClient = new AWS.DynamoDB.DocumentClient();
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
-function usercheck(username,password)
-{
-	console.log(username);
-	console.log(password);
-	var params={
-		 TableName : "UserDetails",
-		 ScanIndexForward: false,
-	        KeyConditionExpression: "#susername = :UserName",
-	        ExpressionAttributeNames:{
-	            "#susername": "UserName"
-	        },
-	        ExpressionAttributeValues: {
-	        	":UserName":username
-	        }, 
-	        Limit:1 
-	};
-	docClient.query(params, function(err, data) {
-		if(err)
-			{
-			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
-			}else{
-				var count=data.Count;
-				console.log(count);
-				if(count>0)
-					{
-					data.Items.forEach(function(item)
-							{
-						      if(item.Password.localeCompare(password)==0)
-						    	  {
-						    	  sessionStorage.setItem("UserName",username);
-						    	  sessionStorage.setItem("UserId",item.UserId);
-						    	  
-						    	  console.log(sessionStorage.getItem("UserId"));
-						    	  
-						    	  sessionStorage.setItem("Email",item.Email);
-						    	  console.log(sessionStorage.getItem("UserName"));
-						    	  window.location.href="SlotAvailability.html";
-						    	  }else{
-						    		  alert("Please enter valid password");
-						    	  }
-							});
-					}else{
-						alert("Please enter valid username");
-					}
-			}
-	});
-	
-	}
-function admincheck(username,password)
-{
-	console.log(username);
-	console.log(password);
-	var params={
-		 TableName : "AdminDetails",
-		 ScanIndexForward: false,
-	        KeyConditionExpression: "#susername = :UserName",
-	        ExpressionAttributeNames:{
-	            "#susername": "UserName"
-	        },
-	        ExpressionAttributeValues: {
-	        	":UserName":username
-	        }, 
-	        Limit:1 
-	};
-	docClient.query(params, function(err, data) {
-		if(err)
-			{
-			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
-			}else{
-				var count=data.Count;
-				console.log(count);
-				if(count>0)
-					{
-					data.Items.forEach(function(item)
-							{
-						      if(item.Password.localeCompare(password)==0)
-						    	  {
-						    	  
-						    	  window.location.href="AdminHome.html";
-						    	  }else{
-						    		  alert("Please enter valid password");
-						    	  }
-							});
-					}else{
-						alert("Please enter valid username");
-					}
-			}
-	});
-	
-	}
+
+
 function adduser(password)
 {
 	const name=document.getElementById('name').value;
@@ -152,16 +64,22 @@ function adduser(password)
 	            "#susername": "UserType"
 	        },
 	        ExpressionAttributeValues: {
-	        	":UserType":"User"
+	        	":UserType":"Admin"
 	        }
 	        
 	};
+	console.log("after params");
+	console.log("after params");
+
 	docClient.query(params, function(err, data) {
+		console.log("in edoc");
 		if(err)
 			{
 			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+			console.log("in errors");
 			}else{
 				console.log(data.Count);
+				console.log("in admin detaiks");
 				data.Items.forEach(function(item)
 						{
 					var count=item.Count;
@@ -169,7 +87,7 @@ function adduser(password)
 					var coustr=toinsert.toString();
 					var checkExsistUser={
 							ScanIndexForward: false,
-							 TableName : "UserDetails",
+							 TableName : "AdminDetails",
 						        KeyConditionExpression: "#susername = :UserType",
 						        ExpressionAttributeNames:{
 						            "#susername": "UserName"
@@ -183,13 +101,14 @@ function adduser(password)
 						if(err)
 							{
 							console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+							console.log("in errors");
 							}else{
 								console.log(data1);
 								console.log(data1.Count);
 								if(data1.Count==0)
 									{
 					var params1={
-							TableName : "UserDetails",
+							TableName : "AdminDetails",
 							Item:{
 								UserId:{N:coustr},
 								UserName:{S:name},
@@ -205,7 +124,7 @@ function adduser(password)
 						var params2={
 								TableName : "UserTypeCount",
 								Item:{
-									UserType:{S:"User"},
+									UserType:{S:"Admin"},
 									Count:{N:coustr}
 								}
 						};
@@ -247,158 +166,19 @@ function phonenumber(inputtxt)
   const phoneno = /^\d{10}$/;
   return inputtxt.value.match(phoneno);
 }
-function addguest()
-{
-	const name=document.getElementById('name1').value;
-	console.log(name);
-	if(name.length>0){
-	const email=document.getElementById('email1').value;
-	console.log(email);
-	const number=document.getElementById('phnumber').value;
-	console.log(number)
-	if(validateEmail(email))
-	{
-		if(/^\d{10}$/.test(number))
-		{
-	var params={
-		 TableName : "UserTypeCount",
-		
-	        KeyConditionExpression: "#susername = :UserType",
-	        ExpressionAttributeNames:{
-	            "#susername": "UserType"
-	        },
-	        ExpressionAttributeValues: {
-	        	":UserType":"Guest"
-	        }
-	       
-	};
-	docClient.query(params, function(err, data) {
-		if(err)
-			{
-			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
-			}else{
-				console.log(data.Count);
-				data.Items.forEach(function(item)
-						{
-					var count=item.Count;
-					var toinsert=count+1;
-					var coustr=toinsert.toString();
-					var params1={
-							TableName : "GuestDetails",
-							Item:{
-								UserId:{N:coustr},
-								UserName:{S:name},
-								PhoneNumber:{S:number},
-								Email:{S:email}
-							}
-						};
-						dynamodb.putItem(params1,function(err, data){
-							if (err) console.log(err, err.stack); // an error occurred
-							   else     console.log(data);
-						});
-						var params2={
-								TableName : "UserTypeCount",
-								Item:{
-									UserType:{S:"Guest"},
-									Count:{N:coustr}
-								}
-						};
-						dynamodb.putItem(params2,function(err, data){
-							if (err) console.log(err, err.stack); // an error occurred
-							   else     console.log(data);
-						});
-					});
-				window.location.href="GuestSlotAvailability.html";
-			}
-	});
-		}else{
-			alert("Please enter valid Mobile Number");
-		}
-	}else{
-		alert("Please Enter valid Email address");
-	}
-	}else{
-		alert("Please enter User Name to move forwad!!!");
-	}
-}
 
 </script>
 </head>
-<body style="background-color: #666666;" onload=clearSession()>
+
+<body style="background-color: #666666;">
 <div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100">		     
-   <form class="login100-form validate-form">
+   <form class="login100-form validate-form" onsubmit="return false;">
             <p style="font-family: Arial, Helvetica, sans-serif; font-size:40px; text-align:center">Welcome! </p>
 			<p style="font-family: Arial, Helvetica, sans-serif; font-size:40px; text-align:center">Smart Parking Management!! </p>
-			<button class="login100-form-btn" onclick="toggle(this,'cont')">
-							User Login
-						</button>
-						<br>
-						<button class="login100-form-btn" onclick="toggle(this,'cont1')">
-							Admin Login
-						</button>
-						<br>
-						<button class="login100-form-btn" onclick="toggle(this,'cont2')">
-							Guest Login
-						</button>
-						<br>
-						<button class="login100-form-btn" onclick="toggle(this,'cont3')">
-							Sign Up
-						</button>
-						</br>
-    <div style="display:none;" id="cont" class="tabs">
-        <div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
-						<input class="input100" type="text" name="username" id="username">
-						<span class="focus-input100"></span>
-						<span class="label-input100">UserName</span>
-					</div>
-					
-					<div class="wrap-input100 validate-input" data-validate="Password is required">
-						<input class="input100" type="password" name="pass" id="pass">
-						<span class="focus-input100"></span>
-						<span class="label-input100">Password</span>
-					</div>
-                 <button class="login100-form-btn" onclick="usercheck(document.getElementById('username').value,document.getElementById('pass').value)">Login</button>
 
-    </div>
-   <div style="display:none;" id="cont1" class="tabs">
-
-        <div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
-						<input class="input100" type="text" name="username1" id="username1">
-						<span class="focus-input100"></span>
-						<span class="label-input100">UserName</span>
-					</div>
-					
-					<div class="wrap-input100 validate-input" data-validate="Password is required">
-						<input class="input100" type="password" name="pass2" id="pass2">
-						<span class="focus-input100"></span>
-						<span class="label-input100">Password</span>
-					</div>
-       <button class="login100-form-btn" onclick="admincheck(document.getElementById('username1').value,document.getElementById('pass2').value)">Login</button>
-    </div>
-    <div style="display:none;" id="cont2" class="tabs">
-
-      <div class="wrap-input100 validate-input" data-validate = "Valid name is required">
-						<input class="input100" type="text" name="name1" id="name1">
-						<span class="focus-input100"></span>
-						<span class="label-input100">UserName</span>
-					</div>
-					
-				<div class="wrap-input100 validate-input" data-validate="Valid email is required">
-						<input class="input100" type="text" name="email1" id="email1">
-						<span class="focus-input100"></span>
-						<span class="label-input100">Email</span>
-					</div>
-				 <div class="wrap-input100 validate-input" data-validate="valid number is required">
-						<input class="input100" type="text" name="phnumber" id="phnumber">
-						<span class="focus-input100"></span>
-						<span class="label-input100">Mobile Number</span>
-					</div>
-       <button class="login100-form-btn" onclick="addguest()">Login</button>
-
-    </div>
-    <div style="display:none;" id="cont3" class="tabs">
+    
        <div class="wrap-input100 validate-input" data-validate = "Valid name">
 						<input class="input100" type="text" name="name" id="name">
 						<span class="focus-input100"></span>
@@ -421,12 +201,12 @@ function addguest()
 						<span class="label-input100">Mobile Number</span>
 					</div>
        <button class="login100-form-btn" onclick="adduser(document.getElementById('pass1').value)">SignUP</button>
-
+</form> 
     </div>
-   </form>
+   
     <div class="login100-more" style="background-image: url('images/Parking lot Image.PNG');">
 				</div>
-   </div></div></div>
+   </div></div>
   
 </body>
 
@@ -447,20 +227,5 @@ function addguest()
 	<script src="vendor/countdowntime/countdowntime.js"></script>
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
-<script>
-    function toggle(ele,name) {
-    	var i, tabcontent, tablinks;
-    	  tabcontent = document.getElementsByClassName("tabs");
-    	  for (i = 0; i < tabcontent.length; i++) {
-    	    tabcontent[i].style.display = "none";
-    	  }
-    	  tablinks = document.getElementsByClassName("login100-form-btn");
-    	  for (i = 0; i < tablinks.length; i++) {
-    	    tablinks[i].className = tablinks[i].className.replace(" active", "");
-    	  }
-    	  document.getElementById(name).style.display = "block";
-    }
-    
 
-</script>
 </html>

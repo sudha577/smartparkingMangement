@@ -1,4 +1,4 @@
-	<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <title>Home</title>
@@ -108,7 +108,7 @@ function initMap() {
   }
 function loadReservation()
 {
-	window.location.href="ReservationPage.html";
+	window.location.href="GuestReservationPage.html";
 }
     </script>
     
@@ -119,23 +119,14 @@ function loadReservation()
 </head>
 <body onload="Javascript:loadref(20000)">
 <header>
-  <div class="topnav">
-  <a class="active" href="SlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
-  <a href="BookingDetails.html">Bookings</a>
-  <a href="ACancelledBookings.html">Cancellations</a>
-  <a  id="analytics" href="Analytics.html">Analytics of Application</a>
-  <div class="dropdown">
-    <button class="dropbtn" >More <i class="fa fa-caret-down"></i></button>
-    <div class="dropdown-content">
-      <a >Peak Hours</a>
-      <a href="AAbout.html">About</a>
-      <a href="AContact.html">Contact us</a>
-    </div>
-  </div> 
+<div class="topnav">
+  <a class="active" href="GuestSlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a> 
+  
+
   <div class="topnav-right">
-    <a href="Notifications.html"><i class="fa fa-bell" style="font-size:24px;color:#B0E0E6"></i></a>
+  
      <div class="dropdown">
-    <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account <i class="fa fa-user-circle"></i></button>
+   <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account <i class="fa fa-user-circle"></i></button>
     <div class="dropdown-content">
       
       <a href="index.html"><i class="fa fa-sign-out"></i>Logout </a>
@@ -147,7 +138,7 @@ function loadReservation()
 <div class="row">
   <div class="column" id="map">
   </div>
-  <div class="column" style="background-image: url('images/backgroundwhite.jpg'); background-repeat: no-repeat;
+  <div class="column" style="background-image: url('images/HomeBackground.jpg'); background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   position: relative;">
@@ -157,11 +148,11 @@ function loadReservation()
  <div align="center" >
  <table id="slottable"  class="myTable" >
   <tr>
-    <th>Slot 1</th>
-    <th>Slot 2</th>
-    <th>Slot 3</th>
-    <th>Slot 4</th>
-    <th>Slot 5</th>
+    <th>SLOT 1</th>
+    <th>SLOT 2</th>
+    <th>SLOT 3</th>
+    <th>SLOT 4</th>
+    <th>SLOT 5</th>
   </tr>
   <tr>
     <td></td>
@@ -173,7 +164,7 @@ function loadReservation()
 </table>
 </br>
 </br>
-<!--  <button class="button" align="center" onClick= "loadReservation()">Reserve Slot</button>-->
+<button class="button" align="center" onClick= "loadReservation()">Reserve Space</button>
 </div>
 </br>
 </br>
