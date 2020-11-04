@@ -23,6 +23,7 @@ var docClient = new AWS.DynamoDB.DocumentClient();
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 function ReserveSpace()
 {
+	console.log(sessionStorage.getItem("UserName"));
 		const UserName=sessionStorage.getItem("UserName");
 		const current_datetime=new Date();
 		const Bookingdate= document.getElementById('date').value;
@@ -65,6 +66,7 @@ function ReserveSpace()
 				   					data.Items.forEach(function(movie) {
 				   						console.log(movie);
 				                     coustr=movie.Count+1;
+				                     sessionStorage.setItem("GuestBookingId",coustr);
 				                     console.log("latest BookingId:"+coustr)
 				   					console.log(coustr);
 							   			var params1={
@@ -80,8 +82,8 @@ function ReserveSpace()
 											Status:{S:status},
 											ToTime:{S:ToTime},
 											SensorName:{S:SensorName},
-											VehicleNumber:{S:VehicleNumber},
-											Email:{S:sessionStorage.getItem("Email")}
+											VehicleNumber:{S:VehicleNumber}
+											
 										}
 									};
 							   console.log("ok till now")
@@ -93,8 +95,9 @@ function ReserveSpace()
 									   else    
 										   {
 										   console.log("Inserted");
-										   if (window.confirm("your booking has been made.")) { 
-											   window.location.href="Bookings.html";
+										   if (window.confirm("your booking has been made.")) {
+											  
+											   window.location.href="Confirmation.html";
 											 }		   
 										   }
 							
@@ -240,7 +243,7 @@ function onScan(err, data) {
     }
     else
     {        
-     if(data.Count>=5)
+     if(data.Count>=2)
     {
     	 if (window.confirm("Sorry! you exceeded maximum bookings")) { 
 			   window.location.href="Bookings.html";
@@ -260,6 +263,7 @@ function onScan(err, data) {
 <body onload="checkBookings()">
 <header>
 	 <div class="topnav">
+	 <a href="GuestSlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a>
   
   <div class="topnav-right">
      <div class="dropdown">

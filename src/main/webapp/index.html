@@ -309,6 +309,8 @@ function addguest()
 						});
 					});
 				window.location.href="GuestSlotAvailability.html";
+				sessionStorage.setItem("UserType","Guest");
+				sessionStorage.setItem("UserName",name);
 			}
 	});
 		}else{

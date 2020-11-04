@@ -1,12 +1,179 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
-<meta charset="ISO-8859-1">
-<title>Thank you for Booking.</title>
-</head>
-<body>
+<title>Details</title>
+ <link href="styles/styles.css" rel="stylesheet" type="text/css">
+ <link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
+    <!-- <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Hello AWS Web World!</title -->
+<script type="text/javascript">
 
+ 
+AWS.config.update({
+	  region: "us-east-2",
+	  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
+	  accessKeyId: "AKIASUU5L6BWABM3DQEC",
+	  secretAccessKey: "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"
+	});  
+ 
+var dynamodb = new AWS.DynamoDB();
+var docClient = new AWS.DynamoDB.DocumentClient();
+var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+
+
+function queryData() {
+	
+    var params = {
+        TableName : "BookingDetail",
+        ScanIndexForward: true,
+        FilterExpression: "#BookingId = :BookingId",
+        ExpressionAttributeNames: {
+            "#BookingId": "BookingId",
+        },
+        ExpressionAttributeValues: { ":BookingId": parseInt(sessionStorage.getItem("GuestBookingId"))}
+             
+    };
+    docClient.scan(params, onScan);
+    function onScan(err, data) {
+        if (err) {
+            console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+        }
+        else
+        {        
+            console.log("Scan succeeded.");
+            console.log(data.Count);
+            console.log(sessionStorage.getItem("BookingId"));
+            data.Items.forEach(function(item) {
+  
+               console.log("Item :",JSON.stringify(item))
+               
+             	   console.log("in For loop ");
+               document.getElementById('uname').innerHTML=sessionStorage.getItem("UserName");
+          	 document.getElementById('bookingid').innerHTML=item.BookingId;
+          	
+          	 document.getElementById('bookingdate').innerHTML=item.BookingDate; 
+          	
+           	 document.getElementById('fromtime').innerHTML=item.FromTime;
+          	
+          	 document.getElementById('totime').innerHTML=item.ToTime;
+          
+          	document.getElementById('amount').innerHTML=item.PaymentAmount; 
+          	
+         	 document.getElementById('payment').innerHTML=item.PaymentMethod; 
+         	
+         	 document.getElementById('slot').innerHTML=item.SensorName; 
+         	
+         	 document.getElementById('vnum').innerHTML=item.VehicleNumber;
+          	 
+
+  
+                            
+            });
+      
+
+            // continue scanning if we have more items
+            if (typeof data.LastEvaluatedKey != "undefined") 
+            {
+                console.log("Scanning for more...");
+                params.ExclusiveStartKey = data.LastEvaluatedKey;
+                docClient.scan(params, onScan);
+            }
+        }
+    }
+}
+
+   
+function appendLeadingZeroes(n){
+	  if(n <= 9){
+	    return "0" + n;
+	  }
+	  return n;
+	}
+	function print()
+	{
+		var prtContent = document.getElementById("details");
+		var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+		WinPrint.document.write(prtContent.innerHTML);
+		WinPrint.document.close();
+		WinPrint.focus();
+		WinPrint.print();
+	}
+</script>
+</head>
+<body onload="Javascript:queryData()">
+ <header>
+<div class="topnav">
+  <a href="GuestSlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a> 
+  
+
+  <div class="topnav-right">
+  
+     <div class="dropdown">
+   <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account <i class="fa fa-user-circle"></i></button>
+    <div class="dropdown-content">
+      
+      <a href="index.html"><i class="fa fa-sign-out"></i>Logout </a>
+    </div>
+  </div> 
+  </div>
+</div>
+</header>
+  <div class="login100-more-avail">
+ <div align="center">
+  </br>
+ </br> 
+ <div align="center" class="form-container" id="details" style=" padding-top:20px">
+  </br>
+ </br> 
+ <p align="centre" style="font-size:2vw;"> <i class="fa fa-check-circle" style="font-size:60px;color:blue"></i></br> </br> your booking has been made. Thank you!! </p>
+ <table id="Detailstable"  class="myDetailsTable"  >
+    <tr>
+    <th style="text-align:centre;padding:20px">UserName</th>
+    <td style="text-align:centre;padding:20px" id="uname"></th>
+    </tr>
+    <tr>
+    <th style="text-align:centre;padding:20px">Booking Id</th>
+    <td style="text-align:centre;padding:20px" id="bookingid"></th>
+    </tr>
+    <tr>
+    <th style="text-align:centre;padding:20px">Booking Date</th>
+    <td style="text-align:centre;padding:20px" id="bookingdate"></th>
+    </tr>
+    
+    <tr>
+    <th style="text-align:centre;padding:20px">From Time</th>
+    <td style="text-align:centre;padding:20px" id="fromtime"></th>
+    </tr>
+    <tr>
+    <th style="text-align:centre;padding:20px">To Time</th>
+    <td style="text-align:centre;padding:20px" id="totime"></th>
+    </tr>
+    <tr>
+    <th style="text-align:centre;padding:20px">Payment Amount</th>
+    <td style="text-align:centre;padding:20px" id="amount"></th>
+    </tr>
+    <tr>
+    <th style="text-align:centre;padding:20px">Payment Method</th>
+    <td style="text-align:centre;padding:20px" id="payment"></th>
+    </tr>
+    <tr>
+    <th style="text-align:centre;padding:20px">Sensor Name</th>
+    <td style="text-align:centre;padding:20px" id="slot"></th>
+    </tr>
+    <tr>
+    <th style="text-align:centre;padding:20px">Vehicle Number</th>
+    <td style="text-align:centre;padding:20px" id="vnum"></th>
+    </tr>
+  
+</table>
+ </br>
+ </br> 
+ </div>
+<button class="button" onclick="print()">Print <i class="fa fa-print" aria-hidden="true"></i></button>
+
+</div>
+</div>
 </body>
 </html>
