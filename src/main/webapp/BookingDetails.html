@@ -5,6 +5,7 @@
  <link href="styles/styles.css" rel="stylesheet" type="text/css">
  <link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+ <script src='https://kit.fontawesome.com/a076d05399.js'></script>
 
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
     <!-- <meta http-equiv="Content-type" content="text/html; charset=utf-8">
@@ -116,6 +117,33 @@ function queryData() {
         }
     }
 }
+function exportTableToExcel(tableID, filename = ''){
+    var downloadLink;
+    var dataType = 'application/vnd.ms-excel';
+    var tableSelect = document.getElementById(tableID);
+    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+    
+    // Specify file name
+    filename = filename?filename+'.xls':'excel_data.xls';
+    
+    // Create download link element
+    downloadLink = document.createElement("a");
+    
+    document.body.appendChild(downloadLink);
+    
+    if(navigator.msSaveOrOpenBlob){
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    }else{
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+        downloadLink.download = filename;
+        
+        //triggering the function
+        downloadLink.click();
+    }
+}
    
 </script>
 </head>
@@ -154,9 +182,7 @@ function queryData() {
  </br>
  </br>
 
- 
- <h1 style="text-align:left"> Booking Data</h1>
- 
+ <button class="button" Style="float:left" onclick="exportTableToExcel('Detailstable', '')"style='font-size:15px'><i class='fas fa-file-export'></i>  Export</button>
  
  
   <table id="Detailstable"  class="myBookingsTable"  >
@@ -170,7 +196,7 @@ function queryData() {
     <th style="text-align:centre;padding:20px">Payment Amount</th>
     <th style="text-align:centre;padding:20px">Payment Method</th>
     <th style="text-align:centre;padding:20px">Slot NUmber</th>
-    <th style="text-align:centre;">Vehicle Number</th>
+    <th style="text-align:centre;padding:20px">Vehicle Number</th>
   </tr>
   
 </table> 

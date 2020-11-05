@@ -311,6 +311,7 @@ function addguest()
 				window.location.href="GuestSlotAvailability.html";
 				sessionStorage.setItem("UserType","Guest");
 				sessionStorage.setItem("UserName",name);
+				sessionStorage.setItem("Email",email);
 			}
 	});
 		}else{
@@ -323,6 +324,10 @@ function addguest()
 		alert("Please enter User Name to move forwad!!!");
 	}
 }
+function clearSession()
+{
+	sessionStorage.clear();
+	}
 
 </script>
 </head>

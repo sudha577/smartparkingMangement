@@ -88,7 +88,7 @@ console.log(parseInt(sessionStorage.getItem("CancelId")))
     	const Todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
 		console.log(Todaydate);
 		console.log(sessionStorage.getItem("UserName"));
-	
+	   console.log(sessionStorage.getItem("CreditAmount"));
     	var params2={
 				TableName : "CancelledBooking",
 				Item:{
@@ -209,8 +209,8 @@ function checkIfOthers()
   </div>
 </div>
 </header>
-<div align="center" style=" padding-top:20px">
-<form  style="width: 600px; height: 700px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:120px" onsubmit="return false;">
+<div align="center" style=" padding-top:50px">
+<form  style="width: 600px; height: 400px; border-style: groove;margin:auto; border-radius:15px; background-color: white; padding-top:40px; padding-left:120px; text-align:centre" onsubmit="return false;">
 
 </br>
 <div>
@@ -231,9 +231,10 @@ function checkIfOthers()
   <input  class="input-form"type="text" id="otherreason" name="otherreason"><br><br>
   </div>
   <button class="input-form-button" id="reserve"  onClick= "CancelBooking()" >Cancel Booking</button>
-  <p style="display: inline-block;text-align: center;text-decoration: none;font-size: 16px;">Cancelled Amount will be available for future booking as credit in your account.</p>
+  
 </div>
 </form>
+<p style="display:inline-block;text-align:centre;text-decoration: none;font-size: 16px;">Cancelled Amount will be available for future booking as credit in your account.</p>
 </div>
 
 </body>
