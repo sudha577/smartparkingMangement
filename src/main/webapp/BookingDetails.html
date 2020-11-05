@@ -132,9 +132,11 @@ function exportTableToExcel(tableID, filename = ''){
     var dataType = 'application/vnd.ms-excel';
     var tableSelect = document.getElementById(tableID);
     var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+    const current_datetime=new Date();
+    var today=current_datetime.getFullYear()+ "-"+ appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) ;
     
     // Specify file name
-    filename = filename?filename+'.xls':'excel_data.xls';
+    filename = filename?filename+'_'+today+'.xlsx':'excel_data.xlsx';
     
     // Create download link element
     downloadLink = document.createElement("a");
@@ -154,10 +156,16 @@ function exportTableToExcel(tableID, filename = ''){
         downloadLink.click();
     }
 }
+function appendLeadingZeroes(n){
+	  if(n <= 9){
+	    return "0" + n;
+	  }
+	  return n
+	}
    
 </script>
 </head>
-<body onload="Javascript:loadref(10000)">
+<body onload="Javascript:loadref(90000)">
  <header>
   <div class="topnav">
   <a href="AdminHome.html"><i class="fa fa-fw fa-home"></i> Home</a>
@@ -192,7 +200,7 @@ function exportTableToExcel(tableID, filename = ''){
  </br>
  </br>
 
- <button class="button" Style="float:left" onclick="exportTableToExcel('Detailstable', '')"style='font-size:15px'><i class='fas fa-file-export'></i>  Export</button>
+ <button class="button" Style="float:left" onclick="exportTableToExcel('Detailstable', 'Booking_history')"style='font-size:15px'><i class='fas fa-file-export'></i>  Export</button>
  
  
   <table id="Detailstable"  class="myBookingsTable"  >
