@@ -44,7 +44,7 @@ function queryData() {
 	        ExpressionAttributeNames: {
 	            "#Dates": "Dates",         
 	        },
-	        ExpressionAttributeValues: { ":today":"2020-11-03" }            
+	        ExpressionAttributeValues: { ":today": today.toString() }            
 	    };
 	    docClient.scan(params, onScan);
 	    function onScan(err, data) {
