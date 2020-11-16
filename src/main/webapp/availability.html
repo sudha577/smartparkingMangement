@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <link href="styles/styles.css" rel="stylesheet" type="text/css">
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
+    <!-- <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Hello AWS Web World!</title -->
+<script type="text/javascript">
+//var AWS = require('aws-sdk');
+//AWS.config.loadFromPath('./credentials');
+ 
+AWS.config.update({
+	  region: "us-east-2",
+	  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
+	  accessKeyId: "AKIASUU5L6BWABM3DQEC",
+	  secretAccessKey: "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"
+	});  
+ 
+var dynamodb = new AWS.DynamoDB();
+var docClient = new AWS.DynamoDB.DocumentClient();
+var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+function loadref(time)
+{
+	queryData1();
+	queryData2();
+setTimeout("location.reload(true);",time);
+} 
+
+function queryData1() {
+	
+    var params = {
+        TableName : "SlotAvailability",
+        ScanIndexForward: false,
+        KeyConditionExpression: "#sname = :SensorName",
+        ExpressionAttributeNames:{
+            "#sname": "SensorName"
+        },
+        ExpressionAttributeValues: {
+        	":SensorName":"Slot1"
+        }, 
+        Limit:1 
+    };
+    docClient.query(params, function(err, data) {
+        if (err) {
+            
+        } else {
+        	
+            data.Items.forEach(function(movie) {
+                
+                if(movie.Distance>20)
+                {
+                	document.getElementById('slottable').rows[1].cells[0].className="empty";
+                	document.getElementById('slottable').rows[1].cells[0].innerHTML="EMPTY"
+                }
+                else
+                {
+                	document.getElementById('slottable').rows[1].cells[0].className="full";
+                	document.getElementById('slottable').rows[1].cells[0].innerHTML="FULL"
+                }
+            });
+         
+        }
+    });
+}
+function queryData2() {
+    var params = {
+        TableName : "SlotAvailability",
+        ScanIndexForward: false,
+        KeyConditionExpression: "#sname = :SensorName",
+        ExpressionAttributeNames:{
+            "#sname": "SensorName"
+        },
+        ExpressionAttributeValues: {
+        	":SensorName":"Slot2"
+        }, 
+        
+        Limit:1 
+    };
+    docClient.query(params, function(err, data) {
+        if (err) {
+           
+        } else {
+        	
+            data.Items.forEach(function(movie) {
+                
+                if(movie.Distance>20)
+                {
+                	document.getElementById('slottable').rows[1].cells[1].className="empty";
+                	document.getElementById('slottable').rows[1].cells[1].innerHTML="EMPTY"
+                }
+                else
+                {
+                	document.getElementById('slottable').rows[1].cells[1].className="full";
+                	document.getElementById('slottable').rows[1].cells[1].innerHTML="FULL"
+                }
+            });
+         
+        }
+    });
+}
+
+  </script>
+  </head>
+  <body onload="Javascript:loadref(10000)">
+  <header>
+    <div class="primary_header">
+      <h1 class="title" align="center">SMART PARKING </h1>
+    </div>
+	 <div class="topnav"> 
+		 <a	href="index.html">HOME</a>	
+          <a href="About.html">ABOUT</a>		
+          <a href="Contact.html">CONTACT US</a>		
+		</div>
+</header>
+  <div>
+ <h1 align="center"> <img src="images/parkingimg.jpg" alt="parkinglot" align="middle" height="250" style="width:60%;"></div></h1>
+  <div>
+  <br>
+ <br>
+ <div align="center">
+ <br>
+ <br>
+  <br>
+ 
+ <table id="slottable"  class="myTable"  >
+  <tr>
+    <th>Slot X</th>
+    <th>Slot Y</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+</div>
+  </body>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+</html>
