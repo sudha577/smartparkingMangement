@@ -33,6 +33,14 @@ var docClient = new AWS.DynamoDB.DocumentClient();
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 function ReserveSpace()
 {
+	console.log(document.getElementById('date').value +"--"+ document.getElementById('From').value +"--"+ document.getElementById('To').value +"--"+document.getElementById('Vnum').value);
+	if(document.getElementById('date').value=="" || document.getElementById('From').value=="" ||document.getElementById('To').value=="" ||document.getElementById('Vnum').value=="")
+		{
+		
+		}
+	
+	else
+	{
 	
 	if(document.getElementById('useCredit').checked)
 		{
@@ -159,7 +167,7 @@ function ReserveSpace()
 			});
 	   
 	   
-	   
+	}  
 }
 function appendLeadingZeroes(n){
 	  if(n <= 9){
@@ -358,7 +366,7 @@ function onScan(err, data) {
 	        			aftercredit=parseInt(aftercredit)*(-1);
 	        			if(item.AvailableCredit!=0)
 	        			{
-	        				document.getElementById('creditmessage').innerHTML= item.AvailableCredit+"$ will be deducted from your credit amount";
+	        				document.getElementById('creditmessage').innerHTML= item.AvailableCredit+"$ will be deducted from your credit amount please pay remaining through PayPal ";
 	        			}
 	        			sessionStorage.setItem("todeduct",0);
 	        			
@@ -423,7 +431,7 @@ function onScan(err, data) {
                 <label class="label-form" for="From" >From:</label>
             </td>
             <td>
-                <select name="From" class="input-form" onchange="displaytooptions(this.id)" id="From">
+                <select name="From" class="input-form" onchange="displaytooptions(this.id)" id="From" required="Required">
                 <option disabled selected value> </option>
     <option value="00:00">00:00</option>
 	<option value="01:00">01:00</option>
@@ -457,7 +465,7 @@ function onScan(err, data) {
                 <label class="label-form"  for="To" >To :</label>
             </td>
             <td>
-                <select name="To" class="input-form" onchange="displayslots()" id="To">
+                <select name="To" class="input-form" onchange="displayslots()" id="To" required="Required">
   </select>
             </td>
         </tr>
@@ -466,7 +474,7 @@ function onScan(err, data) {
                 <label class="label-form" for="SelectSlot">Select Slot :</label>
             </td>
             <td>
-                <select name="Slot" class="input-form" id="Slot">
+                <select name="Slot" class="input-form" id="Slot" required="Required">
             </td>
         </tr>
         <tr>
@@ -474,7 +482,7 @@ function onScan(err, data) {
                     <label class="label-form" for="Vehicle Number">Vehicle Number :</label>
             </td>
             <td>
-                    <input  class="input-form"type="text" id="Vnum" name="Vnum"><br><br>
+                    <input  class="input-form"type="text" id="Vnum" name="Vnum" required="Required"><br><br>
             </td>
         </tr>
         <tr>
@@ -504,7 +512,7 @@ function onScan(err, data) {
           <td>
             <div id="Available-credit" style="display:none;float:left ">
             <label  for="availablecredit">Available Credit :</label>
-            <input  type="text" id="availablecredit" style="width: 50%;" name="availablecredit" ><br><br>
+            <input  type="text" id="availablecredit" style="width: 50%;" name="availablecredit" readonly="readonly" ><br><br>
             <p id="creditmessage"></p>
             </div>
         
@@ -557,7 +565,7 @@ function onScan(err, data) {
             <td>
             </td>
             <td>
-                <button class="input-form-button" id="reserve"  onClick= "ReserveSpace()" disabled >Reserve</button>
+                <button type="submit" class="input-form-button" id="reserve"  onClick= "ReserveSpace()" disabled >Reserve</button>
             </td>
         </tr>
     </table>

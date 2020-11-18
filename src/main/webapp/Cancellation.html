@@ -137,7 +137,7 @@ function CancelBooking()
 	        				        },
 	        				        UpdateExpression: "set AvailableCredit = :r",
 	        				        ExpressionAttributeValues:{
-	        				            ":r":"20"              /* credit.toString() */
+	        				            ":r":credit.toString()
 	        				        },
 	        				        ReturnValues:"UPDATED_NEW"
 	        				    };
