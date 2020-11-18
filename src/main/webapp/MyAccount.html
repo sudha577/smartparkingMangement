@@ -83,6 +83,11 @@ function queryData() {
         }
     }
 }
+
+function togglePopup(){
+	  document.getElementById("popup-1").classList.toggle("active");
+	}
+	
 function Bookings()
 {
 	window.location.href="Bookings.html";
@@ -148,38 +153,22 @@ function removeReadOnly(name)
 										PhoneNumber:{S:phoneno},
 										Password:{S:password},
 										Email:{S:email},
-										AvailableCredit:{S:credit}
+										AvailableCredit:{S:credit.toString()}
 									}
 								};
 								dynamodb.putItem(params1,function(err, data){
 									if (err) console.log(err, err.stack); // an error occurred
-									   else     console.log(data);
+									   else  
+                                           {
+										   console.log("opening popup");
+										   document.getElementById("popup-1").classList.toggle("active");
+										  
+                                           }
 								});
 								});
 					}});
 		
-		/*  var params = {
-			    TableName:"UserDetails",
-			    Key:{
-			        "UserName": uname,
-			        "UserId": uid
-			    },
-			    UpdateExpression: "set info.Email = :em, info.PhoneNumber=:p",
-			    ExpressionAttributeValues:{
-			        ":em":email,
-			        ":p":phoneno
-			    },
-			    ReturnValues:"UPDATED_NEW"
-			};
-
-			console.log("Updating the item...");
-			docClient.update(params, function(err, data) {
-			    if (err) {
-			        console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2));
-			    } else {
-			        console.log("UpdateItem succeeded:", JSON.stringify(data, null, 2));
-			    }
-			});  */
+		
 	}
 </script>
 </head>
@@ -216,36 +205,47 @@ function removeReadOnly(name)
  <table id="Detailstable"  class="myDetailsTable"  >
     <tr>
     <th style="text-align:centre;padding:20px">UserName</th>
-    <td style="text-align:centre;padding:20px" id="uname"></th>
+    <td style="font-size:18px;text-align:left;padding:20px" id="uname"></th>
     </tr>
     <tr>
     <th style="text-align:centre;padding:20px">UserId</th>
-    <td style="text-align:centre;padding:20px" id="uid"></th>
+    <td style="font-size:18px;text-align:left;padding:20px" id="uid"></th>
     </tr>
     <tr>
     <th style="text-align:centre;padding:20px">Phone Number</th>
-    <td style="text-align:centre;padding:20px" id="phoneno"><input class="input-account" name="phoneno" id="phoneno_input" readonly>
-  <button class="account-button" onClick="removeReadOnly('phoneno_input')"><i class="fa fa-edit"></i></button></td>
+    <td style="font-size:18px;text-align:left;padding:20px" id="phoneno"><input class="input-account" name="phoneno" id="phoneno_input" readonly>
+  <button class="account-button" onClick="removeReadOnly('phoneno_input'); document.getElementById('Save').disabled=false;"><i class="fa fa-edit"></i></button></td>
     </th>
     </tr>
     <tr>
     <th style="text-align:centre;padding:20px">Email Address</th>
-    <td style="text-align:centre;padding:20px" id="email"><input class="input-account" name="email" id="email_input" readonly>
-  <button class="account-button" onClick="removeReadOnly('email_input')"><i class="fa fa-edit"></i></button></td>
+    <td style="font-size:18px;text-align:left;padding:20px" id="email"><input class="input-account" name="email" id="email_input" readonly>
+  <button class="account-button" onClick="removeReadOnly('email_input'); document.getElementById('Save').disabled=false;"><i class="fa fa-edit"></i></button></td>
     </th>
     </tr>
     
     <tr>
-    <th style="text-align:centre;padding:20px">Available credit</th>
-    <td style="text-align:centre;padding:20px" id="credit"></th>
+    <th style="text-align:centre;padding:20px">Available credit in $</th>
+    <td style="font-size:18px;text-align:left;padding:20px" id="credit"></th>
     </tr>
   
   
 </table>
  </br>
  </br> 
-   <button class="account-form-button" id="Save" style="align:centre" onClick= "updateData()"  >Save</button>
+   <button class="account-form-button" id="Save" style="align:centre" onClick= "updateData()" disabled  >Save</button>
    </form>
-   </div>
+
+
+<div class="popup" id="popup-1">
+  <div class="overlay"></div>
+  <div class="content">
+    <div class="close-btn" onclick="togglePopup()">&times;</div>
+    <p align="centre"> <i class="fa fa-check-circle" style="font-size:40px;color:blue"></i></br></br></br></br> Your details have been updated successfully. </p>
+  </div>
+</div>
+
+   
+   
 </body>
 </html>

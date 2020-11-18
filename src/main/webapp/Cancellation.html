@@ -30,10 +30,18 @@ AWS.config.update({
 var dynamodb = new AWS.DynamoDB();
 var docClient = new AWS.DynamoDB.DocumentClient();
 var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+
+function togglePopup(){
+	
+	  
+	  window.location.href="Bookings.html";
+		
+	}
 function CancelBooking()
-{	     var amount;
-console.log(sessionStorage.getItem("UserName"));
-console.log(parseInt(sessionStorage.getItem("CancelId")))
+{	    
+	var amount;
+	console.log(sessionStorage.getItem("UserName"));
+	console.log(parseInt(sessionStorage.getItem("CancelId")))
 	 var params = {
 		        TableName : "BookingDetail",
 		        ScanIndexForward: true,
@@ -41,10 +49,10 @@ console.log(parseInt(sessionStorage.getItem("CancelId")))
 		        ExpressionAttributeNames: {
 		            "#user": "UserName",
 		            "#BookingId":"BookingId",
-		        },
+									        },
 		        ExpressionAttributeValues: { ":name": sessionStorage.getItem("UserName"), ":bookingid":parseInt(sessionStorage.getItem("CancelId"))}
 		             
-		    };
+		    	};
 	 docClient.scan(params, onScan);
 	 function onScan(err, data) {
 	        if (err) {
@@ -58,115 +66,138 @@ console.log(parseInt(sessionStorage.getItem("CancelId")))
 	            sessionStorage.setItem("CreditAmount",item.PaymentAmount);	
 	            console.log(item.PaymentAmount);
 	            console.log(sessionStorage.getItem("CreditAmount"));
+	            var UserName=sessionStorage.getItem("UserName");
+	        	var BookingId=parseInt(sessionStorage.getItem("CancelId"));
+	        	 var params = {
+	        		    TableName:"BookingDetail",
+	        		    Key:{
+	        		        "UserName": UserName,
+	        		        "BookingId": BookingId
+	        		    }
+	        		};
+
+	        		console.log("Attempting a conditional delete...");
+	        		docClient.delete(params, function(err, data) {
+	        		    if (err) {
+	        		        console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
+	        		    } else {
+	        		        console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
+	        		    }
+	        		}); 	
+	        		var reason;
+	        		if(document.getElementById("Reason").value=="others")
+	        		{
+	        			reason=document.getElementById("otherreason").value;
+	        			
+	        		}
+	        		else
+	        		{
+	        			reason=document.getElementById("Reason").value;
+	        		}
+	        		console.log(reason);
+	        		//console.log("amount:"+amount);
+	        		
+	        		const current_datetime=new Date();
+	        		
+	            	const Todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
+	        		console.log(Todaydate);
+	        		console.log(sessionStorage.getItem("UserName"));
+	        	   console.log(sessionStorage.getItem("CreditAmount"));
+	        	   
+	        	   var params3 = {
+	        		          TableName : "UserDetails",
+	        		          KeyConditionExpression: "#uname = :UserName",
+	        		          ExpressionAttributeNames:{
+	        		              "#uname": "UserName"
+	        		          },
+	        		          ExpressionAttributeValues: {
+	        		          	":UserName":sessionStorage.getItem("UserName")
+	        		          }
+	        		      };
+	        	   docClient.query(params3, function(err, data) {
+	        	        if (err) {
+	        	            console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+	        	        }
+	        	        else
+	        	        {
+	        	        	console.log(data.Count);
+	        	        	data.Items.forEach(function(item) {
+	        	        		console.log("updating credit");
+	        	        		var credit=parseInt(item.AvailableCredit);
+	        	        		console.log("credit:"+credit);
+	        	        		console.log("UserName:" +sessionStorage.getItem("UserName"));
+	        	        		var userid=item.UserId;
+	        	        		console.log(userid);
+	        	        		credit=parseInt(credit)+parseInt(sessionStorage.getItem("CreditAmount"));
+	        	        		var params4 = {
+	        				        TableName:"UserDetails",
+	        				        Key:{
+	        				            "UserName": sessionStorage.getItem("UserName"),
+	        				            "UserId": userid
+	        				        },
+	        				        UpdateExpression: "set AvailableCredit = :r",
+	        				        ExpressionAttributeValues:{
+	        				            ":r":"20"              /* credit.toString() */
+	        				        },
+	        				        ReturnValues:"UPDATED_NEW"
+	        				    };
+
+	        				    docClient.update(params4, function(err, data) {
+	        				        if (err) {
+	        				            console.log("Unable to update item: " + "\n" + JSON.stringify(err, undefined, 2));
+	        				        } else {
+	        				            console.log("UpdateItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
+	        				        }
+	        				    });
+	        	        	
+	        	        });
+	        	        }
+	        	   });
+	        	
+	        	   
+	        	   
+	        	   
+	            	var params2={
+	        				TableName : "CancelledBooking",
+	        				Item:{
+	        					UserName:{S:sessionStorage.getItem("UserName")},
+	        					BookingId:{N:sessionStorage.getItem("CancelId").toString()},
+	        					CancellationDate:{S:Todaydate},
+	        					CreditAmount:{N:sessionStorage.getItem("CreditAmount").toString()},
+	        					Reason:{S:reason},
+	        					Status:{S:"Y"},
+	        				}
+	        			};
+	        	   console.log("ok till now")
+	        	   dynamodb.putItem(params2,function(err, data){
+	        			if (err)
+	        				{
+	        				console.log(err, err.stack); // an error occurred
+	        				}
+	        			   else    
+	        				   {
+	        				   console.log("Inserted");
+	        				   document.getElementById("popup-1").classList.toggle("active");
+	        				   }
+	        	
+	        		
+	        		
+	        }); 
+
+	            
+	            
+	            
+	            
+	            
+	            
+	            
+	            
+	            
 	            });
-	            }
-	 }
+	         }
+	 							}
 
- 	 var UserName=sessionStorage.getItem("UserName");
-	var BookingId=parseInt(sessionStorage.getItem("CancelId"));
-	 var params = {
-		    TableName:"BookingDetail",
-		    Key:{
-		        "UserName": UserName,
-		        "BookingId": BookingId
-		    }
-		};
-
-		console.log("Attempting a conditional delete...");
-		docClient.delete(params, function(err, data) {
-		    if (err) {
-		        console.error("Unable to delete item. Error JSON:", JSON.stringify(err, null, 2));
-		    } else {
-		        console.log("DeleteItem succeeded:", JSON.stringify(data, null, 2));
-		    }
-		}); 	
-		var reason;
-		if(document.getElementById("Reason").value=="others")
-		{
-			reason=document.getElementById("otherreason").value;
-			
-		}
-		else
-		{
-			reason=document.getElementById("Reason").value;
-		}
-		console.log(reason);
-		//console.log("amount:"+amount);
-		
-		const current_datetime=new Date();
-		
-    	const Todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
-		console.log(Todaydate);
-		console.log(sessionStorage.getItem("UserName"));
-	   console.log(sessionStorage.getItem("CreditAmount"));
-    	var params2={
-				TableName : "CancelledBooking",
-				Item:{
-					UserName:{S:sessionStorage.getItem("UserName")},
-					BookingId:{N:sessionStorage.getItem("CancelId").toString()},
-					CancellationDate:{S:Todaydate},
-					CreditAmount:{N:sessionStorage.getItem("CreditAmount").toString()},
-					Reason:{S:reason},
-					Status:{S:"Y"},
-				}
-			};
-	   console.log("ok till now")
-	   dynamodb.putItem(params2,function(err, data){
-			if (err)
-				{
-				console.log(err, err.stack); // an error occurred
-				}
-			   else    
-				   {
-				   console.log("Inserted");
-				   if (window.confirm("your booking has been cancelled.")) { 
-					   window.location.href="Bookings.html";
-					 }		   
-				   }
-	
-		
-		
-}); 
-	   var params3 = {
-		          TableName : "UserDetails",
-		          KeyConditionExpression: "#uname = :UserName",
-		          ExpressionAttributeNames:{
-		              "#uname": "UserName"
-		          },
-		          ExpressionAttributeValues: {
-		          	":UserName":sessionStorage.getItem("UserName")
-		          }
-		      };
-	   docClient.query(params3, function(err, data) {
-	        if (err) {
-	            console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
-	        }
-	        else
-	        {
-	        	console.log(data.Count);
-	        	data.Items.forEach(function(item) {
-	        		
-	        		var credit=parseInt(item.AvailableCredit);
-	        		console.log(credit);
-	        		var userid=item.UserId;
-	        		credit=credit+sessionStorage.getItem("CreditAmount")
-	        		   var params4={
-								TableName : "UserDetails",
-								Item:{
-									UserName:{S:sessionStorage.getItem("UserName")},
-									AvailableCredit:{S:credit.toString()},
-									UserId:{S:userid.toString()}
-									
-								}
-						};
-						dynamodb.putItem(params2,function(err, data){
-							if (err) console.log(err, err.stack); // an error occurred
-							   else     console.log(data);
-						});
-	        		
-	        	});
-	        }
-	   });
+ 		   
 	   }
 
 
@@ -182,11 +213,11 @@ function checkIfOthers()
 	console.log(document.getElementById("Reason").value);
 	if(document.getElementById("Reason").value=="others")
 		{
-		document.getElementById('other').style.display='block';
+		document.getElementById('specify_reason').style.display='table-row';
 		}
 	else
 		{
-		document.getElementById('other').style.display='none';
+		document.getElementById('specify_reason').style.display='none';
 		}
 	}
 
@@ -219,33 +250,51 @@ function checkIfOthers()
   </div>
 </div>
 </header>
-<div align="center" style=" padding-top:50px">
-<form  style="width: 600px; height: 400px; border-style: groove;margin:auto; border-radius:15px; background-color: white; padding-top:40px; padding-left:120px; text-align:centre" onsubmit="return false;">
-
-</br>
-<div>
-</br>
-  <label class="label-form" for="Reason">Reason for Cancellation :</label>
-    <select name="Reason" class="input-form" id="Reason" onchange="checkIfOthers()">
+<div align="center" class="table-form-container" style=" padding-top:50px">
+<form style="width: 600px; height: 350px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:20px" onsubmit="return false;">
+    <table class="cancellation-form">
+        <tr>
+            <td>
+               <label class="label-form" for="Reason">Reason for Cancellation :</label>
+            </td>
+            <td>
+                <select name="Reason" class="input-form" id="Reason" onchange="checkIfOthers()">
     <option disabled selected value> </option>
     <option value="Change of plan">Change of plan</option>
 	<option value="Duplicate Booking">Duplicate Booking</option>
 	<option value="Preferred another parking lot">Preferred another parking lot</option>
 	<option value="others">others</option>
- </select>
- 
-    </br>
-    </br>
-    <div  style="display:none;" id="other">
-    <label class="label-form" for="otherreason">please specify</label>
+ </select>	
+            </td>
+        </tr>
+        <tr id="specify_reason" style="display:none">
+		<td>
+    <label class="label-form" for="otherreason">please specify</label></td>
+	<td>
   <input  class="input-form"type="text" id="otherreason" name="otherreason"><br><br>
-  </div>
-  <button class="input-form-button" id="reserve"  onClick= "CancelBooking()" >Cancel Booking</button>
-  
-</div>
+           
+            </td>
+        </tr>
+        <tr>
+            <td>
+                
+            </td>
+            <td>
+                <button class="input-form-button" id="reserve"  onClick= "CancelBooking()" >Cancel Booking</button>
+            </td>
+        </tr>
+    </table>
 </form>
 <p style="display:inline-block;text-align:centre;text-decoration: none;font-size: 16px;">Cancelled Amount will be available for future booking as credit in your account.</p>
 </div>
+
+<div class="popup" id="popup-1">
+  <div class="overlay"></div>
+  <div class="content">
+    <div class="close-btn" onclick="togglePopup('popup-1')">&times;</div>
+    <p align="centre"> <i class="fa fa-check-circle" style="font-size:40px;color:blue"></i></br></br> Your booking has been cancelled.</br></br>Thank you! </p>
+  </div>
+  
 
 </body>
 </html>
