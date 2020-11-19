@@ -4,6 +4,13 @@
 		<!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GDXS5PCQN4"></script>
 <script>
+
+if(sessionStorage.getItem("UserType")!="User" ||sessionStorage.getItem("UserName")=="")
+{
+window.location.href="index.html";
+}
+</script>
+<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
@@ -24,11 +31,11 @@
 <script type="text/javascript">
 function initMap() {
 	var locations = [
-	      ['Slot 1', 37.655656, -122.057867, 1],
-	      ['Slot 2', 37.657963, -122.052656, 2],
-	      ['Slot 3', 37.659326, -122.054388, 3],
-	      ['Slot 4', 37.659597, -122.056430, 4],
-	      ['Slot 5', 37.656038, -122.052505, 5]
+	      ['University Library', 37.655656, -122.057867, 1],
+	      ['CS Department', 37.657963, -122.052656, 2],
+	      ['Student Faculty Building', 37.659326, -122.054388, 3],
+	      ['University Theater', 37.659597, -122.056430, 4],
+	      ['Wellness Center', 37.656038, -122.052505, 5]
 	    ];
 
 	    var map = new google.maps.Map(document.getElementById('map'), {
@@ -71,7 +78,8 @@ function initMap() {
   	queryData("Slot1");
   	var slot="Slot1";
   	setInterval("queryData(\"Slot1\");",10000);
-  	//queryData("Slot2");
+  	queryData("Slot2");
+  	setInterval("queryData(\"Slot2\");",10000);
   //setTimeout("location.reload(true);",time);
   } 
 
@@ -100,17 +108,20 @@ function initMap() {
             	// adding some elements to the map  
             	map1.set("Slot1", 0); 
             	map1.set("Slot2", 1); 
+            	map1.set("Slot3", 2);
+            	map1.set("Slot4", 3);
+            	map1.set("Slot5", 4);
             	console.log(slotId);
                   console.log(map1.get(slotId));
                   console.log(movie.Distance)
-                  if(movie.Distance>20)
+                  if(movie.Distance<6 || movie.Distance>20)
                   {
-                  	document.getElementById('slottable').rows[1].cells[0].className="empty";
+                  	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].className="empty";
                   	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].innerHTML="EMPTY"
                   }
                   else
                   {
-                  	document.getElementById('slottable').rows[1].cells[0].className="full";
+                  	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].className="full";
                   	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].innerHTML="FULL"
                   }
               });
@@ -167,11 +178,11 @@ function loadReservation()
  <div align="center" >
  <table id="slottable"  class="myTable" >
   <tr>
-    <th>SLOT 1</th>
-    <th>SLOT 2</th>
-    <th>SLOT 3</th>
-    <th>SLOT 4</th>
-    <th>SLOT 5</th>
+    <th>University Library</th>
+    <th>CS Department</th>
+    <th>Student Faculty Building</th>
+    <th>University Theater</th>
+    <th>Wellness Center</th>
   </tr>
   <tr>
     <td></td>

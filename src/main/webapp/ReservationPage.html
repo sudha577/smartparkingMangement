@@ -1,8 +1,15 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 			<!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GDXS5PCQN4"></script>
+<script>
+
+if(sessionStorage.getItem("UserType")!="User" ||sessionStorage.getItem("UserName")=="")
+{
+window.location.href="index.html";
+}
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -180,10 +187,11 @@ function displaytooptions()
 	console.log("in displaytooptions method");
 	var selector=document.getElementById("From");
 	console.log(selector.selectedIndex);
-	var n=selector.selectedIndex;
+	var n=document.getElementById("From").value.substring(0,2);
+	console.log(n);
 	var options = document.querySelectorAll('#To option');
 	  options.forEach(o => o.remove());
-	for (i = n; i < 24; i++) {
+	for (i = Number(n)+1; i < Number(n)+13 && i<24; i++) {
 		console.log("in for loop");
 	var x = document.getElementById("To");
 	  var option = document.createElement("option");
@@ -193,6 +201,56 @@ function displaytooptions()
 	  x.add(option);
 	}
 	displayslots();
+	}
+	
+	function displayfromoptions()
+	{
+		const current_datetime=new Date();
+		console.log(current_datetime);
+		const Todaydate= current_datetime.getFullYear()+ "-"+ appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) ;
+
+		if(document.getElementById("date").value==Todaydate)
+			{
+		var d=new Date();
+	 	var hours=d.getHours();
+	 	var d=new Date();
+	 	var currenthours=d.getHours();
+	 	var options = document.querySelectorAll('#From option');
+		  options.forEach(o => o.remove());
+		for (i = currenthours+1; i<24; i++) {
+			console.log("in for loop");
+		var x = document.getElementById("From");
+		  var option = document.createElement("option");
+		  
+		  option.value = appendLeadingZeroes(i)+":00";
+		  option.text=appendLeadingZeroes(i)+":00";
+		  x.add(option);
+	 	}	
+		displaytooptions();
+			}
+		else if(document.getElementById("date").value > Todaydate)
+			{
+			var options = document.querySelectorAll('#From option');
+			  options.forEach(o => o.remove());
+			for (i = 0; i<24; i++) {
+				console.log("in for loop");
+			var x = document.getElementById("From");
+			  var option = document.createElement("option");
+			  
+			  option.value = appendLeadingZeroes(i)+":00";
+			  option.text=appendLeadingZeroes(i)+":00";
+			  x.add(option);
+			}
+			displaytooptions();
+			}
+		
+			else
+			{
+			var options = document.querySelectorAll('#From option');
+			  options.forEach(o => o.remove());
+			  var options = document.querySelectorAll('#To option');
+			  options.forEach(o => o.remove());
+			}
 	}
 function displayslots() {
 	var n1=document.getElementById("From").value.substring(0,2);
@@ -212,14 +270,49 @@ function displayslots() {
 		{
 		CheckpayPal();
 		}
-	var options = document.querySelectorAll('#Slot option');
-	  options.forEach(o => o.remove());
+	const todaydate= document.getElementById("date").value;
+	console.log(todaydate);
+	var params11={
+			 TableName : "BookingDetail",
+			 FilterExpression: ":one > #FromTime AND :one <#ToTime  AND #BookingDate = :date AND #UserName= :username OR :two > #FromTime AND :two <#ToTime  AND #BookingDate = :date AND #UserName= :username OR #BookingDate = :date AND #FromTime = :one AND #UserName= :username OR #BookingDate = :date AND #ToTime = :two AND #UserName= :username",
+			 ExpressionAttributeNames:{
+		            "#FromTime":"FromTime",
+		            "#ToTime":"ToTime",
+		            "#BookingDate":"BookingDate",
+		            "#UserName":"UserName"
+		        },
+		        ExpressionAttributeValues: {
+		        	":one":document.getElementById("From").value,
+		        	":two":document.getElementById("To").value,
+		        	":date":todaydate,
+		        	":username":sessionStorage.getItem("UserName")
+		        }
+		        
+		};
+	docClient.scan(params11, onScan);
+	function onScan(err, data) {
+		if(err)
+			{
+			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+			}else{
+				var count=data.Count;
+				var options = document.querySelectorAll('#Slot option');
+				  options.forEach(o => o.remove());
+				if(count>0)
+					{
+					console.log("already have booking");
+					document.getElementById("Tomessage").innerHTML="you already have booking for this time.<br>\ please select different time window.";
+					}
+		
+	
+	
+				else{
+					document.getElementById("Tomessage").innerHTML="";
+	
 	  const current_datetime=new Date();
-		const todaydate= document.getElementById("date").value;
-		console.log(todaydate);
 	var params={
 			 TableName : "BookingDetail",
-			 FilterExpression: " #FromTime between :one AND :two AND #BookingDate = :date OR #ToTime between :one AND :two AND #BookingDate = :date",
+			 FilterExpression: ":one > #FromTime AND :one <#ToTime  AND #BookingDate = :date OR :two > #FromTime AND :two <#ToTime  AND #BookingDate = :date OR #BookingDate = :date AND #FromTime = :one OR #BookingDate = :date AND #ToTime = :two",
 			 ExpressionAttributeNames:{
 		            "#FromTime":"FromTime",
 		            "#ToTime":"ToTime",
@@ -259,15 +352,34 @@ function displayslots() {
 				{ 
 					console.log(item);
 					  var option = document.createElement("option");
-					  option.text = item;
+					  
+					  switch(item) {
+					  case "Slot 1":text="University Library";
+					    // code block
+					    break;
+					  case "Slot 2":text="CS Department";
+					    
+					    break;
+					  case "Slot 3":text="Student Faculty Building";
+					    break;
+					  case "Slot 4":text="University Theater";
+					    break;
+					  case "Slot 5":text="Wellness center";
+					    break;
+					  default:
+					   
+					}
+					  option.text = text;
+					  option.value=item
 					  option.id=item;
 					  x.add(option);
 					}
 				
 			}
 	}
+			}}
 	
-}
+}}
 
 function togglePopup(){
 	
@@ -277,24 +389,28 @@ function togglePopup(){
 	}
 function checkBookings()
 {
+	
 	const current_datetime=new Date();
+	console.log(current_datetime);
 	const Todaydate= current_datetime.getFullYear()+ "-"+ appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) ;
 
-	var today = new Date().toISOString().split('T')[0];
-	console.log(today);
-	document.getElementsByName("date")[0].setAttribute('min', today);
-	console.log(today);
+	document.getElementById("date").min= Todaydate;
+	console.log(Todaydate);
+	var currhours=appendLeadingZeroes(new Date().getHours())+":00";
+	console.log(currhours);
+	console.log(sessionStorage.getItem("UserName"));
+
 	
 	var params = {
 	        TableName : "BookingDetail",
 	        ScanIndexForward: true,
-	        FilterExpression: "#user = :name AND #BookingDate > :date  OR #user = :name AND #BookingDate = :date AND #ToTime < :hours ",
+	        FilterExpression: "#user = :name AND #BookingDate > :date  OR #user = :name AND #BookingDate = :date AND #ToTime > :hours ",
 	        ExpressionAttributeNames: {
 	            "#user": "UserName",
 	            "#BookingDate":"BookingDate",
 	            "#ToTime":"ToTime"
 	        },
-	        ExpressionAttributeValues: { ":name": sessionStorage.getItem("UserName"),":date":Todaydate, ":hours":new Date().getHours()}
+	        ExpressionAttributeValues: { ":name": sessionStorage.getItem("UserName"),":date":Todaydate, ":hours":currhours}
 	             
 	    };
 	    docClient.scan(params, onScan);
@@ -305,8 +421,12 @@ function onScan(err, data) {
     }
     else
     {        
+    	console.log(data.Count);
      if(data.Count>=5)
     {
+    	 data.Items.forEach(function(movie) {
+     		console.log(movie.BookingId);
+     	});
     	 if (window.confirm("Sorry! you exceeded maximum bookings")) { 
 			   window.location.href="Bookings.html";
 			 }	
@@ -350,6 +470,7 @@ function onScan(err, data) {
 	        			{
 	        			document.getElementById('creditmessage').innerHTML= "Please pay using paypal. You have zero credits."
 	        			}	
+	        		else{
 	        		var aftercredit=parseInt(item.AvailableCredit)-parseInt(document.getElementById('payamount').value);
 	        		if(aftercredit>=0)
 	        		{
@@ -375,7 +496,9 @@ function onScan(err, data) {
 	    				console.log(sessionStorage.getItem("payamount"));
 	    				     
 	        			}
+	        		}
 	        	});
+	        
 	        }});
 	   
 	    
@@ -416,14 +539,15 @@ function onScan(err, data) {
 </div>
 </header>
 <div align="center" class="table-form-container" id="form" style=" padding-top:20px; display:none">
-<form style="width: 600px; height: 800px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:20px" onsubmit="return false;">
+<form style="width: 600px; height: 900px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:20px" onsubmit="return false;">
+     <img src="images/parking icon.jpg"  width="85" height="85">
     <table class="reservation-form">
         <tr>
             <td>
                <label class="label-form" for="datelabel">Select Date:</label>
             </td>
             <td>
-                <input type="date"  id="date" required="Required" style="font-size:15px" class="input-form" name="date" placeholder="Select suitable date" />
+                <input type="date"  id="date" required="Required" style="font-size:15px" onchange="displayfromoptions(this.id)" class="input-form" data-validate = "Selected date should be in future." name="date" placeholder="Select suitable date" />
             </td>
         </tr>
         <tr>
@@ -432,31 +556,7 @@ function onScan(err, data) {
             </td>
             <td>
                 <select name="From" class="input-form" onchange="displaytooptions(this.id)" id="From" required="Required">
-                <option disabled selected value> </option>
-    <option value="00:00">00:00</option>
-	<option value="01:00">01:00</option>
-	<option value="02:00">02:00</option>
-	<option value="03:00">03:00</option>
-	<option value="04:00">04:00</option>
-	<option value="05:00">05:00</option>
-	<option value="06:00">06:00</option>
-	<option value="07:00">07:00</option>
-	<option value="08:00">08:00</option>
-	<option value="09:00">09:00</option>
-	<option value="10:00">10:00</option>
-	<option value="11:00">11:00</option>
-	<option value="12:00">12:00</option>
-	<option value="13:00">13:00</option>
-	<option value="14:00">14:00</option>
-	<option value="15:00">15:00</option>
-	<option value="16:00">16:00</option>
-	<option value="17:00">17:00</option>
-	<option value="18:00">18:00</option>
-	<option value="19:00">19:00</option>
-	<option value="20:00">20:00</option>
-	<option value="21:00">21:00</option>
-	<option value="22:00">22:00</option>
-	<option value="23:00">23:00</option>
+
   </select>
             </td>
         </tr>
@@ -467,6 +567,11 @@ function onScan(err, data) {
             <td>
                 <select name="To" class="input-form" onchange="displayslots()" id="To" required="Required">
   </select>
+  </br>
+  </br>
+  </br>
+  </br>
+  <p id="Tomessage" style="text-align: left;font-size: inherit;"></p>
             </td>
         </tr>
         <tr>
@@ -510,9 +615,9 @@ function onScan(err, data) {
           <td>
           </td>
           <td>
-            <div id="Available-credit" style="display:none;float:left ">
-            <label  for="availablecredit">Available Credit :</label>
-            <input  type="text" id="availablecredit" style="width: 50%;" name="availablecredit" readonly="readonly" ><br><br>
+            <div id="Available-credit" style="display:none;float:centre ">
+            <label for="availablecredit">Available Credit :</label>
+            <input  type="text" id="availablecredit" style="width: 30%;" name="availablecredit" readonly="readonly" ><br><br>
             <p id="creditmessage"></p>
             </div>
         
@@ -565,7 +670,7 @@ function onScan(err, data) {
             <td>
             </td>
             <td>
-                <button type="submit" class="input-form-button" id="reserve"  onClick= "ReserveSpace()" disabled >Reserve</button>
+                <button type="submit" class="input-form-button" id="reserve"  onClick= "ReserveSpace()"  >Reserve</button>
             </td>
         </tr>
     </table>

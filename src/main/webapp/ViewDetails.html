@@ -4,6 +4,13 @@
 			<!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GDXS5PCQN4"></script>
 <script>
+
+if(sessionStorage.getItem("UserType")!="User" ||sessionStorage.getItem("UserName")=="")
+{
+window.location.href="index.html";
+}
+</script>
+<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
@@ -72,8 +79,25 @@ function queryData() {
           	document.getElementById('amount').innerHTML=item.PaymentAmount; 
           	
          	 document.getElementById('payment').innerHTML=item.PaymentMethod; 
+         	 var text;
+         	switch(item.SensorName) {
+			  case "Slot 1":text="University Library";
+			    // code block
+			    break;
+			  case "Slot 2":text="CS Department";
+			    
+			    break;
+			  case "Slot 3":text="Student Faculty Building";
+			    break;
+			  case "Slot 4":text="University Theater";
+			    break;
+			  case "Slot 5":text="Wellness center";
+			    break;
+			  default:
+			   
+			}
          	
-         	 document.getElementById('slot').innerHTML=item.SensorName; 
+         	 document.getElementById('slot').innerHTML=text; 
          	
          	 document.getElementById('vnum').innerHTML=item.VehicleNumber;
           	 
@@ -179,7 +203,7 @@ function appendLeadingZeroes(n){
     <td style="text-align:centre;padding:20px" id="payment"></th>
     </tr>
     <tr>
-    <th style="text-align:centre;padding:20px">Sensor Name</th>
+    <th style="text-align:centre;padding:20px">Parking Space</th>
     <td style="text-align:centre;padding:20px" id="slot"></th>
     </tr>
     <tr>

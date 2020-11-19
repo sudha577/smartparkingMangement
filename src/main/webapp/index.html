@@ -82,6 +82,7 @@ function usercheck(username,password)
 						    	  {
 						    	  sessionStorage.setItem("UserName",username);
 						    	  sessionStorage.setItem("UserId",item.UserId);
+						    	  sessionStorage.setItem("UserType","User")
 						    	  
 						    	  console.log(sessionStorage.getItem("UserId"));
 						    	  
@@ -207,7 +208,8 @@ function adduser(password)
 								UserName:{S:name},
 								PhoneNumber:{S:number},
 								Password:{S:password},
-								Email:{S:email}
+								Email:{S:email},
+								AvailableCredit:{S:"0"}
 							}
 						};
 						dynamodb.putItem(params1,function(err, data){
@@ -401,7 +403,7 @@ function clearSession()
       <div class="wrap-input100 validate-input" data-validate = "Valid name is required">
 						<input class="input100" type="text" name="name1" id="name1">
 						<span class="focus-input100"></span>
-						<span class="label-input100">UserName</span>
+						<span class="label-input100">Enter Your Name</span>
 					</div>
 					
 				<div class="wrap-input100 validate-input" data-validate="Valid email is required">

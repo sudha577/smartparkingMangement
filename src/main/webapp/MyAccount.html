@@ -4,6 +4,13 @@
 			<!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GDXS5PCQN4"></script>
 <script>
+
+if(sessionStorage.getItem("UserType")!="User" ||sessionStorage.getItem("UserName")=="")
+{
+window.location.href="index.html";
+}
+</script>
+<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
@@ -198,8 +205,9 @@ function removeReadOnly(name)
 </div>
 </header>
 
-  <div align="center" class="form-container" id="form" style=" padding-top:20px">
+  <div align="center" class="table-form-container" id="form" style=" padding-top:20px">
   <form  style="width: 900px; height: 700px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:20px" onsubmit="return false;">
+  <img src="images/parking icon.jpg"  width="85" height="85">
   </br>
  </br> 
  <table id="Detailstable"  class="myDetailsTable"  >

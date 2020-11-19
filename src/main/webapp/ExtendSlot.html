@@ -4,6 +4,13 @@
 			<!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GDXS5PCQN4"></script>
 <script>
+
+if(sessionStorage.getItem("UserType")!="User" ||sessionStorage.getItem("UserName")=="")
+{
+window.location.href="index.html";
+}
+</script>
+<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
@@ -41,8 +48,7 @@ function onLoad()
 	        ExpressionAttributeNames: {
 	            "#BookingId": "BookingId",
 	        },
-	        ExpressionAttributeValues: { ":BookingId": Number(sessionStorage.getItem("Extenditem"))}
-	             
+	        ExpressionAttributeValues: { ":BookingId": Number(sessionStorage.getItem("Extenditem"))}            
 	    };
 	docClient.scan(params, onScan);
 	function onScan(err, data) {
@@ -53,7 +59,6 @@ function onLoad()
 				var count=data.Count;
 				console.log(count);
 				var extendFrom;
-				
 				data.Items.forEach(function(item) {
 					console.log(item);
 					document.getElementById('From').value=item.ToTime;
@@ -67,7 +72,7 @@ function onLoad()
 				console.log("n:"+ n);
 				var options = document.querySelectorAll('#To option');
 				  options.forEach(o => o.remove());
-				for (i = Number(n)+1; i < 24; i++) {
+				for (i = Number(n)+1; i< Number(n)+12 && i < 24; i++) {
 					console.log("in for loop");
 				var x = document.getElementById("To");
 				  var option = document.createElement("option");
@@ -76,6 +81,7 @@ function onLoad()
 				  option.id=i;
 				  x.add(option);
 				}
+				displayslots()
 				
 			}
 	}
@@ -87,21 +93,36 @@ function appendLeadingZeroes(n){
 	  }
 	  return n;
 }
-function displayslots() {
+function displayslots() 
+{
+	var n1=document.getElementById("From").value.substring(0,2);
+	var n2=document.getElementById("To").value.substring(0,2);
+	console.log(n1);
+	console.log(n2);
+	var amount=(n2-n1) * 10;
+	console.log(amount);
+	document.getElementById("payamount").value=amount;
+	if(document.getElementById('useCredit').checked)
+	{
+		CheckCredit();
+	}
+	else if(document.getElementById('usePaypal').checked)
+		{
+		CheckpayPal();
+		}
+	var options = document.querySelectorAll('#Slot option');
+	  options.forEach(o => o.remove());
+	  
 	var slot=sessionStorage.getItem("ToExtend");
-	const current_datetime=new Date();
-	const todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
-	console.log(todaydate);
+	var flag=true;
 	var params = {
 	        TableName : "BookingDetail",
 	        ScanIndexForward: false,
-	        FilterExpression: "#SensorName = :SensorName AND #BookingDate=:Date AND #FromTime=:From",
+	        FilterExpression: "#BookingId = :BookingId",
 	        ExpressionAttributeNames: {
-	            "#SensorName": "SensorName",
-	            "#BookingDate": "BookingDate",
-	            "#FromTime":"FromTime"
+	            "#BookingId": "BookingId",
 	        },
-	        ExpressionAttributeValues: { ":SensorName": slot,":Date": todaydate,":From":sessionStorage.getItem("extendFrom")}            
+	        ExpressionAttributeValues: { ":BookingId": Number(sessionStorage.getItem("Extenditem"))}            
 	    };
 	docClient.scan(params, onScan);
 	function onScan(err, data) {
@@ -109,82 +130,380 @@ function displayslots() {
 			{
 			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
 			}else{
-				var count=data.Count;
-				console.log(count);
-				if(count>0)
-					{
-					document.getElementById('slotselection').style.visibility='visible';
-					displayslots1();
+				data.Items.forEach(function(item) {
+					var date=item.BookingDate;
+					var from=item.ToTime;
+					var params = {
+					        TableName : "BookingDetail",
+					        ScanIndexForward: false,
+					        FilterExpression: ":one > #FromTime AND :one <#ToTime  AND #BookingDate = :date OR :two > #FromTime AND :two <#ToTime  AND #BookingDate = :date OR #BookingDate = :date AND #FromTime = :one OR #BookingDate = :date AND #ToTime = :two",
+					        ExpressionAttributeNames: {
+					            "#BookingDate": "BookingDate",
+					            "#FromTime":"FromTime",
+					            "#ToTime":"ToTime",
+					        },
+					        ExpressionAttributeValues: { ":date": date,":one":document.getElementById("From").value,
+					        	":two":document.getElementById("To").value }            
+					    };
+					docClient.scan(params, onScan);
+					function onScan(err, data) {
+						if(err)
+							{
+							console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+							}else{
+								sessionStorage.setItem("isFree",true);
+								data.Items.forEach(function(movie) {
+									if(movie.SensorName==slot)
+										{
+										console.log(movie.SensorName);
+										flag=false;
+										}
+								});
+								console.log(flag);
+								if(flag==false)
+								{
+									document.getElementById("NotAvailable").innerHTML="Sorry! "+slot + " is not available for extension please select another slot."
+									document.getElementById('slotselection').style.display='table-row';
+									var slots=["Slot 1","Slot 2","Slot 3","Slot 4","Slot 5"];
+									data.Items.forEach(function(movie) {
+						                  
+						                  if(slots.includes(movie.SensorName))
+						                  {
+						                	  delete slots[slots.indexOf(movie.SensorName)];
+						                  }
+						                  else
+						                  {
+						                  	
+						                  }
+						              });
+									slots.sort();
+									console.log(slots);
+									var x = document.getElementById("Slot");
+									slots.forEach(myFunction); 
+									function myFunction(item, index) 
+									{ 
+										console.log(item);
+										  var option = document.createElement("option");
+										  switch(item) {
+										  case "Slot 1":text="University Library";
+										    // code block
+										    break;
+										  case "Slot 2":text="CS Department";
+										    
+										    break;
+										  case "Slot 3":text="Student Faculty Building";
+										    break;
+										  case "Slot 4":text="University Theater";
+										    break;
+										  case "Slot 5":text="Wellness center";
+										    break;
+										  default:
+										   
+										}
+										  option.text = text;
+										  option.value=item;
+										  option.id=item;
+										  x.add(option);
+										}
+								}
+								else
+									{
+									document.getElementById('slotselection').style.display='none';
+									}
+								
+								
+							}
 					}
-				else
-					{
 					
-					}
+					
+					
+				});
+				
+				
+				
 				
 			}
 	}
 
-	}
-function displayslots1() {
+}
+
+
+function CheckCredit()
+{
+	document.getElementById("paypal-button").style.display='none';
+	console.log("In check Credit method");
+	 var params3 = {
+	          TableName : "UserDetails",
+	          KeyConditionExpression: "#uname = :UserName",
+	          ExpressionAttributeNames:{
+	              "#uname": "UserName"
+	          },
+	          ExpressionAttributeValues: {
+	          	":UserName":sessionStorage.getItem("UserName")
+	          }
+	      };
+   docClient.query(params3, function(err, data) {
+        if (err) {
+            console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+        }
+        else
+        {
+        	console.log(data.Count);
+        	data.Items.forEach(function(item) {
+        		document.getElementById("Available-credit").style.display='block';
+        		console.log(item.AvailableCredit);
+        		var userid=item.UserId;
+        		document.getElementById('availablecredit').value= item.AvailableCredit;
+        		if(item.AvailableCredit==0)
+        			{
+        			document.getElementById('creditmessage').innerHTML= "Please pay using paypal. You have zero credits."
+        			}	
+        		else
+        			{
+        		var aftercredit=parseInt(item.AvailableCredit)-parseInt(document.getElementById('payamount').value);
+        		if(aftercredit>=0)
+        		{
+        			sessionStorage.setItem("todeduct",aftercredit);
+        			document.getElementById('reserve').disabled=false;
+        			if(item.AvailableCredit!=0)
+        			{
+        			document.getElementById('creditmessage').innerHTML= document.getElementById('payamount').value+"$ will be deducted from your credit amount";
+        			}
+        			
+        		}
+        		else if(aftercredit<0)
+        			{
+        			aftercredit=parseInt(aftercredit)*(-1);
+        			if(item.AvailableCredit!=0)
+        			{
+        				document.getElementById('creditmessage').innerHTML= item.AvailableCredit+"$ will be deducted from your credit amount please pay remaining through PayPal ";
+        			}
+        			sessionStorage.setItem("todeduct",0);
+        			
+    				document.getElementById("paypal-button").style.display='block';
+    				sessionStorage.setItem("payamount",aftercredit);
+    				console.log(sessionStorage.getItem("payamount"));
+    				     
+        			}
+        			}
+        	});
+        }});
+   
+    
+}
+
+function CheckpayPal()
+{
+	console.log(sessionStorage.setItem("payamount",document.getElementById('payamount').value));
+	document.getElementById("Available-credit").style.display='none';
+	document.getElementById("paypal-button").style.display='block';
+}
+
+
+function ExtendSpace()
+{
+	console.log(document.getElementById('From').value +"--"+ document.getElementById('To').value );
+	if(document.getElementById('From').value=="" ||document.getElementById('To').value=="" )
+		{
+		
+		}
 	
-	var options = document.querySelectorAll('#Slot option');
-	  options.forEach(o => o.remove());
-	  const current_datetime=new Date();
-		const todaydate= appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate())+"-"+current_datetime.getFullYear() ;
-		console.log(todaydate);
-		console.log(document.getElementById("From").value);
-		console.log(document.getElementById("To").value);
-	var params={
-			 TableName : "BookingDetails",
-			 FilterExpression: " #FromTime > :one AND #FromTime < :two AND #BookingDate = :date OR #ToTime > :one AND #ToTime < :two AND #BookingDate = :date",
-			 ExpressionAttributeNames:{
-		            "#FromTime":"FromTime",
-		            "#ToTime":"ToTime",
-		            "#BookingDate":"BookingDate"
+	else
+	{
+	
+	if(document.getElementById('useCredit').checked)
+		{
+		console.log(sessionStorage.getItem("UserId"));
+		console.log("used credit");
+		var params4 = {
+		        TableName:"UserDetails",
+		        Key:{
+		            "UserName": sessionStorage.getItem("UserName"),
+		            "UserId": parseInt(sessionStorage.getItem("UserId"))
 		        },
-		        ExpressionAttributeValues: {
-		        	":one":document.getElementById("From").value,
-		        	":two":document.getElementById("To").value,
-		        	":date":todaydate
+		        UpdateExpression: "set AvailableCredit = :r",
+		        ExpressionAttributeValues:{
+		            ":r":sessionStorage.getItem("todeduct").toString()
+		        },
+		        ReturnValues:"UPDATED_NEW"
+		    };
+
+		    docClient.update(params4, function(err, data) {
+		        if (err) {
+		            console.log("Unable to update item: " + "\n" + JSON.stringify(err, undefined, 2));
+		        } else {
+		            console.log("UpdateItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
+		            document.getElementById('reserve').disabled=false;
 		        }
 		        
-		};
-	docClient.scan(params, onScan);
-	function onScan(err, data) {
-		if(err)
+		    });
+		    
+		    sessionStorage.setItem("payment",sessionStorage.getItem("payment")+"credit");
+		}
+	console.log(sessionStorage.getItem("ToExtend"));
+	var params6 = {
+	        TableName : "BookingDetail",
+	        ScanIndexForward: true,
+	        FilterExpression: "#BookingId = :BookingId",
+	        ExpressionAttributeNames: {
+	            "#BookingId": "BookingId",
+	        },
+	        ExpressionAttributeValues: { ":BookingId": Number(sessionStorage.getItem("Extenditem"))}
+	             
+	    };
+	    docClient.scan(params6, onScan);
+	    function onScan(err, data) {
+	        if (err) {
+	            console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+	        }
+	        else
+	        {   
+	        	console.log(data.Count)
+	        	data.Items.forEach(function(item) {
+	        		  
+	                console.log("Item :",JSON.stringify(item))
+	                var prevPay=item.PaymentAmount;
+	                var prevMethod=item.PaymentMethod+ ", "+sessionStorage.getItem("payment")+"credit";
+	                var Sensor=item.SensorName;
+	                var Email=item.Email;
+	                var BookingDate=item.BookingDate;
+	                var Vnum=item.VehicleNumber;
+	                
+	   
+			if(document.getElementById("slotselection").style.display=='none')
 			{
-			console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
-			}else{
-				var count=data.Count;
-				console.log(count);
-				var slots=["Slot 1","Slot 2","Slot 3","Slot 4","Slot 5"];
-				data.Items.forEach(function(movie) {
-	                  
-	                  if(slots.includes(movie.SensorName))
-	                  {
-	                	  delete slots[slots.indexOf(movie.SensorName)];
-	                  }
-	                  else
-	                  {
-	                  	
-	                  }
-	              });
-				slots.sort();
-				var x = document.getElementById("Slot");
-				slots.forEach(myFunction); 
-				function myFunction(item, index) 
-				{ 
-					console.log(item);
-					  var option = document.createElement("option");
-					  option.text = item;
-					  option.id=item;
-					  x.add(option);
-					}
-				
-			}
-	}
+				var totalPay= parseInt(prevPay)+parseInt(document.getElementById("payamount").value.toString());
+				var params4 = {
+				        TableName:"BookingDetail",
+				        Key:{
+				            "UserName": sessionStorage.getItem("UserName"),
+				            "BookingId": Number(sessionStorage.getItem("Extenditem")),
+				        },
+				        UpdateExpression: "set PaymentAmount = :r, ToTime=:t",
+				        ExpressionAttributeValues:{
+				            ":r": totalPay.toString(),
+				            ":t":document.getElementById("To").value.toString(),
+				        },
+				        ReturnValues:"UPDATED_NEW"
+				    };
 	
+				    docClient.update(params4, function(err, data) {
+				        if (err) {
+				            console.log("Unable to update item: " + "\n" + JSON.stringify(err, undefined, 2));
+				        } else {
+				            console.log("UpdateItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
+				            window.alert("Extension has been made");
+				        }
+				    });
+				
+				}
+				else 
+				{
+					
+					
+					
+					var Flag="Null";
+					var FromTime=document.getElementById('From').value;
+					var PaymentAmount=document.getElementById('payamount').value;
+					var Paymentmethod="paypal";
+					var status="Y";
+					var ToTime=document.getElementById('To').value;
+					var SensorName=document.getElementById('Slot').value;
+					var params={
+							 TableName : "UserTypeCount",
+							
+						        KeyConditionExpression: "#susername = :UserType",
+						        ExpressionAttributeNames:{
+						            "#susername": "UserType"
+						        },
+						        ExpressionAttributeValues: {
+						        	":UserType":"Bookings"
+						        }
+						       
+						};
+						docClient.query(params, function(err, data) {
+							if(err)
+								{
+								console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+								}
+							else
+								{
+											console.log(data.Count);
+							   					var coustr;
+							   					data.Items.forEach(function(movie) {
+							   						console.log(movie);
+							                     coustr=movie.Count+1;
+							                     console.log("latest BookingId:"+coustr)
+							   					console.log(coustr);
+										   			var params1={
+													TableName : "BookingDetail",
+													Item:{
+														UserName:{S:sessionStorage.getItem("UserName")},
+														BookingId:{N:coustr.toString()},
+														BookingDate:{S:BookingDate},
+														Flag:{S:Flag},
+														FromTime:{S:FromTime},
+														PaymentAmount:{S:PaymentAmount},
+														PaymentMethod:{S:prevMethod},
+														Status:{S:status},
+														ToTime:{S:ToTime},
+														SensorName:{S:SensorName},
+														VehicleNumber:{S:Vnum},
+														Email:{S:Email}
+													}
+												};
+										   console.log("ok till now")
+										   dynamodb.putItem(params1,function(err, data){
+												if (err)
+													{
+													console.log(err, err.stack); // an error occurred
+													}
+												   else    
+													   {
+													   console.log("Inserted");
+													   document.getElementById("popup-1").classList.toggle("active");   
+													   }
+										
+										   
+										});
+										   console.log(coustr+": coustr")
+										   var params2={
+													TableName : "UserTypeCount",
+													Item:{
+														UserType:{S:"Bookings"},
+														Count:{N:coustr.toString()}
+													}
+											};
+											dynamodb.putItem(params2,function(err, data){
+												if (err) console.log(err, err.stack); // an error occurred
+												   else     console.log(data);
+											});
+										   
+										});
+							   }
+								
+						});
+				}
+	        	});
+
+				
+			
+			
+			
+			
+					   
+			   
+			}  
 }
+	}}
+
+
+function togglePopup(){
+	
+	  
+	  window.location.href="Bookings.html";
+		
+	}
 	</script>
 </head>
 <body onload="onLoad()">
@@ -213,18 +532,78 @@ function displayslots1() {
   </div>
 </div>
 </header>
-<div align="center" style=" padding-top:20px">
-<form style="width: 600px; height: 700px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:120px" onsubmit="return false;">
-
-  <label class="label-form" for="from">From :</label>
-  <input  class="input-form"type="text" id="From" name="from" readonly="readonly" ><br><br>
-
+<div align="center" class="table-form-container" id="form" style=" padding-top:20px">
+  <form  style="width: 600px; height:700px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:20px" onsubmit="return false;">
+  </br>
+    <img src="images/parking icon.jpg"  width="85" height="85">
+    <table class="reservation-form">
+        <tr>
+            <td>
+               <label class="label-form" for="from">From :</label>
+            </td>
+            <td>
+               <input  class="input-form"type="text" id="From" name="from" readonly="readonly" ><br><br>	
+            </td>
+        </tr>
+        <tr>
+		
+		<td>
     <label class="label-form"  for="To" >To :</label>
+	<td>
   <select name="To" class="input-form" onchange="displayslots()" id="To">
   </select>
-  <label class="label-form" for="payment Amount">Payment Amount in $ :</label>
-  <input  class="input-form"type="text" id="payamount" name="payamount" readonly="readonly" ><br><br>
-  <div id="paypal-button"></div>
+           
+            </td>
+        </tr>
+        
+        <tr id="slotselection" style="display:none;">
+		
+		<td>
+    <label class="label-form"  for="Slot" >Select Slot :</label>
+    </td>
+	<td>
+  <select name="Select Slot" class="input-form"  id="Slot">
+  </select>
+  </br>
+  </br>
+  </br>
+  </br>
+  <p id="NotAvailable"> </p>
+           
+            </td>
+        </tr>
+        <tr>
+        
+            <td>
+              <label class="label-form" for="payment Amount">Price in $ :</label>  
+            </td>
+            <td>
+                <input  class="input-form"type="text" id="payamount" name="payamount" readonly="readonly" ><br><br>
+            </td>
+        </tr>
+		<tr>
+            <td>
+                <label class="label-form" for="paymentType">Payment Method:</label>
+            </td>
+            <td style="float:left">
+                
+                    <input type="radio" value="useCredit" id="useCredit" name="paymentType" onClick="CheckCredit()">
+                    <label for="useCredit"  >Use Your Credit  </label> 
+                    <input type="radio" value="usePaypal" id="usePaypal" name="paymentType" onClick="CheckpayPal()">
+                    <label for="usePaypal">Pay using PayPal</label>
+          </td>
+          </tr>
+          <tr>
+          <td>
+          </td>
+          <td>
+            <div id="Available-credit" style="display:none;float:left ">
+            <label  for="availablecredit">Available Credit :</label>
+            <input  type="text" id="availablecredit" style="width: 50%;" name="availablecredit" readonly="readonly" ><br><br>
+            <p id="creditmessage"></p>
+            </div>
+        
+            <div id="paypal-button" hidden>
   <script>
         paypal.Button.render({
 
@@ -247,7 +626,7 @@ function displayslots1() {
                     payment: {
                         transactions: [
                             {
-                                amount: {total: document.getElementById('payamount').value, currency: 'USD'}
+                                amount: {total: sessionStorage.getItem("payamount"), currency: 'USD'}
                             }
                         ]
                     }
@@ -259,18 +638,32 @@ function displayslots1() {
                 // Make a call to the REST api to execute the payment
                 return actions.payment.execute().then(function () {
                 	document.getElementById('reserve').disabled=false;
-                  window.alert('Payment Complete!');
+                	sessionStorage.setItem("payment","Paypal");
+                	window.alert("payment Complete!!");
                 });
             }
         }, '#paypal-button');
 
     </script>
-    </br>
-    </br>
-  <button class="button" id="reserve"  onClick= "ReserveSpace()" disabled >Reserve</button>
+   </div>
+    
+            </td>
+        </tr>
+
+		
+		
+		
+    </table>
+    <button class="button" id="reserve"  onClick= "ExtendSpace()" >Extend</button>
+    </form>
+    </div>
+    
+    <div class="popup" id="popup-1">
+  <div class="overlay"></div>
+  <div class="content">
+    <div class="close-btn" onclick="togglePopup('popup-1')">&times;</div>
+    <p align="centre"> <i class="fa fa-check-circle" style="font-size:40px;color:blue"></i></br></br> Your booking has been made.</br></br>Thank you! </p>
   </div>
-</form>
-</div>
 
 </body>
 </html>

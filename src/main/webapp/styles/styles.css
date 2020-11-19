@@ -212,7 +212,7 @@ td.label-column
   text-align: left;
   background-color: lemonchiffon;
   border-collapse:bottom;
-  border-radius: 7px;
+  border-radius: 1em;
   }
 .myTable th { 
   background-color: #808080;

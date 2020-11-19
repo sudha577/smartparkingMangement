@@ -10,6 +10,13 @@
 
   gtag('config', 'G-GDXS5PCQN4');
 </script>
+<script>
+
+if(sessionStorage.getItem("UserType")!="User" ||sessionStorage.getItem("UserName")=="" || sessionStorage.getItem("CancelId")=="")
+{
+window.location.href="index.html";
+}
+</script>
 
 <meta charset="ISO-8859-1">
 <title>Cancel Booking</title>
@@ -252,6 +259,7 @@ function checkIfOthers()
 </header>
 <div align="center" class="table-form-container" style=" padding-top:50px">
 <form style="width: 600px; height: 350px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:20px" onsubmit="return false;">
+    <img src="images/parking icon.jpg"  width="85" height="85">
     <table class="cancellation-form">
         <tr>
             <td>

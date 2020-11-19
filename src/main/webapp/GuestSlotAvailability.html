@@ -3,9 +3,198 @@
 <head>
 			<!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GDXS5PCQN4"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  <!-- <script>
+
+  if(sessionStorage.getItem("UserType")!="Guest" ||sessionStorage.getItem("UserName")=="")
+  {
+  window.location.href="index.html";
+  }
+  </script> -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GDXS5PCQN4');
+  </script>
+  	
+  <title>Guestslotavailability</title>
+  <link rel="shortcut icon" type="image/jpg" href="images/parking icon.jpg">
+  <meta charset="ISO-8859-1">
+
+  <link href="styles/styles.css" rel="stylesheet" type="text/css">
+  <link href="css/availabilitypage.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
+  <script type="text/javascript">
+  function initMap() {
+  	var locations = [
+  	      ['University Library', 37.655656, -122.057867, 1],
+  	      ['CS Department', 37.657963, -122.052656, 2],
+  	      ['Student Faculty Building', 37.659326, -122.054388, 3],
+  	      ['University Theater', 37.659597, -122.056430, 4],
+  	      ['Wellness Center', 37.656038, -122.052505, 5]
+  	    ];
+
+  	    var map = new google.maps.Map(document.getElementById('map'), {
+  	      zoom: 16,
+  	      center: new google.maps.LatLng(37.657742, -122.056259),
+  	      mapTypeId: google.maps.MapTypeId.ROADMAP
+  	    });
+
+  	    var infowindow = new google.maps.InfoWindow();
+
+  	    var marker, i;
+
+  	    for (i = 0; i < locations.length; i++) {  
+  	      marker = new google.maps.Marker({
+  	        position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+  	        map: map
+  	      });
+
+  	      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+  	        return function() {
+  	          infowindow.setContent(locations[i][0]);
+  	          infowindow.open(map, marker);
+  	        }
+  	      })(marker, i));
+  	    }
+    }
+
+      AWS.config.update({
+    	  region: "us-east-2",
+    	  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
+    	  accessKeyId: "AKIASUU5L6BWABM3DQEC",
+    	  secretAccessKey: "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"
+    	});  
+     
+    var dynamodb = new AWS.DynamoDB();
+    var docClient = new AWS.DynamoDB.DocumentClient();
+    var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+    function loadref(time)
+    {
+    	queryData("Slot1");
+    	var slot="Slot1";
+    	setInterval("queryData(\"Slot1\");",10000);
+    	queryData("Slot2");
+    	setInterval("queryData(\"Slot2\");",10000);
+    } 
+
+    function queryData(slotId) {
+    	console.log("refreshed");
+        var params = {
+            TableName : "SlotAvailability",
+            ScanIndexForward: false,
+            KeyConditionExpression: "#sname = :SensorName",
+            ExpressionAttributeNames:{
+                "#sname": "SensorName"
+            },
+            ExpressionAttributeValues: {
+            	":SensorName":slotId
+            }, 
+            Limit:1 
+        };
+        docClient.query(params, function(err, data) {
+            if (err) {
+                
+            } else {
+          	  
+                data.Items.forEach(function(movie) {
+              	  var map1 = new Map(); 
+              	  
+              	// adding some elements to the map  
+              	map1.set("Slot1", 0); 
+              	map1.set("Slot2", 1); 
+  		map1.set("Slot3", 2);
+              	map1.set("Slot4", 3);
+              	map1.set("Slot5", 4);
+              	console.log(slotId);
+                    console.log(map1.get(slotId));
+                    console.log(movie.Distance)
+                    if(movie.Distance<6 || movie.Distance>20)
+                    {
+                    	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].className="empty";
+                    	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].innerHTML="EMPTY"
+                    }
+                    else
+                    {
+                    	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].className="full";
+                    	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].innerHTML="FULL"
+                    }
+                });
+             
+            }
+        });
+    }
+  function loadReservation()
+  {
+  	window.location.href="GuestReservationPage.html";
+  }
+      </script>
+      
+   <script defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDzyOaqAYHjR_UtKv4X25gmw4NeX5aHuHY&callback=initMap">
+      </script> 
+      
+  </head>
+  <body onload="Javascript:loadref(20000)">
+  <header>
+  <div class="topnav">
+    <a class="active" href="GuestSlotAvailability.html"><i class="fa fa-fw fa-home"></i> Home</a> 
+    
+
+    <div class="topnav-right">
+    
+       <div class="dropdown">
+     <button class="dropbtn" style="background-color: #B0E0E6;color: black;">My Account <i class="fa fa-user-circle"></i></button>
+      <div class="dropdown-content">
+        
+        <a href="index.html"><i class="fa fa-sign-out"></i>Logout </a>
+      </div>
+    </div> 
+    </div>
+  </div>
+  </header>
+  <div class="row">
+    <div class="column" id="map">
+    </div>
+    <div class="column" style="background-image: url('images/HomeBackground.jpg'); background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    position: relative;">
+      </br>
+   </br>
+  </br>
+   <div align="center" >
+   <table id="slottable"  class="myTable" >
+    <tr>
+     <th>University Library</th>
+      <th>CS Department</th>
+      <th>Student Faculty Building</th>
+      <th>University Theater</th>
+      <th>Wellness Center</th>
+    </tr>
+    <tr>
+      <td></td>
+      <td class="empty">EMPTY</td>
+      <td class="empty">EMPTY</td>
+      <td class="empty">EMPTY</td>
+      <td class="empty">EMPTY</td>
+    </tr>
+  </table>
+  </br>
+  </br>
+  <button class="button" align="center" onClick= "loadReservation()">Reserve Space</button>
+  </div>
+  </br>
+  </br>
+      
+      
+    </div>
+  </div>
+  </body>
+  </html>
+push(arguments);}
   gtag('js', new Date());
 
   gtag('config', 'G-GDXS5PCQN4');
@@ -122,9 +311,6 @@ function loadReservation()
 }
     </script>
     
- <script defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDzyOaqAYHjR_UtKv4X25gmw4NeX5aHuHY&callback=initMap">
-    </script> 
     
 </head>
 <body onload="Javascript:loadref(20000)">
