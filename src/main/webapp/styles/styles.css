@@ -13,6 +13,23 @@ body {
 .hidden {
   visibility: hidden
 }
+
+.column1 {
+  float: left;
+  width: 31.33%;
+  padding: 10px;
+  height: 100px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row1:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+
 .label-form
 {
 	font: 15px/1.4em "Lucida Grande", Verdana, sans-serif;
@@ -221,7 +238,7 @@ td.label-column
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 2;
-  width: 80%;
+  width: 90%;
   padding: 20px;
   text-align: center;
 }
