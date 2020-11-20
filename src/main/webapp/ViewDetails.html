@@ -78,7 +78,7 @@ function queryData() {
           
           	document.getElementById('amount').innerHTML=item.PaymentAmount; 
           	
-         	 document.getElementById('payment').innerHTML=item.PaymentMethod; 
+         	// document.getElementById('payment').innerHTML=item.PaymentMethod; 
          	 var text;
          	switch(item.SensorName) {
 			  case "Slot 1":text="University Library";
@@ -198,10 +198,10 @@ function appendLeadingZeroes(n){
     <th style="text-align:centre;padding:20px">Payment Amount</th>
     <td style="text-align:centre;padding:20px" id="amount"></th>
     </tr>
-    <tr>
+    <!-- <tr>
     <th style="text-align:centre;padding:20px">Payment Method</th>
     <td style="text-align:centre;padding:20px" id="payment"></th>
-    </tr>
+    </tr> -->
     <tr>
     <th style="text-align:centre;padding:20px">Parking Space</th>
     <td style="text-align:centre;padding:20px" id="slot"></th>

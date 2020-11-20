@@ -370,7 +370,10 @@ function ExtendSpace()
 	        		  
 	                console.log("Item :",JSON.stringify(item))
 	                var prevPay=item.PaymentAmount;
-	                var prevMethod=sessionStorage.getItem("payment");
+	                /* var prevMethod=sessionStorage.getItem("payment"); */
+	                
+	                var prevMethod="paypal";
+	                
 	                var Sensor=item.SensorName;
 	                var Email=item.Email;
 	                var BookingDate=item.BookingDate;
@@ -589,6 +592,8 @@ function togglePopup(){
   <form  style="width: 600px; height:700px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:20px" onsubmit="return false;">
   </br>
     <img src="images/parking icon.jpg"  width="85" height="85">
+    </br>
+    <p style="display:inline-block;text-align:centre;text-decoration: none;font-size: 16px;">You can only extend a booking once.</p>
     <table class="reservation-form">
         <tr>
             <td>
