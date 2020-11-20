@@ -162,7 +162,7 @@ function displayslots()
 								console.log(flag);
 								if(flag==false)
 								{
-									document.getElementById("NotAvailable").innerHTML="Sorry! "+slot + " is not available for extension please select another slot."
+									document.getElementById("NotAvailable").innerHTML="Sorry! your space is not available for extension please select another slot."
 									document.getElementById('slotselection').style.display='table-row';
 									var slots=["Slot 1","Slot 2","Slot 3","Slot 4","Slot 5"];
 									data.Items.forEach(function(movie) {
@@ -209,6 +209,7 @@ function displayslots()
 								else
 									{
 									document.getElementById('slotselection').style.display='none';
+									document.getElementById('Slot').value=slot;
 									}
 								
 								
@@ -337,8 +338,14 @@ function ExtendSpace()
 		        }
 		        
 		    });
-		    
-		    sessionStorage.setItem("payment",sessionStorage.getItem("payment")+"credit");
+		    if(sessionStorage.getItem("payment")!=null)
+		    	{
+		    sessionStorage.setItem("payment",sessionStorage.getItem("payment")+", credit");
+		    	}
+		    else 
+		    	{
+		    	sessionStorage.setItem("payment","credit");
+		    	}
 		}
 	console.log(sessionStorage.getItem("ToExtend"));
 	var params6 = {
@@ -363,14 +370,14 @@ function ExtendSpace()
 	        		  
 	                console.log("Item :",JSON.stringify(item))
 	                var prevPay=item.PaymentAmount;
-	                var prevMethod=item.PaymentMethod+ ", "+sessionStorage.getItem("payment")+"credit";
+	                var prevMethod=sessionStorage.getItem("payment");
 	                var Sensor=item.SensorName;
 	                var Email=item.Email;
 	                var BookingDate=item.BookingDate;
 	                var Vnum=item.VehicleNumber;
 	                
 	   
-			if(document.getElementById("slotselection").style.display=='none')
+			/* if(document.getElementById("slotselection").style.display=='none')
 			{
 				var totalPay= parseInt(prevPay)+parseInt(document.getElementById("payamount").value.toString());
 				var params4 = {
@@ -392,23 +399,31 @@ function ExtendSpace()
 				            console.log("Unable to update item: " + "\n" + JSON.stringify(err, undefined, 2));
 				        } else {
 				            console.log("UpdateItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
-				            window.alert("Extension has been made");
+				            document.getElementById("popup-1").classList.toggle("active");
 				        }
 				    });
 				
 				}
 				else 
-				{
+				{ */
+					var SensorName;
+					if(document.getElementById('Slot').value=="")
+						{
+						SensorName=Sensor;
+						}
+					else
+						{
+						SensorName=document.getElementById('Slot').value;
+						}
 					
 					
-					
-					var Flag="Null";
+					var Flag="Extension for Booking "+sessionStorage.getItem("Extenditem");
 					var FromTime=document.getElementById('From').value;
 					var PaymentAmount=document.getElementById('payamount').value;
 					var Paymentmethod="paypal";
 					var status="Y";
 					var ToTime=document.getElementById('To').value;
-					var SensorName=document.getElementById('Slot').value;
+					
 					var params={
 							 TableName : "UserTypeCount",
 							
@@ -431,6 +446,18 @@ function ExtendSpace()
 											console.log(data.Count);
 							   					var coustr;
 							   					data.Items.forEach(function(movie) {
+							   						
+							   						console.log(sessionStorage.getItem("UserName"));
+							   						console.log(BookingDate);
+							   						console.log(FromTime);
+							   						console.log(PaymentAmount);
+							   						console.log(prevMethod);
+							   						console.log(status);
+							   						console.log(ToTime);
+							   						console.log(SensorName);
+							   						console.log(Vnum);
+							   						console.log(Email);
+							   						
 							   						console.log(movie);
 							                     coustr=movie.Count+1;
 							                     console.log("latest BookingId:"+coustr)
@@ -461,29 +488,55 @@ function ExtendSpace()
 												   else    
 													   {
 													   console.log("Inserted");
-													   document.getElementById("popup-1").classList.toggle("active");   
+													   console.log(coustr+": coustr")
+													   var params2={
+																TableName : "UserTypeCount",
+																Item:{
+																	UserType:{S:"Bookings"},
+																	Count:{N:coustr.toString()}
+																}
+														};
+														dynamodb.putItem(params2,function(err, data){
+															if (err) console.log(err, err.stack); // an error occurred
+															   else     console.log(data);
+														});
+													   
+													   
+													   var updateflag = {
+														        TableName:"BookingDetail",
+														        Key:{
+														            "UserName": sessionStorage.getItem("UserName"),
+														            "BookingId": Number(sessionStorage.getItem("Extenditem")),
+														        },
+														        UpdateExpression: "set Flag = :r",
+														        ExpressionAttributeValues:{
+														            ":r": 'Y'
+														        },
+														        ReturnValues:"UPDATED_NEW"
+														    };
+											
+														    docClient.update(updateflag, function(err, data) {
+														        if (err) {
+														            console.log("Unable to update item: " + "\n" + JSON.stringify(err, undefined, 2));
+														        } else {
+														            console.log("UpdateItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
+														            document.getElementById("popup-1").classList.toggle("active");
+														        }
+														    });
+											
+													   
+													   
 													   }
 										
 										   
 										});
-										   console.log(coustr+": coustr")
-										   var params2={
-													TableName : "UserTypeCount",
-													Item:{
-														UserType:{S:"Bookings"},
-														Count:{N:coustr.toString()}
-													}
-											};
-											dynamodb.putItem(params2,function(err, data){
-												if (err) console.log(err, err.stack); // an error occurred
-												   else     console.log(data);
-											});
+										   
 										   
 										});
 							   }
 								
 						});
-				}
+				/* } */
 	        	});
 
 				
@@ -662,7 +715,7 @@ function togglePopup(){
   <div class="overlay"></div>
   <div class="content">
     <div class="close-btn" onclick="togglePopup('popup-1')">&times;</div>
-    <p align="centre"> <i class="fa fa-check-circle" style="font-size:40px;color:blue"></i></br></br> Your booking has been made.</br></br>Thank you! </p>
+    <p align="centre"> <i class="fa fa-check-circle" style="font-size:40px;color:blue"></i></br></br> Your extension has been made.</br></br>Thank you! </p>
   </div>
 
 </body>

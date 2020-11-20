@@ -173,6 +173,7 @@ function CancelBooking()
 	        					CreditAmount:{N:sessionStorage.getItem("CreditAmount").toString()},
 	        					Reason:{S:reason},
 	        					Status:{S:"Y"},
+	        					Email:{S:sessionStorage.getItem("Email")},
 	        				}
 	        			};
 	        	   console.log("ok till now")

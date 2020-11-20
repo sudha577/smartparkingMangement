@@ -404,13 +404,14 @@ function checkBookings()
 	var params = {
 	        TableName : "BookingDetail",
 	        ScanIndexForward: true,
-	        FilterExpression: "#user = :name AND #BookingDate > :date  OR #user = :name AND #BookingDate = :date AND #ToTime > :hours ",
+	        FilterExpression: "#user = :name AND #BookingDate > :date AND #Flag <> :flag OR #user = :name AND #BookingDate = :date AND #ToTime > :hours AND #Flag <> :flag",
 	        ExpressionAttributeNames: {
 	            "#user": "UserName",
 	            "#BookingDate":"BookingDate",
-	            "#ToTime":"ToTime"
+	            "#ToTime":"ToTime",
+	            "#Flag":"Flag"
 	        },
-	        ExpressionAttributeValues: { ":name": sessionStorage.getItem("UserName"),":date":Todaydate, ":hours":currhours}
+	        ExpressionAttributeValues: { ":name": sessionStorage.getItem("UserName"),":date":Todaydate, ":hours":currhours, ":flag":'Y'}
 	             
 	    };
 	    docClient.scan(params, onScan);

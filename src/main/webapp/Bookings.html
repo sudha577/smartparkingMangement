@@ -123,7 +123,18 @@ function queryData() {
             if((item.BookingDate>Todaydate)||((item.BookingDate==Todaydate) &&(item.ToTime.substring(0,2)>new Date().getHours())))
             	{
             document.getElementById('Detailstable').rows[i].cells[5].innerHTML = "<button class='button' align='center' onClick= 'navigate(\""+item.SensorName+"\")'>Navigate</button>";
-            document.getElementById('Detailstable').rows[i].cells[6].innerHTML = "<button class='button' align='center' onClick= 'extend(\""+item.BookingId+"\")'>Extend</button>";
+            if(item.Flag=='Y')
+            	{
+            	document.getElementById('Detailstable').rows[i].cells[6].innerHTML ="ALready Extended!";
+            	}
+            else if(item.Flag=="Null")
+            	{
+            	document.getElementById('Detailstable').rows[i].cells[6].innerHTML = "<button class='button' align='center' onClick= 'extend(\""+item.BookingId+"\")'>Extend</button>";
+            	}
+            else
+            	{
+            document.getElementById('Detailstable').rows[i].cells[6].innerHTML = item.Flag;
+            	}
             document.getElementById('Detailstable').rows[i].cells[7].innerHTML = "<button class='button' align='center' onClick= 'cancel(\""+item.BookingId+"\")'>Cancel</button>";
             	}
           console.log("helll0")
