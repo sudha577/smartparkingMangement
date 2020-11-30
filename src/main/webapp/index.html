@@ -202,18 +202,6 @@ function adduser(password)
 								if(data1.Count==0)
 									{
 									
-									var SaveEmail={
-										TableName : "UserEmails",
-										Item:{
-											UserId:{N:coustr},
-											UserName:{S:name},
-											Email:{S:email}
-										}
-									};
-									dynamodb.putItem(SaveEmail,function(err, data){
-										if (err) console.log(err, err.stack); // an error occurred
-										   else     console.log(data);
-									});
 					var params1={
 							TableName : "UserDetails",
 							Item:{
