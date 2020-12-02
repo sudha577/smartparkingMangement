@@ -5,10 +5,10 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GDXS5PCQN4"></script>
 <script>
 
-if(sessionStorage.getItem("UserType")!="User" ||sessionStorage.getItem("UserName")=="")
+/* if(sessionStorage.getItem("UserType")!="User" ||sessionStorage.getItem("UserName")=="")
 {
 window.location.href="index.html";
-}
+} */
 </script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -75,60 +75,138 @@ function initMap() {
   var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
   function loadref(time)
   {
-  	queryData("Slot1");
-  	var slot="Slot1";
-  	setInterval("queryData(\"Slot1\");",10000);
-  	queryData("Slot2");
-  	setInterval("queryData(\"Slot2\");",10000);
+  	 queryData("Slot 1"); 
+  	setInterval("queryData(\"Slot 1\");",10000);
+  	queryData("Slot 2"); 
+  	setInterval("queryData(\"Slot 2\");",10000);
+  	queryData("Slot 3"); 
+  	setInterval("queryData(\"Slot 3\");",10000);
+  	queryData("Slot 4"); 
+  	setInterval("queryData(\"Slot 4\");",10000);
+  	queryData("Slot 5"); 
+  	setInterval("queryData(\"Slot 5\");",10000);
+  	/* queryData("Slot2");
+  	setInterval("queryData(\"Slot2\");",10000); */
   //setTimeout("location.reload(true);",time);
   } 
 
   function queryData(slotId) {
-  	console.log("refreshed");
-      var params = {
-          TableName : "SlotAvailability",
-          ScanIndexForward: false,
-          KeyConditionExpression: "#sname = :SensorName",
-          ExpressionAttributeNames:{
-              "#sname": "SensorName"
-          },
-          ExpressionAttributeValues: {
-          	":SensorName":slotId
-          }, 
-          Limit:1 
-      };
-      docClient.query(params, function(err, data) {
-          if (err) {
-              
-          } else {
-        	  
-              data.Items.forEach(function(movie) {
-            	  var map1 = new Map(); 
-            	  
-            	// adding some elements to the map  
-            	map1.set("Slot1", 0); 
-            	map1.set("Slot2", 1); 
-            	map1.set("Slot3", 2);
-            	map1.set("Slot4", 3);
-            	map1.set("Slot5", 4);
-            	console.log(slotId);
-                  console.log(map1.get(slotId));
-                  console.log(movie.Distance)
-                  if(movie.Distance<6 || movie.Distance>20)
-                  {
-                  	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].className="empty";
-                  	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].innerHTML="EMPTY"
-                  }
-                  else
-                  {
-                  	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].className="full";
-                  	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].innerHTML="FULL"
-                  }
-              });
-           
-          }
-      });
-  }
+  	//console.log("refreshed");
+  	var map1 = new Map(); 
+  	map1.set("Slot 1", 0); 
+          	map1.set("Slot 2", 1); 
+          	map1.set("Slot 3", 2);
+          	map1.set("Slot 4", 3);
+          	map1.set("Slot 5", 4);
+  	
+  	
+  	var d=new Date();
+ 	var currenthours=d.getHours();
+ 	var currentminutes=d.getMinutes();
+ 	var currentseconds=d.getSeconds(); 
+ 	const current_datetime=new Date();
+ 	const today= current_datetime.getFullYear()+ "-"+ appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) ;
+    var currenttime=appendLeadingZeroes(currenthours)+":"+appendLeadingZeroes(currentminutes);
+    displayAvailableTimes(slotId);
+ 	var Checkbooking = {
+	        TableName : "BookingDetail",
+	        ScanIndexForward: false,
+	        FilterExpression: ":one >= #FromTime AND :one < #ToTime  AND #BookingDate = :date AND #SensorName = :slot",
+	        ExpressionAttributeNames: {
+	            "#BookingDate": "BookingDate",
+	            "#FromTime":"FromTime",
+	            "#ToTime":"ToTime",
+	            "#SensorName":"SensorName"
+	        },
+	        ExpressionAttributeValues: { ":date": today,":one":currenttime,":slot":slotId
+	        	 }            
+	    };
+ 	 docClient.scan(Checkbooking, onScan);
+ 	 function onScan(err, data) {
+     if (err) {
+             
+         } 
+     else {
+ 	     //console.log(data.Count);
+             	if(data.Count==0)
+ 	    		{
+                	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].className="empty";
+                	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].innerHTML="Now </br> EMPTY"
+                }
+                else
+                {
+                	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].className="full";
+                	document.getElementById('slottable').rows[1].cells[map1.get(slotId)].innerHTML="Now </br> FULL"
+                }
+              	
+        }
+ 	 }
+ 	 }
+  function displayAvailableTimes(slotId)
+  {
+	  
+	  var map1 = new Map(); 
+	  	map1.set("Slot 1", 0); 
+		map1.set("Slot 2", 1); 
+      	map1.set("Slot 3", 2);
+	    map1.set("Slot 4", 3);
+	    map1.set("Slot 5", 4);
+	  	console.log("in displayAvailableTimes");
+	  	var d=new Date();
+	 	var currenthours=d.getHours();
+	 	var currentminutes=d.getMinutes();
+	 	var currentseconds=d.getSeconds();
+	 	//console.log(currentseconds); 
+	 	const current_datetime=new Date();
+	 	const today= current_datetime.getFullYear()+ "-"+ appendLeadingZeroes(current_datetime.getMonth() + 1) + "-" + appendLeadingZeroes(current_datetime.getDate()) ;
+	    var currenttime=appendLeadingZeroes(currenthours)+":"+appendLeadingZeroes(currentminutes);
+	    console.log(currenttime);
+	    var availabletimes="";
+	     var Checkbooking = {
+	    	        TableName : "BookingDetail",
+	    	        FilterExpression: "#BookingDate = :date AND #SensorName = :slot AND #ToTime > :time ",
+	    	        ExpressionAttributeNames: {
+	    	            "#BookingDate": "BookingDate",
+	    	            "#SensorName":"SensorName",
+	    	            "#ToTime":"ToTime"
+	    	        },
+	    	        ExpressionAttributeValues: { ":date": today,":slot":slotId,":time":currenttime
+	    	        	 }            
+	    	    };
+	    	docClient.scan(Checkbooking, onScan);
+	    	function onScan(err, data) {
+	        if (err) {
+	                
+	            } 
+	        else 
+	        {
+	        	console.log(data.Count);
+	        	if(data.Count==0)
+	        	{
+	        		document.getElementById('slottable').rows[2].cells[map1.get(slotId)].innerHTML="Fully Available"
+	        	}
+	        	else
+	        	{
+	        		availabletimes="Booked For:</br>";
+	        		data.Items.forEach(function(item) {
+	        			var window=item.FromTime+"-"+item.	ToTime;
+	        			availabletimes=availabletimes+"</br>"+window;
+	        			
+	        			
+	        		});
+	        		document.getElementById('slottable').rows[2].cells[map1.get(slotId)].innerHTML=availabletimes;
+	        		}
+	        	}
+	        }
+	     }
+	   
+	  
+  function appendLeadingZeroes(n){
+	  if(n <= 9){
+	    return "0" + n;
+	  }
+	  return n;
+	}
 function loadReservation()
 {
 	window.location.href="ReservationPage.html";
@@ -168,7 +246,7 @@ function loadReservation()
 <div class="row">
   <div class="column" id="map">
   </div>
-  <div class="column" style="background-image: url('images/HomeBackground.jpg'); background-repeat: no-repeat;
+  <div class="column" style="background-image: url('images/ParkingHome.jpg'); background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   position: relative;">
@@ -186,17 +264,24 @@ function loadReservation()
   </tr>
   <tr>
     <td></td>
-    <td class="empty">EMPTY</td>
-    <td class="empty">EMPTY</td>
-    <td class="empty">EMPTY</td>
-    <td class="empty">EMPTY</td>
+    <td class="empty">Now </br> EMPTY</td>
+    <td class="empty">Now </br> EMPTY</td>
+    <td class="empty">Now </br> EMPTY</td>
+    <td class="empty">Now </br> EMPTY</td>
+  </tr>
+  <tr>
+    <td class=row2>Fully Available</td>
+    <td class=row2>Fully Available</td>
+    <td class=row2>Fully Available</td>
+    <td class=row2>Fully Available</td>
+    <td class=row2>Fully Available</td>
   </tr>
 </table>
 </br>
 </br>
 <button class="button" align="center" onClick= "loadReservation()">Reserve Space</button>
 </br>
-<p style="display:inline-block;text-align:centre;text-decoration: none;font-size: 22px;">Only 5 active reservations are allowed.</p>
+<p style="display:inline-block;text-align:centre;text-decoration: none;font-size: 18px;">Only 5 active reservations are allowed.</p>
 </div>
 
 </br>
