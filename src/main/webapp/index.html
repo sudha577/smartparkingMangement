@@ -129,7 +129,14 @@ function admincheck(username,password)
 							{
 						      if(item.Password.localeCompare(password)==0)
 						    	  {
+						    	  sessionStorage.setItem("UserName",username);
+						    	  sessionStorage.setItem("UserId",item.UserId);
+						    	  sessionStorage.setItem("UserType","Admin")
 						    	  
+						    	  console.log(sessionStorage.getItem("UserId"));
+						    	  
+						    	  sessionStorage.setItem("Email",item.Email);
+						    	  console.log(sessionStorage.getItem("UserName"));
 						    	  window.location.href="AdminHome.html";
 						    	  }else{
 						    		  alert("Please enter valid password");
@@ -152,7 +159,7 @@ function adduser(password)
 	{
 	console.log(password);
 	var passlen=password.length;
-	if(passlen>0){
+	if(check_pass(password)==4){
 	const number=document.getElementById('number').value;
 	console.log(number)
 	if(/^\d{10}$/.test(number))
@@ -181,18 +188,21 @@ function adduser(password)
 					var toinsert=count+1;
 					var coustr=toinsert.toString();
 					var checkExsistUser={
-							ScanIndexForward: false,
 							 TableName : "UserDetails",
-						        KeyConditionExpression: "#susername = :UserType",
+							 FilterExpression: "#susername = :UserType or #suseremail =:UserEmail",
 						        ExpressionAttributeNames:{
-						            "#susername": "UserName"
+						            "#susername": "UserName",
+						            "#suseremail": "Email"
 						        },
 						        ExpressionAttributeValues: {
-						        	":UserType": name
-						        },
-						        Limit:1
+						        	":UserType": name,
+						        	":UserEmail": email
+						        }
+						       
 					};
-					docClient.query(checkExsistUser, function(err, data1) {
+					docClient.scan(checkExsistUser, onScan);
+					function onScan(err, data1) {
+					//docClient.query(checkExsistUser, function(err, data1) {
 						if(err)
 							{
 							console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
@@ -233,10 +243,10 @@ function adduser(password)
 						 }	
 									}
 								else{
-									alert("Username already exsists please enter other username");
+									alert("Username or email already exsists please enter other username or email");
 								}
 							}
-					});
+					}
 					});
 				
 			}
@@ -245,7 +255,7 @@ function adduser(password)
 			alert("Enter a valid Mobile number");
 		}
 		}else{
-			alert("Please Enter Password");
+			alert("Password length should be greater than 6 and must contain alphabets,numbers and special characters");
 		}
 	}
 	else{
@@ -261,6 +271,15 @@ function phonenumber(inputtxt)
 {
   const phoneno = /^\d{10}$/;
   return inputtxt.value.match(phoneno);
+}
+function check_pass(password){
+	var no=0;
+	if(password.length>6 && password.match(/[a-z]/) && password.match(/\d+/) && password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)){
+		no=4;
+	}else{
+		no=1;
+	}
+	return no;
 }
 function addguest()
 {
