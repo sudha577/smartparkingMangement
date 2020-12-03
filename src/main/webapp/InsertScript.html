@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
+<script>
+AWS.config.update({
+	  region: "us-east-2",
+	  endpoint: 'http://dynamodb.us-east-2.amazonaws.com',
+	  accessKeyId: "AKIASUU5L6BWABM3DQEC",
+	  secretAccessKey: "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"
+	});  
+
+var dynamodb = new AWS.DynamoDB();
+var docClient = new AWS.DynamoDB.DocumentClient();
+var ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+
+function insertscript()
+{
+	var params={
+			 TableName : "UserTypeCount",
+			
+		        KeyConditionExpression: "#susername = :UserType",
+		        ExpressionAttributeNames:{
+		            "#susername": "UserType"
+		        },
+		        ExpressionAttributeValues: {
+		        	":UserType":"Bookings"
+		        }
+		       
+		};
+		docClient.query(params, function(err, data) {
+			if(err)
+				{
+				console.error("Unable to scan the table. Error JSON:", JSON.stringify(err, null, 2));
+				}
+			else
+				{
+							console.log(data.Count);
+			   					var coustr;
+			   					data.Items.forEach(function(movie) {
+			   						console.log(movie);
+			                     coustr=movie.Count+1;
+			                     console.log("latest BookingId:"+coustr)
+			   					console.log(coustr);
+	var params1={
+			TableName : "BookingDetail",
+			Item:{
+				UserName:{S:"jyotest2"},
+				BookingId:{N:coustr.toString()},
+				BookingDate:{S:"2020-12-02"},
+				Flag:{S:"Null"},
+				FromTime:{S:"10:00"},
+				PaymentAmount:{S:"10"},
+				PaymentMethod:{S:"paypal"},
+				Status:{S:"Y"},
+				ToTime:{S:"11:00"},
+				SensorName:{S:"Slot1"},
+				VehicleNumber:{S:"345"},
+				Email:{S:sessionStorage.getItem("Email")}
+			}
+		};
+   console.log("ok till now")
+   dynamodb.putItem(params1,function(err, data){
+		if (err)
+			{
+			console.log(err, err.stack); // an error occurred
+			}
+		   else    
+			   {
+			   console.log("Inserted");
+			   //document.getElementById("popup-1").classList.toggle("active");   
+			   }
+
+   
+});
+			   					});
+				}
+		});
+	}
+	
+	
+	function insertscript2()
+	{
+		var n=345
+		var params1={
+				TableName : "SlotAvailability",
+				Item:{
+					SensorName:{S:"Slot1"},
+					Seq:{N:n.toString()},
+					Dates:{S:"2020-12-02"},
+					Distance:{S:"15"},
+					Time:{S:"10:19:46"}
+				}
+			};
+	   console.log("ok till now")
+	   dynamodb.putItem(params1,function(err, data){
+			if (err)
+				{
+				console.log(err, err.stack); // an error occurred
+				}
+			   else    
+				   {
+				   console.log("Inserted");
+				   //document.getElementById("popup-1").classList.toggle("active");   
+				   }
+	});
+	}
+</script>
+</head>
+<body>
+<button type="submit" class="input-form-button" id="reserve"  onClick= "insertscript2()"  >SlotInsert</button>
+<button type="submit" class="input-form-button" id="reserve1"  onClick= "insertscript()"  >Booking Insert</button>
+
+</body>
+</html>

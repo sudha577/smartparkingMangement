@@ -18,27 +18,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
-	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
-<!--===============================================================================================-->	
-	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
-<!--===============================================================================================-->	
-	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="css/util.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
-<!--===============================================================================================-->
+	
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.652.0.min.js"></script>
 <script type="text/javascript">
 
@@ -144,9 +124,7 @@ function adduser(password)
 							if (err) console.log(err, err.stack); // an error occurred
 							   else     console.log(data);
 						});
-						if (window.confirm("Please login now !!!! ")) { 
-							   window.location.href="index.html";
-						 }	
+						document.getElementById("popup-1").classList.toggle("active");	
 									}
 								else{
 									alert("Username already exsists please enter other username");
@@ -169,6 +147,15 @@ function adduser(password)
 	}
 	
 }
+
+
+function togglePopup(){
+	
+	  
+	  window.location.href="AdminHome.html";
+		
+	}
+
 function validateEmail(email) {
 	  const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	  return re.test(email);
@@ -185,19 +172,21 @@ function phonenumber(inputtxt)
 <body style="font: 12px/1.4em "Lucida Grande", Verdana, sans-serif;">
 <header>
 <div class="topnav">
-  <a href="AdminHome.html" style="font: 12px/1.4em "Lucida Grande", Verdana, sans-serif;"><i class="fa fa-fw fa-home"></i> Home</a>
-  <a href="BookingDetails.html" style="font: 12px/1.4em "Lucida Grande", Verdana, sans-serif;">Bookings</a>
-  <a href="ACancelledBookings.html" style="font: 12px/1.4em "Lucida Grande", Verdana, sans-serif;">Cancellations</a>
-  <a href="AdminSignUp.html" style="font: 12px/1.4em "Lucida Grande", Verdana, sans-serif;"><i class="fa fa-plus-circle"></i> Add Admin</a>
+  <a href="AdminHome.html"><i class="fa fa-fw fa-home"></i> Home</a>
+  <a href="BookingDetails.html">Bookings</a>
+  <a href="ACancelledBookings.html">Cancellations</a>
+  <!--  <a  id="analytics" href="Analytics.html">Analytics</a>-->
+  <a href="AdminSignUp.html"><i class="fa fa-plus-circle"></i> Add Admin</a>
   <div class="dropdown">
-    <button class="dropbtn" style="font: 12px/1.4em "Lucida Grande", Verdana, sans-serif;">More <i class="fa fa-caret-down"></i></button>
+    <button class="dropbtn" >More <i class="fa fa-caret-down"></i></button>
     <div class="dropdown-content">
-     <a href="AshowPredictData.html" style="font: 12px/1.4em "Lucida Grande", Verdana, sans-serif;">Peak Hours</a>
-      <a href="AAbout.html" style="font: 12px/1.4em "Lucida Grande", Verdana, sans-serif;">About</a>
-      <a href="AContact.html" style="font: 12px/1.4em "Lucida Grande", Verdana, sans-serif;">Contact us</a>
+      <a href="AshowPredictData.html">Peak Hours</a>
+      <a href="AAbout.html">About</a>
+      <a href="AContact.html">Contact us</a>
     </div>
   </div> 
   <div class="topnav-right">
+
   <a href="Notifications.html"><i class="fa fa-bell" style="font-size:18px;color:#B0E0E6"></i></a>  
     <div class="dropdown">
     
@@ -211,62 +200,69 @@ function phonenumber(inputtxt)
 </div>
 </header>
 
-<div class="limiter">
-		<div class="container-login100">
-			<div class="wrap-login100">		     
-   <form class="login100-form validate-form" onsubmit="return false;">
+	<div align="center" class="table-form-container" id="form" style=" padding-top:20px;">		     
+   <form style="width: 600px; height: 500px; border-style: groove; border-radius:15px; background-color: white; padding-top:25px; padding-left:20px" onsubmit="return false;">
         <!--     <p style="font-family: Arial, Helvetica, sans-serif; font-size:40px; text-align:center">Welcome! </p>--> 
-			<p style="font-family: Arial, Helvetica, sans-serif; font-size:40px; text-align:center">Welcome Administrator !!</p>
-            <p style="font-family: Arial, Helvetica, sans-serif; font-size:30px; text-align:center"> Smart Parking Management  </p></br>
-            </br>
-    		<p style="font-family: Arial, Helvetica, sans-serif; font-size:15px; text-align:left"> Please enter below details to create new admin:  </p> <br>
-       <div class="wrap-input100 validate-input" data-validate = "Valid name">
-						<input class="input100" type="text" name="name" id="name">
-						<span class="focus-input100"></span>
-						<span class="label-input100">User Name</span>
-					</div>		
-        <div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
-						<input class="input100" type="text" name="email"  id="email" required>
-						<span class="focus-input100"></span>
-						<span class="label-input100">Email</span>
-					</div>
-					
-					<div class="wrap-input100 validate-input" data-validate="Password is required">
-						<input class="input100" type="password" name="pass1" id="pass1">
-						<span class="focus-input100"></span>
-						<span class="label-input100">Password</span>
-					</div>
-					 <div class="wrap-input100 validate-input" data-validate = "Valid Number">
-						<input class="input100" type="text" name="number" id="number">
-						<span class="focus-input100"></span>
-						<span class="label-input100">Mobile Number</span>
-					</div>
-       <button class="login100-form-btn" onclick="adduser(document.getElementById('pass1').value)">Add New Admin</button>
+			<p style="font-family: Arial, Helvetica, sans-serif; font-size:25px; text-align:center">Welcome Administrator !!</p>
+    		<p style="font-family: Arial, Helvetica, sans-serif; font-size:15px; text-align:center"> Please enter below details to create new admin:  </p> <br>
+          <table class="reservation-form">
+        <tr>
+            <td>
+               <label class="label-form" for="name">UserName:</label>
+            </td>
+            <td>
+                <input type="text"  id="name" required="Required" style="font-size:15px" class="input-form" name="name" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="label-form" for="email" >Email:</label>
+            </td>
+            <td>
+             <input type="text" data-validate = "Valid email is required: ex@abc.xyz"  id="email" required="Required" style="font-size:15px" class="input-form" name="email" />
+                           </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="label-form"  for="To" >Password :</label>
+            </td>
+            <td>
+                <input type="password" data-validate="Password is required"  id="pass1" required="Required" style="font-size:15px" class="input-form" name="pass1" />
+                           </td>
+                </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="label-form"  for="To" >Mobile Number :</label>
+            </td>
+            <td>
+                <input type="text" data-validate = "Valid Number"  id="number" required="Required" style="font-size:15px" class="input-form" name="number" />
+                           </td>
+                </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+            <button type="submit" class="input-form-button" onclick="adduser(document.getElementById('pass1').value)">Add New Admin</button>
+             </td>
+        </tr>
+    </table>
 </form> 
+   
     
    
-    <div class="login100-more" style="background-image: url('images/Parking lot Image.PNG');">
-	</div>
-   </div></div></div>
+   <!--  <div class="login100-more" style="background-image: url('images/Parking lot Image.PNG');">
+	</div> -->
+   </div>
+   <div class="popup" id="popup-1">
+  <div class="overlay"></div>
+  <div class="content">
+    <div class="close-btn" onclick="togglePopup('popup-1')">&times;</div>
+    <p align="centre"> <i class="fa fa-check-circle" style="font-size:40px;color:blue"></i></br></br>New Admin has been added.</br> </br>Please try to login now!</p>
+  </div>
   
 </body>
 
-	
-<!--===============================================================================================-->
-	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/animsition/js/animsition.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/bootstrap/js/popper.js"></script>
-	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/select2/select2.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/daterangepicker/moment.min.js"></script>
-	<script src="vendor/daterangepicker/daterangepicker.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/countdowntime/countdowntime.js"></script>
-<!--===============================================================================================-->
-	<script src="js/main.js"></script>
 
 </html>
