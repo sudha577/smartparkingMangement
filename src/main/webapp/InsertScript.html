@@ -49,14 +49,14 @@ function insertscript()
 			Item:{
 				UserName:{S:"jyotest2"},
 				BookingId:{N:coustr.toString()},
-				BookingDate:{S:"2020-12-02"},
+				BookingDate:{S:"2020-12-03"},
 				Flag:{S:"Null"},
-				FromTime:{S:"10:00"},
+				FromTime:{S:"11:00"},
 				PaymentAmount:{S:"10"},
 				PaymentMethod:{S:"paypal"},
 				Status:{S:"Y"},
-				ToTime:{S:"11:00"},
-				SensorName:{S:"Slot1"},
+				ToTime:{S:"12:00"},
+				SensorName:{S:"Slot 1"},
 				VehicleNumber:{S:"345"},
 				Email:{S:sessionStorage.getItem("Email")}
 			}
@@ -87,9 +87,9 @@ function insertscript()
 		var params1={
 				TableName : "SlotAvailability",
 				Item:{
-					SensorName:{S:"Slot1"},
+					SensorName:{S:"Slot5"},
 					Seq:{N:n.toString()},
-					Dates:{S:"2020-12-02"},
+					Dates:{S:"2020-12-03"},
 					Distance:{S:"15"},
 					Time:{S:"10:19:46"}
 				}
