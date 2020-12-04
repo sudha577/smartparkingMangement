@@ -135,8 +135,12 @@ function queryData() {
             	{
             document.getElementById('Detailstable').rows[i].cells[6].innerHTML = item.Flag;
             	}
-            document.getElementById('Detailstable').rows[i].cells[7].innerHTML = "<button class='button' align='center' onClick= 'cancel(\""+item.BookingId+"\")'>Cancel</button>";
+            
             	}
+            if((item.BookingDate>Todaydate)||((item.BookingDate==Todaydate) &&(item.FromTime.substring(0,2)>new Date().getHours())))
+        	{
+            document.getElementById('Detailstable').rows[i].cells[7].innerHTML = "<button class='button' align='center' onClick= 'cancel(\""+item.BookingId+"\")'>Cancel</button>";
+        	}
           console.log("helll0")
             	i++;  
                             
