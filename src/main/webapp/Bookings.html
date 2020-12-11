@@ -127,7 +127,7 @@ function queryData() {
             	{
             	document.getElementById('Detailstable').rows[i].cells[6].innerHTML ="Already Extended!";
             	}
-            if(item.ToTime=='23:00')
+            else if(item.ToTime=='23:00')
             	{
             	document.getElementById('Detailstable').rows[i].cells[6].innerHTML ="Cannot Extend!";
             	}
@@ -137,7 +137,7 @@ function queryData() {
             	}
             else
             	{
-            //document.getElementById('Detailstable').rows[i].cells[6].innerHTML = item.Flag;
+            document.getElementById('Detailstable').rows[i].cells[6].innerHTML = item.Flag;
             	}
             
             	}
