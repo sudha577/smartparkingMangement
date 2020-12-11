@@ -299,6 +299,7 @@ td.label-column
 .myBookingsTable {
   border-collapse: collapse;
   width: 100%;
+  
 }
 
 .myBookingsTable th, td {
@@ -318,10 +319,17 @@ td.label-column
 
 
 
+
+
+
+
+
+
 .myDetailsTable {
   border-collapse: collapse;
   width: 70%;
   align:centre;
+   border: 1px solid black;
 }
 
 .myDetailsTable td {
@@ -330,6 +338,7 @@ td.label-column
   width: 50%;
    text: bold;
   font-size: 12px;
+   
 }
 
 .myDetailsTable tr:nth-child(even){background-color: #eafbf9}
@@ -340,6 +349,7 @@ td.label-column
   text-align: centre;
   padding: 5px;
   width: 30%;
+   border: 1px solid black;
 }
 
 
