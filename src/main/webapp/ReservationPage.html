@@ -217,7 +217,7 @@ function displaytooptions()
 	 	var currenthours=d.getHours();
 	 	var options = document.querySelectorAll('#From option');
 		  options.forEach(o => o.remove());
-		for (i = currenthours+1; i<24; i++) {
+		for (i = currenthours+1; i<23; i++) {
 			console.log("in for loop");
 		var x = document.getElementById("From");
 		  var option = document.createElement("option");
@@ -232,7 +232,7 @@ function displaytooptions()
 			{
 			var options = document.querySelectorAll('#From option');
 			  options.forEach(o => o.remove());
-			for (i = 0; i<24; i++) {
+			for (i = 0; i<23; i++) {
 				console.log("in for loop");
 			var x = document.getElementById("From");
 			  var option = document.createElement("option");

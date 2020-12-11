@@ -40,11 +40,12 @@ function queryData() {
 	console.log(today);
 	var params = {
 	        TableName : "SlotAvailability",
-	        FilterExpression: "#Dates =:today",
+	        FilterExpression: "#Dates =:today AND #Distance BETWEEN :low AND :up ",
 	        ExpressionAttributeNames: {
-	            "#Dates": "Dates",         
+	            "#Dates": "Dates", 
+	            "#Distance": "Distance"
 	        },
-	        ExpressionAttributeValues: { ":today": today.toString() }            
+	        ExpressionAttributeValues: { ":today": today.toString(), ":low":6 ,":up": 20 }            
 	    };
 	    docClient.scan(params, onScan);
 	    function onScan(err, data) {
@@ -91,6 +92,7 @@ function queryData() {
              console.log(data);
              if(data.Count==0)
             	 {
+            	
             	 row = table.insertRow(i);
             	  c0 = row.insertCell(0);
             	  c1= row.insertCell(1);
@@ -104,6 +106,7 @@ function queryData() {
                  document.getElementById('Detailstable').rows[i].cells[2].innerHTML=today;
                 
                 	 i++;
+            		 
             	 }
          }
         }

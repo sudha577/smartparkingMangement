@@ -127,13 +127,17 @@ function queryData() {
             	{
             	document.getElementById('Detailstable').rows[i].cells[6].innerHTML ="Already Extended!";
             	}
+            if(item.ToTime=='23:00')
+            	{
+            	document.getElementById('Detailstable').rows[i].cells[6].innerHTML ="Cannot Extend!";
+            	}
             else if(item.Flag=="Null")
             	{
             	document.getElementById('Detailstable').rows[i].cells[6].innerHTML = "<button class='button' align='center' onClick= 'extend(\""+item.BookingId+"\")'>Extend</button>";
             	}
             else
             	{
-            document.getElementById('Detailstable').rows[i].cells[6].innerHTML = item.Flag;
+            //document.getElementById('Detailstable').rows[i].cells[6].innerHTML = item.Flag;
             	}
             
             	}
