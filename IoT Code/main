@@ -1,0 +1,216 @@
+
+#include <ctime>
+#include <Arduino.h>
+#include <WiFiClientSecure.h>
+#include <PubSubClient.h>
+#include <string.h>
+#include <time.h>
+#define trigPin 13
+#define echoPin 12
+unsigned long clocktime;
+
+double dist;
+// You will need an internet connection for this...
+
+const char* ssid = "XXX";
+const char* password = "XXXX";
+
+
+
+const char* awsEndpoint = "XXXXX-ats.iot.us-east-2.amazonaws.com";
+
+// This is the arn
+const char* topic = "arn:aws:iot:us-east-2:XXXXX:thing/distanceSensor";
+
+// Right now we are also subscribing to our own publication... 
+// You can create another topic on AWS to subscribe to if you wish...
+//const char* subscribeTopic = topic;
+const char* subscribeTopic = "arn:aws:iot:us-east-2:XXXX:thing/distanceSensor";
+
+// Update the two certificate strings below. Paste in the text of your AWS 
+// device certificate and private key. Add a quote character at the start
+// of each line and a backslash, n, quote, space, backslash at the end 
+// of each line:
+
+// xxxxxxxxxx-certificate.pem.crt
+const char* certificate_pem_crt = \
+"-----BEGIN CERTIFICATE-----\n" \
+"MIIDWjCCAkKgAwIBAgIVAKJg1c/5O4hnDq6s3o7LsLIV/nXJMA0GCSqGSIb3DQE\n" \
+"CwUAME0xSzBJBgNVBAsMQkFtYXpvbiBXZWIgU2VydmljZXMgTz1BbWF6b24uY29\n" \
+"IEluYy4gTD1TZWF0dGxlIFNUPVdhc2hpbmd0b24gQz1VUzAeFw0yMDA0MTIwMjM\n" \
+"MTZaFw00OTEyMzEyMzU5NTlaMB4xHDAaBgNVBAMME0FXUyBJb1QgQ2VydGlmaWN\n" \
+"dGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDUnVU6uEaxUbqSVVa\n" \
+"oTz3NYEQ7a4PTLx0R26XWkerIIYubJ8y9xL42Hl2ImB+FaXJqddnTHW6HHVWX3N\n" \
+"pJczEpDvg7HweggVtzCftuOCMUjb+GzodtDjTrAplRTb8XSj9pgLa133M8uePbL\n" \
+"8PC1MqnKK5cIH+rsA4HQeaOWRvRjeWdnaWCvWCaUadFY3KSAPL2p3Mt9jxpw3vo\n" \
+"zu/Vmw/+N1TsrSBPbFk0VNpzLstBJryz3ukMeCANXCN3AH3sxc1f1JtwYvA1+Y5\n" \
+"6mO9CbwcPwXyrR2jZTob0YhNJ+LaPX8WJaylcz3uG83A725A3RhIhceyNkuVLIG\n" \
+"0t3vAgMBAAGjYDBeMB8GA1UdIwQYMBaAFObNOZrF7ZRVvHGSEpeKJ4bj+CcAMB0G\n" \
+"A1UdDgQWBBQci46dCpKM5q21h2PKmdBefn92kzAMBgNVHRMBAf8EAjAAMA4GA1U\n" \
+"DwEB/wQEAwIHgDANBgkqhkiG9w0BAQsFAAOCAQEAAY7qqn9tFTfeNOjlXDyFzDf\n" \
+"PJNqwYhfSw8yk6rBEa/4FzXxdc0JLtuTyWW3eA2pnEdgqQsjMt+ucGQnTGq3Ufr\n" \
+"waa3s94e1YYgPRLy8eChBo//33+XjbBgOfE+iR9PDb16G3q+Z9hsOp31NaVSCel\n" \
+"iSiWAw8ScDe4jCCJqzjvV12WoeH8HrfBQHRJSow/fNdppHbzLchjH6WzLz47r4/\n" \
+"lRTbXW4eGFxlApy6hZuQR+O0Rh26YeCrUsUmygIvT19fGriT6MgNVbbhmSIqRMO\n" \
+"fPAcOBA03shRR7NMnvv1Q5KplTa3EsBV3mWjZp7sbb3fSr2SmmN6w4aV0aKnoA=\n" \
+"-----END CERTIFICATE-----\n";
+
+// xxxxxxxxxx-private.pem.key
+const char* private_pem_key = \
+"-----BEGIN RSA PRIVATE KEY-----\n" \
+"MIIEowIBAAKCAQEA1J1VOrhGsVG6klVWkKE89zWBEO2uD0y8dEdul1pHqyCGLmy\n" \
+"MvcS+Nh5diJgfhWlyanXZ0x1uhx1Vl9zbaSXMxKQ74Ox8HoIFbcwn7bjgjFI2/h\n" \
+"6HbQ406wKZUU2/F0o/aYC2td9zPLnj2yzvDwtTKpyiuXCB/q7AOB0Hmjlkb0Y3l\n" \
+"Z2lgr1gmlGnRWNykgDy9qdzLfY8acN76F87v1ZsP/jdU7K0gT2xZNFTacy7LQSa\n" \
+"s97pDHggDVwjdwB97MXNX9SbcGLwNfmOUOpjvQm8HD8F8q0do2U6G9GITSfi2j1\n" \
+"FiWspXM97hvNwO9uQN0YSIXHsjZLlSyBn9Ld7wIDAQABAoIBAGoPIdjs27bQgjV\n" \
+"BK2ZAQSAWCXNqqpPKSMIDw7JJj8jNkwqOy/9OCWSNuTLOT8sJUt3wc/xwDhawd2\n" \
+"N8hV9mavuEUCeNzwwt+yRjslzE/Brgqs3gcIXiNFuXLEv2cIB5tTA32OzYzm9Ye\n" \
+"V2ALqMd6wl/rZqfS5Clfhn4sb4IicgFIAU8zTrReRi0BvRIu4eJMkFgmvVVk1T0\n" \
+"LsnUROaCKJ9cyXI+2tAB8mrkt8kLNjssopYzrBZGaIYjue8xK/xcZ7gS7uQhTSO\n" \
+"jUe9vz/4KjZDYQmJraUkAH0pJTj8FLbwhTcQ9NvGpAF1m/WuskisFkIyIbxdbK4\n" \
+"Ef87dAECgYEA8+kp3qymPiwMT0xwrjvUglQfLuhSwT2ALYEwJvJLAzEo2tvTnX+\n" \
+"dxXZ7DxX7BHLBwwInfmUySWuwvABoe4FVgb+4xzhZoZowHThKhuDDtiLf8zyZXk\n" \
+"AVdkKzlBvazxyftghTDdBceuZ0h2vXcylH6HLotIA1MsipKeQYVJoW8CgYEA3yc\n" \
+"FxDdBhMPPjaG8yi3KfZgwV4o3ZVFL+NqssREEUSjM/am7bcxGOYnYI7wSYP6Twr\n" \
+"P6AmFez4Czuj/QR2QqKWPTM8kotxrCkkycsiLdnhGqZ1MfYfoV1gFAtMtge48yp\n" \
+"YIMJ+c2MNXW9Y+TLmpYW5na7Hu/RZXTwqiLjS4ECgYAMEsKLzyf7c9q4IiSBu1x\n" \
+"hxR0EfPmtNCfcAGeK+gipFBNZQw4g5Uag+5hjysa+FaAZswWZcBDpKXd6FtsVIf\n" \
+"FkmPnGJb3NNak26B0xLNrVJaZR6qfzAWWOkQaqkiZmkhglvou9505slvO1sFTd0\n" \
+"FIxEdYh/AaL2yQMkYyCd6QKBgQDAk2okJ7RmIpqb+Nh7DZ8MAog7N7QSjVgY3Kx\n" \
+"u8t2D4K8PFaQfPBM6Yn/5TruZovkHIwYl29mqorgvsZleq1IEiGPjSDv4pDlntg\n" \
+"oUzMvuNpaU9oH1vqmLdqdNntmTp99xgI9Ozt+/nMxN/9Thx7Op1mo/4V06YkZUe\n" \
+"u83lgQKBgGjxlsHDWv/+vRE6l69CmXOnYtZL/zO/5G+2ws9U0zgCxCvjuzNk0X8\n" \
+"Z6QfXMQC1kPfziLXSLciAekgb8AreyJSBJBPXw7CBofQnW8yNUKFXHkTRMsXMV/\n" \
+"qnyEwkqIxmUKadMwEdSL2vYjjnWeYsM0PGWTYLyNh0bfORPeKV\n" \
+"-----END RSA PRIVATE KEY-----\n";
+
+// This key should be fine as is. It is just the root certificate.
+const char* rootCA = \
+"-----BEGIN CERTIFICATE-----\n" \
+"MIIDQTCCAimgAwIBAgITBmyfz5m/jAo54vB4ikPmljZbyjANBgkqhkiG9w0BAQs\n" \
+"ADA5MQswCQYDVQQGEwJVUzEPMA0GA1UEChMGQW1hem9uMRkwFwYDVQQDExBBbWF\n" \
+"b24gUm9vdCBDQSAxMB4XDTE1MDUyNjAwMDAwMFoXDTM4MDExNzAwMDAwMFowOTE\n" \
+"MAkGA1UEBhMCVVMxDzANBgNVBAoTBkFtYXpvbjEZMBcGA1UEAxMQQW1hem9uIFJ\n" \
+"b3QgQ0EgMTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALJ4gHHKeNX\n" \
+"ca9HgFB0fW7Y14h29Jlo91ghYPl0hAEvrAIthtOgQ3pOsqTQNroBvo3bSMgHFzZ\n" \
+"9O6II8c+6zf1tRn4SWiw3te5djgdYZ6k/oI2peVKVuRF4fn9tBb6dNqcmzU5L/q\n" \
+"IFAGbHrQgLKm+a/sRxmPUDgH3KKHOVj4utWp+UhnMJbulHheb4mjUcAwhmahRWa\n" \
+"VOujw5H5SNz/0egwLX0tdHA114gk957EWW67c4cX8jJGKLhD+rcdqsq08p8kDi1\n" \
+"93FcXmn/6pUCyziKrlA4b9v7LWIbxcceVOF34GfID5yHI9Y/QCB/IIDEgEw+OyQ\n" \
+"jgSubJrIqg0CAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAM\n" \
+"AYYwHQYDVR0OBBYEFIQYzIU07LwMlJQuCFmcx7IQTgoIMA0GCSqGSIb3DQEBCwU\n" \
+"A4IBAQCY8jdaQZChGsV2USggNiMOruYou6r4lK5IpDB/G/wkjUu0yKGX9rbxenD\n" \
+"U5PMCCjjmCXPI6T53iHTfIUJrU6adTrCC2qJeHZERxhlbI1Bjjt/msv0tadQ1wU\n" \
+"N+gDS63pYaACbvXy8MWy7Vu33PqUXHeeE6V/Uq2V8viTO96LXFvKWlJbYK8U90v\n" \
+"o/ufQJVtMVT8QtPHRh8jrdkPSHCa2XV4cdFyQzR1bldZwgJcJmApzyMZFo6IQ6X\n" \
+"5MsI+yMRQ+hDKXJioaldXgjUkK642M4UwtBV8ob2xJNDd2ZhwLnoQdeXeGADbkp\n" \
+"rqXRfboQnoZsG4q5WTP468SQvv\n" \
+"-----END CERTIFICATE-----\n";
+
+WiFiClientSecure wiFiClient;
+void msgReceived(char* topic, byte* payload, unsigned int len);
+PubSubClient pubSubClient(awsEndpoint, 8883, msgReceived, wiFiClient);
+void pubSubCheckConnect();
+ 
+void setup() {
+	
+	Serial.begin(115200);
+  
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+	Serial.println();
+	Serial.println("ESP32 AWS IoT Example");
+	Serial.printf("SDK version: %s\n", ESP.getSdkVersion());
+
+	Serial.print("Connecting to ");
+	Serial.print(ssid);
+	WiFi.begin(ssid, password);
+	WiFi.waitForConnectResult();
+	Serial.print(", WiFi connected, IP address: ");
+	Serial.println(WiFi.localIP());
+
+	wiFiClient.setCACert(rootCA);
+	wiFiClient.setCertificate(certificate_pem_crt);
+	wiFiClient.setPrivateKey(private_pem_key);
+
+
+}
+
+unsigned long lastPublish;
+int msgCount;
+int counter = 1;
+
+
+void loop() {
+
+	//pubSubCheckConnect();
+	pubSubCheckConnect();
+
+	if (millis() - lastPublish > 10000) {
+
+    long duration, distance;
+  digitalWrite(trigPin, LOW);  // Added this line
+  delayMicroseconds(2); // Added this line
+  digitalWrite(trigPin, HIGH);
+
+  delayMicroseconds(10); // Added this line
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration/2) / 29.1;
+
+     Serial.print(distance);
+    Serial.println(" cm");
+	
+		char val[256];
+		memset(val, 0, 256);
+		snprintf(val, 255, "%ld", counter);
+    	char value[256];
+		memset(value, 0, 256);
+		snprintf(value, 255, "%ld", distance);
+		String DSensor = "{" + String("\"Seq\"") + ":" + val + "," + "\n" +
+							 String("\"Distance\"") + ":" + value + "," + "\n" +
+							 String("\"SensorName\"") + ":" + "\"Slot1\"" +  "}";
+ 
+		boolean rc = pubSubClient.publish(topic,DSensor.c_str());
+    Serial.print("Published, rc=");
+		Serial.print((rc ? "OK: " : "FAILED: "));
+		Serial.println();
+
+		counter++;
+		
+		lastPublish = millis();
+		delay(10000);
+	  
+		
+	}
+}
+
+void msgReceived(char* topic, byte* payload, unsigned int length) {
+	Serial.print("Message received on ");
+	Serial.print(topic);
+	Serial.print(": ");
+	for (int i = 0; i < length; i++) {
+		Serial.print((char)payload[i]);
+		
+	}
+	
+
+	Serial.println();
+	
+}
+
+void pubSubCheckConnect() {
+	if (!pubSubClient.connected()) {
+		Serial.print("PubSubClient connecting to: ");
+		Serial.print(awsEndpoint);
+		while (!pubSubClient.connected()) {
+			Serial.print(".");
+			pubSubClient.connect("ESPthingXXXX");
+
+		}
+		Serial.println(" connected");
+		pubSubClient.subscribe(subscribeTopic);
+	}
+	pubSubClient.loop();
+}
